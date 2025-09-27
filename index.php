@@ -56,7 +56,6 @@
                 <a href="#contact" class="nav-link">Contact</a>
                 <a href="track_report.php" class="nav-link">Track Report</a>
                 <a href="admin/dashboard.php" class="nav-link btn-login">Admin Panel</a>
-                <a href="admin/register.php" class="nav-link btn-register">Register</a>
             </div>
             <div class="hamburger" id="hamburger">
                 <span class="bar"></span>

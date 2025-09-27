@@ -16,34 +16,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['create_user'])) {
         $first_name = sanitizeInput($_POST['first_name']);
         $last_name = sanitizeInput($_POST['last_name']);
+        $username = sanitizeInput($_POST['username']); // ADD THIS LINE - it was missing!
         $email = sanitizeInput($_POST['email']);
         $phone = sanitizeInput($_POST['phone']);
         $role = sanitizeInput($_POST['role']);
         $lgu_id = intval($_POST['lgu_id']) ?: null;
         $password = $_POST['password'];
         
+        // Validate username uniqueness
+        $username_check = $pdo->prepare("SELECT COUNT(*) FROM users WHERE username = ?");
+        $username_check->execute([$username]);
+        
         // Validate email uniqueness
         $email_check = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
         $email_check->execute([$email]);
         
-        if ($email_check->fetchColumn() > 0) {
+        if ($username_check->fetchColumn() > 0) {
+            $error_message = "Username already exists.";
+        } elseif ($email_check->fetchColumn() > 0) {
             $error_message = "Email address already exists.";
         } elseif (strlen($password) < 8) {
             $error_message = "Password must be at least 8 characters long.";
+        } elseif (empty($username)) {
+            $error_message = "Username is required.";
         } else {
             try {
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 
+                // FIXED: Corrected the INSERT statement
                 $stmt = $pdo->prepare("
-                    INSERT INTO users (first_name, last_name, email, phone, password, role, lgu_id)
-                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    INSERT INTO users (first_name, last_name, username, email, phone, password_hash, role, lgu_id, is_active, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())
                 ");
-                $stmt->execute([$first_name, $last_name, $email, $phone, $hashed_password, $role, $lgu_id]);
-                
+                $stmt->execute([$first_name, $last_name, $username, $email, $phone, $hashed_password, $role, $lgu_id]);
+
                 $success_message = "User created successfully.";
+                
+                // Clear form data after successful creation
+                unset($_POST);
+                
             } catch (Exception $e) {
                 error_log("User creation error: " . $e->getMessage());
-                $error_message = "Error creating user. Please try again.";
+                $error_message = "Error creating user: " . $e->getMessage();
             }
         }
     }
@@ -73,13 +87,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
                 
-                $stmt = $pdo->prepare("UPDATE users SET password = ? WHERE user_id = ?");
+                $stmt = $pdo->prepare("UPDATE users SET password_hash = ? WHERE user_id = ?");
                 $stmt->execute([$hashed_password, $user_id]);
                 
                 $success_message = "Password reset successfully.";
             } catch (Exception $e) {
                 error_log("Password reset error: " . $e->getMessage());
-                $error_message = "Error resetting password.";
+                $error_message = "Error resetting password: " . $e->getMessage();
             }
         }
     }
@@ -309,6 +323,10 @@ include 'includes/header.php';
             </div>
             
             <div class="form-row">
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input type="text" name="username" id="username" required>
+                </div>
                 <div class="form-group">
                     <label for="email">Email Address *</label>
                     <input type="email" name="email" id="email" required>

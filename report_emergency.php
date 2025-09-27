@@ -528,7 +528,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                 <a href="index.php#about" class="nav-link">About</a>
                 <a href="index.php#contact" class="nav-link">Contact</a>
                 <a href="admin/dashboard.php" class="nav-link btn-login">Admin Panel</a>
-                <a href="admin/register.php" class="nav-link btn-register">Register</a>
             </div>
             <div class="hamburger" id="hamburger">
                 <span class="bar"></span>
