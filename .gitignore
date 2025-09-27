@@ -1,0 +1,36 @@
+# Upload directories
+uploads/
+temp/
+
+# Log files
+*.log
+logs/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# PHP specific
+.env
+config/local.php
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Test files
+test_*.php
+debug_*.php
