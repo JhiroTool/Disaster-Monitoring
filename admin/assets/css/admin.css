@@ -1,3 +1,29 @@
+/* Priority badge styles for disaster details */
+.priority-badge {
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 16px;
+    font-size: 0.98em;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+.priority-low {
+    background: #d1fae5;
+    color: #047857;
+    border: 1px solid #10b981;
+}
+.priority-medium {
+    background: #fef3c7;
+    color: #b45309;
+    border: 1px solid #f59e42;
+}
+.priority-high, .priority-critical {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #ef4444;
+}
 /* --- Enhanced Disaster Details Report Info --- */
 .dashboard-card .card-header {
     display: flex;

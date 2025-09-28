@@ -68,7 +68,16 @@ include 'includes/header.php';
     <div class="detail-section"><label><i class="fas fa-layer-group"></i> Type</label><div class="value"><?php echo htmlspecialchars($disaster['type_name']); ?></div></div>
     <div class="detail-section"><label><i class="fas fa-bolt"></i> Severity</label><div class="value"><?php echo htmlspecialchars($disaster['severity_display']); ?></div></div>
     <div class="detail-section"><label><i class="fas fa-flag"></i> Status</label><div class="value"><?php echo ucfirst(str_replace('_', ' ', $disaster['status'])); ?></div></div>
-    <div class="detail-section"><label><i class="fas fa-exclamation-triangle"></i> Priority</label><div class="value"><?php echo ucfirst($disaster['priority']); ?></div></div>
+    <div class="detail-section"><label><i class="fas fa-exclamation-triangle"></i> Priority</label><div class="value">
+        <?php 
+            $priority = strtolower($disaster['priority']);
+            $priorityClass = 'priority-medium';
+            if ($priority === 'low') $priorityClass = 'priority-low';
+            elseif ($priority === 'high' || $priority === 'critical') $priorityClass = 'priority-high';
+            elseif ($priority === 'medium') $priorityClass = 'priority-medium';
+        ?>
+        <span class="priority-badge <?php echo $priorityClass; ?>"><?php echo ucfirst($disaster['priority']); ?></span>
+    </div></div>
     <div class="detail-section"><label><i class="fas fa-calendar-alt"></i> Reported At</label><div class="value"><?php echo date('M j, Y g:i A', strtotime($disaster['reported_at'])); ?></div></div>
     <div class="detail-section"><label><i class="fas fa-map-marker-alt"></i> Location</label><div class="value"><?php echo htmlspecialchars($disaster['address']); ?></div></div>
     <?php if ($disaster['landmark']): ?>
