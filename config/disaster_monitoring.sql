@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Sep 27, 2025 at 08:43 AM
+-- Generation Time: Sep 28, 2025 at 09:32 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -95,7 +95,10 @@ INSERT INTO `activity_logs` (`log_id`, `user_id`, `action`, `table_name`, `recor
 (25, 2, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '2025-09-27 05:31:18'),
 (26, 2, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '2025-09-27 05:34:54'),
 (27, 2, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '2025-09-27 05:41:01'),
-(28, 2, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '2025-09-27 06:40:43');
+(28, 2, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '2025-09-27 06:40:43'),
+(29, 2, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '2025-09-28 05:36:37'),
+(30, 2, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '2025-09-28 05:37:38'),
+(31, 2, 'login', NULL, NULL, NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-09-28 05:40:47');
 
 -- --------------------------------------------------------
 
@@ -168,6 +171,76 @@ CREATE TABLE `disasters` (
 --
 
 INSERT INTO `disasters` (`disaster_id`, `tracking_id`, `disaster_name`, `type_id`, `severity_level`, `severity_display`, `severity_score`, `address`, `city`, `province`, `state`, `latitude`, `longitude`, `landmark`, `reporter_name`, `reporter_phone`, `alternate_contact`, `description`, `people_affected`, `immediate_needs`, `current_situation`, `image_path`, `status`, `assigned_lgu_id`, `assigned_user_id`, `priority`, `reported_at`, `acknowledged_at`, `resolved_at`, `escalation_deadline`, `is_anonymous`, `is_verified`, `source`, `created_at`, `updated_at`) VALUES
+(1, 'DM20250927-23CCE7', '12hr no power', 20, 'red-3', 'Widespread power loss', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046166', '', '12hr no power', '100+', '[]', '', NULL, 'closed', NULL, NULL, 'medium', '2025-09-27 03:03:46', NULL, '2025-09-27 03:35:40', NULL, 0, 0, 'web_form', '2025-09-27 03:03:46', '2025-09-28 06:02:45'),
+(2, 'DM20250927-75065C', 'Partial Building Collapse on 3rd Floor', 20, 'red-1', 'Critical situations', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046168', '', 'Partial structural collapse reported in residential building. Multiple families affected, immediate evacuation required.', '6-10', '[\"medical_assistance\",\"rescue\"]', 'some are dead', NULL, 'resolved', 1, 1, 'high', '2025-09-27 05:03:35', '2025-09-27 05:28:00', '2025-09-28 07:23:28', NULL, 0, 0, 'web_form', '2025-09-27 05:03:35', '2025-09-28 07:23:28'),
+(3, 'DM20250927-B8AEE7', 'Im under the lava', 20, 'red-2', 'Heavy devastation', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046169', '', 'Im under the lava', '100+', '[\"medical_assistance\",\"shelter\",\"rescue\",\"transportation\",\"security\"]', 'too much ash fall and hard to breath', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 05:47:55', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 05:47:55', '2025-09-28 06:02:45'),
+(4, 'DM20250927-ABA233', 'Test emergency report', 20, 'orange-2', 'Minor structural damage', 1.00, 'Test Location, Quezon City', 'Test Location', 'Philippines', 'Philippines', NULL, NULL, '', '', '09123456789', '', 'Test emergency report', '', '[]', '', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 05:54:50', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 05:54:50', '2025-09-28 06:02:45'),
+(5, 'DM20250927-CB5364', 'Im toxic', 20, 'red-1', 'Critical situations', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046166', '', 'Im toxic', '11-25', '[\"medical_assistance\"]', 'Toxic waste pour on my skin and i drink some', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 05:56:28', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 05:56:28', '2025-09-28 06:02:45'),
+(6, 'DM20250927-1694F3', 'Another test emergency report', 20, 'red-2', 'Heavy devastation', 1.00, 'Test Location 2, Manila', 'Test Location 2', 'Philippines', 'Philippines', NULL, NULL, '', '', '09876543210', '', 'Another test emergency report', '', '[]', '', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 05:57:21', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 05:57:21', '2025-09-28 06:02:45'),
+(7, 'DM20250927-1250E8', 'Im toxic', 20, 'red-1', 'Critical situations', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046166', '', 'Im toxic', '11-25', '[\"medical_assistance\"]', 'Toxic waste pour on my skin and i drink some', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 06:00:01', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:00:01', '2025-09-28 06:02:45'),
+(8, 'DM20250927-2F3E8F', 'Im toxic', 20, 'red-1', 'Critical situations', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046166', '', 'Im toxic', '11-25', '[\"medical_assistance\"]', 'Toxic waste pour on my skin and i drink some', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 06:00:02', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:00:02', '2025-09-28 06:02:45'),
+(9, 'DM20250927-EE6AED', 'Testing auto-track functionality', 20, 'orange-3', 'Partially accessible roads', 1.00, 'Test Auto-Track Location, Quezon City', 'Test Auto-Track Location', 'Philippines', 'Philippines', NULL, NULL, '', '', '09111222333', '', 'Testing auto-track functionality', '', '[]', '', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 06:07:26', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:07:26', '2025-09-28 06:02:45'),
+(10, 'DM20250927-89EA92', 'Testing complete auto-track workflow', 20, 'red-1', 'Critical situations', 1.00, 'Final Test Location, Manila', 'Final Test Location', 'Philippines', 'Philippines', NULL, NULL, '', '', '09444555666', '', 'Testing complete auto-track workflow', '', '[]', '', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 06:11:04', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:11:04', '2025-09-27 06:11:04'),
+(11, 'DM20250927-80C45A', 'Im toxic', 20, 'red-1', 'Critical situations', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046166', '', 'Im toxic', '11-25', '[\"medical_assistance\"]', 'Toxic waste pour on my skin and i drink some', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 06:11:52', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:11:52', '2025-09-28 06:02:45'),
+(12, 'DM20250927-4CD3E6', 'help', 20, 'green-2', 'Intact homes & accessible roads', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046163', '', 'help', '1-5', '[\"medical_assistance\"]', 'im under the wall', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 06:30:44', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:30:44', '2025-09-28 06:02:45'),
+(13, 'DM20250927-E916FC', 'help', 20, 'green-2', 'Intact homes & accessible roads', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046163', '', 'help', '1-5', '[\"medical_assistance\"]', 'im under the wall', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 06:31:26', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:31:26', '2025-09-28 06:02:45'),
+(14, 'DM20250927-DDD3FC', 'help', 20, 'green-2', 'Intact homes & accessible roads', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046163', '', 'help', '1-5', '[\"medical_assistance\"]', 'im under the wall', 'uploads/emergency_images/emergency_1758954861_68d7856ddd40c.png', 'pending', NULL, NULL, 'medium', '2025-09-27 06:34:21', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:34:21', '2025-09-28 06:02:45'),
+(15, 'DM20250927-E19102', 'help', 20, 'green-2', 'Intact homes & accessible roads', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046163', '', 'help', '1-5', '[\"medical_assistance\"]', 'im under the wall', 'uploads/emergency_images/emergency_1758954878_68d7857e19112.png', 'pending', NULL, NULL, 'medium', '2025-09-27 06:34:38', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:34:38', '2025-09-28 06:02:45'),
+(16, 'DM20250927-D7A313', 'help', 20, 'green-2', 'Intact homes & accessible roads', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046163', '', 'help', '1-5', '[\"medical_assistance\"]', 'im under the wall', 'uploads/emergency_images/emergency_1758954925_68d785ad7a322.png', 'pending', NULL, NULL, 'medium', '2025-09-27 06:35:25', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:35:25', '2025-09-28 06:02:45'),
+(17, 'DM20250927-1528FF', 'help', 20, 'green-2', 'Intact homes & accessible roads', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046163', '', 'help', '1-5', '[\"medical_assistance\"]', 'im under the wall', 'uploads/emergency_images/emergency_1758955009_68d786015290e.png', 'pending', NULL, NULL, 'medium', '2025-09-27 06:36:49', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:36:49', '2025-09-28 06:02:45'),
+(18, 'DM20250928-492C85', 'Accessibility', 20, 'red-2', 'Heavy devastation (Red)', 1.00, 'purok 3, Halang, Lipa City, Batangas, Philippines', 'Lipa City', 'Batangas', 'CALABARZON', NULL, NULL, NULL, NULL, '09151046166', NULL, 'I am under the water', NULL, NULL, NULL, NULL, 'pending', NULL, NULL, 'medium', '2025-09-28 05:35:00', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-28 05:35:00', '2025-09-28 06:02:45'),
+(19, 'DM20250928-B9A812', 'Transport', 20, 'orange-2', 'Minor structural damage (Orange)', 1.00, 'purok 3, Halang, Lipa City, Batangas, Philippines', 'Lipa City', 'Batangas', 'CALABARZON', NULL, NULL, NULL, NULL, '09151046166', NULL, 'Im under the wheel', NULL, NULL, NULL, NULL, 'pending', NULL, NULL, 'medium', '2025-09-28 05:41:31', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-28 05:41:31', '2025-09-28 06:02:45'),
+(20, 'DM20250928-20C3E6', 'Water', 20, 'orange-2', 'Minor structural damage (Orange)', 1.00, 'purok 5, Datu Esmael, Dasmariñas City, Cavite, Philippines', 'Dasmariñas City', 'Cavite', 'CALABARZON', NULL, NULL, NULL, NULL, '09151046169', NULL, 'im need water', NULL, NULL, NULL, NULL, 'closed', NULL, NULL, 'medium', '2025-09-28 06:04:50', '2025-09-28 06:06:02', '2025-09-28 07:23:56', NULL, 0, 0, 'web_form', '2025-09-28 06:04:50', '2025-09-28 07:24:22');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `disasters_backup_20250928_140244`
+--
+
+CREATE TABLE `disasters_backup_20250928_140244` (
+  `disaster_id` int(11) NOT NULL DEFAULT 0,
+  `tracking_id` varchar(20) NOT NULL,
+  `disaster_name` varchar(200) NOT NULL,
+  `type_id` int(11) NOT NULL,
+  `severity_level` varchar(20) NOT NULL,
+  `severity_display` varchar(100) DEFAULT NULL,
+  `severity_score` decimal(3,2) DEFAULT 1.00,
+  `address` text NOT NULL,
+  `city` varchar(100) DEFAULT NULL,
+  `province` varchar(100) DEFAULT 'Philippines',
+  `state` varchar(100) DEFAULT 'Philippines',
+  `latitude` decimal(10,8) DEFAULT NULL,
+  `longitude` decimal(11,8) DEFAULT NULL,
+  `landmark` varchar(200) DEFAULT NULL,
+  `reporter_name` varchar(100) DEFAULT NULL,
+  `reporter_phone` varchar(20) NOT NULL,
+  `alternate_contact` varchar(20) DEFAULT NULL,
+  `description` text NOT NULL,
+  `people_affected` varchar(50) DEFAULT NULL,
+  `immediate_needs` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`immediate_needs`)),
+  `current_situation` text DEFAULT NULL,
+  `image_path` varchar(255) DEFAULT NULL,
+  `status` enum('pending','assigned','acknowledged','in_progress','resolved','closed','escalated') DEFAULT 'pending',
+  `assigned_lgu_id` int(11) DEFAULT NULL,
+  `assigned_user_id` int(11) DEFAULT NULL,
+  `priority` enum('low','medium','high','critical') DEFAULT 'medium',
+  `reported_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `acknowledged_at` timestamp NULL DEFAULT NULL,
+  `resolved_at` timestamp NULL DEFAULT NULL,
+  `escalation_deadline` timestamp NULL DEFAULT NULL,
+  `is_anonymous` tinyint(1) DEFAULT 0,
+  `is_verified` tinyint(1) DEFAULT 0,
+  `source` enum('web_form','mobile_app','hotline','social_media','official') DEFAULT 'web_form',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `disasters_backup_20250928_140244`
+--
+
+INSERT INTO `disasters_backup_20250928_140244` (`disaster_id`, `tracking_id`, `disaster_name`, `type_id`, `severity_level`, `severity_display`, `severity_score`, `address`, `city`, `province`, `state`, `latitude`, `longitude`, `landmark`, `reporter_name`, `reporter_phone`, `alternate_contact`, `description`, `people_affected`, `immediate_needs`, `current_situation`, `image_path`, `status`, `assigned_lgu_id`, `assigned_user_id`, `priority`, `reported_at`, `acknowledged_at`, `resolved_at`, `escalation_deadline`, `is_anonymous`, `is_verified`, `source`, `created_at`, `updated_at`) VALUES
 (1, 'DM20250927-23CCE7', '12hr no power', 34, 'red-3', 'Widespread power loss', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046166', '', '12hr no power', '100+', '[]', '', NULL, 'closed', NULL, NULL, 'medium', '2025-09-27 03:03:46', NULL, '2025-09-27 03:35:40', NULL, 0, 0, 'web_form', '2025-09-27 03:03:46', '2025-09-27 05:51:14'),
 (2, 'DM20250927-75065C', 'Partial Building Collapse on 3rd Floor', 23, 'red-1', 'Critical situations', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046168', '', 'Partial structural collapse reported in residential building. Multiple families affected, immediate evacuation required.', '6-10', '[\"medical_assistance\",\"rescue\"]', 'some are dead', NULL, 'in_progress', 1, 1, 'high', '2025-09-27 05:03:35', '2025-09-27 05:28:00', NULL, NULL, 0, 0, 'web_form', '2025-09-27 05:03:35', '2025-09-27 05:40:58'),
 (3, 'DM20250927-B8AEE7', 'Im under the lava', 33, 'red-2', 'Heavy devastation', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046169', '', 'Im under the lava', '100+', '[\"medical_assistance\",\"shelter\",\"rescue\",\"transportation\",\"security\"]', 'too much ash fall and hard to breath', NULL, 'pending', NULL, NULL, 'medium', '2025-09-27 05:47:55', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 05:47:55', '2025-09-27 05:51:14'),
@@ -184,7 +257,9 @@ INSERT INTO `disasters` (`disaster_id`, `tracking_id`, `disaster_name`, `type_id
 (14, 'DM20250927-DDD3FC', 'help', 23, 'green-2', 'Intact homes & accessible roads', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046163', '', 'help', '1-5', '[\"medical_assistance\"]', 'im under the wall', 'uploads/emergency_images/emergency_1758954861_68d7856ddd40c.png', 'pending', NULL, NULL, 'medium', '2025-09-27 06:34:21', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:34:21', '2025-09-27 06:34:21'),
 (15, 'DM20250927-E19102', 'help', 23, 'green-2', 'Intact homes & accessible roads', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046163', '', 'help', '1-5', '[\"medical_assistance\"]', 'im under the wall', 'uploads/emergency_images/emergency_1758954878_68d7857e19112.png', 'pending', NULL, NULL, 'medium', '2025-09-27 06:34:38', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:34:38', '2025-09-27 06:34:38'),
 (16, 'DM20250927-D7A313', 'help', 23, 'green-2', 'Intact homes & accessible roads', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046163', '', 'help', '1-5', '[\"medical_assistance\"]', 'im under the wall', 'uploads/emergency_images/emergency_1758954925_68d785ad7a322.png', 'pending', NULL, NULL, 'medium', '2025-09-27 06:35:25', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:35:25', '2025-09-27 06:35:25'),
-(17, 'DM20250927-1528FF', 'help', 23, 'green-2', 'Intact homes & accessible roads', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046163', '', 'help', '1-5', '[\"medical_assistance\"]', 'im under the wall', 'uploads/emergency_images/emergency_1758955009_68d786015290e.png', 'pending', NULL, NULL, 'medium', '2025-09-27 06:36:49', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:36:49', '2025-09-27 06:36:49');
+(17, 'DM20250927-1528FF', 'help', 23, 'green-2', 'Intact homes & accessible roads', 1.00, 'Purok 3, Brgy. Halang, Lipa City, Batangas', 'Purok 3', 'Philippines', 'Philippines', NULL, NULL, 'near the school', '', '09151046163', '', 'help', '1-5', '[\"medical_assistance\"]', 'im under the wall', 'uploads/emergency_images/emergency_1758955009_68d786015290e.png', 'pending', NULL, NULL, 'medium', '2025-09-27 06:36:49', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-27 06:36:49', '2025-09-27 06:36:49'),
+(18, 'DM20250928-492C85', 'Accessibility', 23, 'red-2', 'Heavy devastation (Red)', 1.00, 'purok 3, Halang, Lipa City, Batangas, Philippines', 'Lipa City', 'Batangas', 'CALABARZON', NULL, NULL, NULL, NULL, '09151046166', NULL, 'I am under the water', NULL, NULL, NULL, NULL, 'pending', NULL, NULL, 'medium', '2025-09-28 05:35:00', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-28 05:35:00', '2025-09-28 05:35:00'),
+(19, 'DM20250928-B9A812', 'Transport', 23, 'orange-2', 'Minor structural damage (Orange)', 1.00, 'purok 3, Halang, Lipa City, Batangas, Philippines', 'Lipa City', 'Batangas', 'CALABARZON', NULL, NULL, NULL, NULL, '09151046166', NULL, 'Im under the wheel', NULL, NULL, NULL, NULL, 'pending', NULL, NULL, 'medium', '2025-09-28 05:41:31', NULL, NULL, NULL, 0, 0, 'web_form', '2025-09-28 05:41:31', '2025-09-28 05:41:31');
 
 -- --------------------------------------------------------
 
@@ -254,7 +329,30 @@ CREATE TABLE `disaster_types` (
 --
 
 INSERT INTO `disaster_types` (`type_id`, `type_name`, `description`, `category`, `severity_weight`, `is_active`, `created_at`, `updated_at`) VALUES
-(17, 'Earthquake', 'Ground shaking caused by tectonic movements that can cause structural damage', 'natural', 4.50, 1, '2025-09-27 04:10:54', '2025-09-27 04:10:54'),
+(20, 'Typhoon', 'Tropical cyclone with strong winds and heavy rain', 'natural', 4.80, 1, '2025-09-27 04:10:54', '2025-09-27 04:10:54');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `disaster_types_backup_20250928_140244`
+--
+
+CREATE TABLE `disaster_types_backup_20250928_140244` (
+  `type_id` int(11) NOT NULL DEFAULT 0,
+  `type_name` varchar(100) NOT NULL,
+  `description` text DEFAULT NULL,
+  `category` enum('natural','man-made','technological','biological') DEFAULT 'natural',
+  `severity_weight` decimal(3,2) DEFAULT 1.00,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `disaster_types_backup_20250928_140244`
+--
+
+INSERT INTO `disaster_types_backup_20250928_140244` (`type_id`, `type_name`, `description`, `category`, `severity_weight`, `is_active`, `created_at`, `updated_at`) VALUES
 (18, 'Flood', 'Overflow of water from rivers, lakes, or heavy rainfall causing property damage', 'natural', 3.20, 1, '2025-09-27 04:10:54', '2025-09-27 04:10:54'),
 (19, 'Fire', 'Uncontrolled burning that destroys property and threatens life', 'man-made', 4.00, 1, '2025-09-27 04:10:54', '2025-09-27 04:10:54'),
 (20, 'Typhoon', 'Tropical cyclone with strong winds and heavy rain', 'natural', 4.80, 1, '2025-09-27 04:10:54', '2025-09-27 04:10:54'),
@@ -268,8 +366,7 @@ INSERT INTO `disaster_types` (`type_id`, `type_name`, `description`, `category`,
 (36, 'Drought', 'Extended period of deficient rainfall causing water shortage', 'natural', 2.80, 1, '2025-09-27 05:50:52', '2025-09-27 05:50:52'),
 (37, 'Industrial Accident', 'Accidents in factories, plants, and industrial facilities', 'technological', 3.60, 1, '2025-09-27 05:50:52', '2025-09-27 05:50:52'),
 (38, 'Transportation Accident', 'Vehicle, aircraft, ship, or train accidents', 'man-made', 3.20, 1, '2025-09-27 05:50:52', '2025-09-27 05:50:52'),
-(39, 'Explosion', 'Sudden violent release of energy from bombs or gas leaks', 'man-made', 4.40, 1, '2025-09-27 05:50:52', '2025-09-27 05:50:52'),
-(40, 'Other Emergency', 'Other types of disasters or emergency situations', 'natural', 2.00, 1, '2025-09-27 05:50:52', '2025-09-27 05:50:52');
+(39, 'Explosion', 'Sudden violent release of energy from bombs or gas leaks', 'man-made', 4.40, 1, '2025-09-27 05:50:52', '2025-09-27 05:50:52');
 
 -- --------------------------------------------------------
 
@@ -323,7 +420,17 @@ INSERT INTO `disaster_updates` (`update_id`, `disaster_id`, `user_id`, `update_t
 (25, 14, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-09-27 06:34:21'),
 (26, 15, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-09-27 06:34:38'),
 (27, 16, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-09-27 06:35:25'),
-(28, 17, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-09-27 06:36:49');
+(28, 17, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-09-27 06:36:49'),
+(29, 18, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-09-28 05:35:00'),
+(30, 19, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-09-28 05:41:31'),
+(31, 20, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-09-28 06:04:50'),
+(32, 20, 2, 'status_change', 'Status updated to Acknowledged', 'Status changed by Admin istrator', NULL, NULL, 0, NULL, '2025-09-28 06:06:01'),
+(33, 20, 2, 'status_change', 'Status updated to In progress', 'Status changed by Admin istrator', NULL, NULL, 0, NULL, '2025-09-28 06:41:55'),
+(34, 2, 2, 'status_change', 'Status updated to Closed', 'Status changed by Admin istrator', NULL, NULL, 0, NULL, '2025-09-28 07:21:40'),
+(35, 2, 2, 'status_change', 'Status updated to Resolved', 'Status changed by Admin istrator', NULL, NULL, 0, NULL, '2025-09-28 07:22:01'),
+(36, 2, 2, 'status_change', 'Status updated to Resolved', 'Status changed by Admin istrator', NULL, NULL, 0, NULL, '2025-09-28 07:23:28'),
+(37, 20, 2, 'status_change', 'Status updated to Resolved', 'Status changed by Admin istrator', NULL, NULL, 0, NULL, '2025-09-28 07:23:56'),
+(38, 20, 2, 'status_change', 'Status updated to Closed', 'done my boy', NULL, NULL, 0, NULL, '2025-09-28 07:24:22');
 
 -- --------------------------------------------------------
 
@@ -549,7 +656,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `first_name`, `last_name`, `role`, `lgu_assigned`, `lgu_id`, `phone`, `is_active`, `email_verified`, `created_at`, `updated_at`, `last_login`) VALUES
 (1, 'admin', 'admin@imsafe.gov.ph', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System', 'Administrator', 'admin', 'Quezon City LGU', 8, NULL, 1, 1, '2025-09-27 01:52:17', '2025-09-27 04:29:16', NULL),
-(2, 'Admin_01', 'administrator@email.com', '$2y$10$lGAlfpvVUFi1ZGXvmsnQ6OwALrcjpfLFKtAKEI8IeuZ1JzWzfskR6', 'Admin', 'istrator', 'admin', 'Manila City LGU', 9, '', 1, 0, '2025-09-27 02:09:54', '2025-09-27 06:40:43', '2025-09-27 06:40:43');
+(2, 'Admin_01', 'administrator@email.com', '$2y$10$lGAlfpvVUFi1ZGXvmsnQ6OwALrcjpfLFKtAKEI8IeuZ1JzWzfskR6', 'Admin', 'istrator', 'admin', 'Manila City LGU', 9, '', 1, 0, '2025-09-27 02:09:54', '2025-09-28 05:40:47', '2025-09-28 05:40:47');
 
 -- --------------------------------------------------------
 
@@ -718,7 +825,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `announcements`
@@ -730,7 +837,7 @@ ALTER TABLE `announcements`
 -- AUTO_INCREMENT for table `disasters`
 --
 ALTER TABLE `disasters`
-  MODIFY `disaster_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `disaster_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `disaster_resources`
@@ -754,7 +861,7 @@ ALTER TABLE `disaster_types`
 -- AUTO_INCREMENT for table `disaster_updates`
 --
 ALTER TABLE `disaster_updates`
-  MODIFY `update_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `update_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
 -- AUTO_INCREMENT for table `lgus`
