@@ -3,11 +3,12 @@ session_start();
 require_once '../config/database.php';
 require_once 'includes/auth.php';
 
+
 $disaster_id = intval($_GET['id'] ?? 0);
 $page_title = 'Disaster Details';
 
 if (!$disaster_id) {
-    header('Location: disasters.php');
+    echo '<div style="color:red;font-weight:bold;padding:20px;">Error: No disaster ID provided in URL.</div>';
     exit;
 }
 
@@ -107,7 +108,7 @@ try {
     $disaster = $stmt->fetch();
     
     if (!$disaster) {
-        header('Location: disasters.php');
+        echo '<div style="color:red;font-weight:bold;padding:20px;">Error: No disaster found in database for ID: ' . htmlspecialchars($disaster_id) . '</div>';
         exit;
     }
     

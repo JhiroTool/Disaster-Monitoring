@@ -1,3 +1,76 @@
+/* --- Disaster Details Page Custom Styles --- */
+.dashboard-card {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 4px 24px 0 rgba(0,0,0,0.08);
+    padding: 32px 28px 24px 28px;
+    margin-top: 32px;
+    margin-bottom: 32px;
+    border: 1px solid #e5e7eb;
+}
+.dashboard-card .card-header {
+    border-bottom: 1px solid #f1f1f1;
+    margin-bottom: 18px;
+    padding-bottom: 8px;
+}
+.dashboard-card h3 {
+    font-size: 1.3rem;
+    color: #2563eb;
+    margin: 0;
+}
+.dashboard-card .card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.detail-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+.detail-section:last-child {
+    border-bottom: none;
+}
+.detail-section label {
+    min-width: 120px;
+    font-weight: 600;
+    color: #374151;
+    font-size: 1rem;
+}
+.detail-section .value {
+    color: #222;
+    font-size: 1rem;
+    word-break: break-word;
+}
+.dashboard-card img {
+    margin-top: 6px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.06);
+}
+.page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    margin-top: 18px;
+}
+.page-title h2 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+.page-title p {
+    margin: 0;
+    color: #64748b;
+    font-size: 1rem;
+}
+.page-actions .btn {
+    font-size: 0.95rem;
+    padding: 7px 18px;
+}
 /* Admin Dashboard CSS */
 :root {
     --primary-color: #2563eb;

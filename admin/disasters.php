@@ -327,7 +327,7 @@ include 'includes/header.php';
                                 </td>
                                 <td>
                                     <div class="action-buttons">
-                                        <a href="disaster-details.php?id=<?php echo $disaster['disaster_id']; ?>" 
+                                        <a href="view-disaster.php?id=<?php echo urlencode($disaster['disaster_id']); ?>" 
                                            class="btn btn-xs btn-primary" title="View Details">
                                             <i class="fas fa-eye"></i>
                                         </a>
