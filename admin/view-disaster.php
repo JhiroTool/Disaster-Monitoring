@@ -65,25 +65,25 @@ include 'includes/header.php';
                 <?php endif; ?>
             </div>
         </div>
-        <div class="detail-section"><label>Type</label><div class="value"><?php echo htmlspecialchars($disaster['type_name']); ?></div></div>
-        <div class="detail-section"><label>Severity</label><div class="value"><?php echo htmlspecialchars($disaster['severity_display']); ?></div></div>
-        <div class="detail-section"><label>Status</label><div class="value"><?php echo ucfirst(str_replace('_', ' ', $disaster['status'])); ?></div></div>
-        <div class="detail-section"><label>Priority</label><div class="value"><?php echo ucfirst($disaster['priority']); ?></div></div>
-        <div class="detail-section"><label>Reported At</label><div class="value"><?php echo date('M j, Y g:i A', strtotime($disaster['reported_at'])); ?></div></div>
-        <div class="detail-section"><label>Location</label><div class="value"><?php echo htmlspecialchars($disaster['address']); ?></div></div>
-        <?php if ($disaster['landmark']): ?>
-        <div class="detail-section"><label>Landmark</label><div class="value"><?php echo htmlspecialchars($disaster['landmark']); ?></div></div>
-        <?php endif; ?>
-        <div class="detail-section"><label>Description</label><div class="value"><?php echo nl2br(htmlspecialchars($disaster['description'])); ?></div></div>
-        <?php if ($disaster['current_situation']): ?>
-        <div class="detail-section"><label>Current Situation</label><div class="value"><?php echo nl2br(htmlspecialchars($disaster['current_situation'])); ?></div></div>
-        <?php endif; ?>
-        <?php if ($disaster['people_affected']): ?>
-        <div class="detail-section"><label>People Affected</label><div class="value"><?php echo htmlspecialchars($disaster['people_affected']); ?></div></div>
-        <?php endif; ?>
-        <?php if ($disaster['immediate_need']): ?>
-        <div class="detail-section"><label>Immediate Needs</label><div class="value"><?php echo htmlspecialchars($disaster['immediate_need']); ?></div></div>
-        <?php endif; ?>
+    <div class="detail-section"><label><i class="fas fa-layer-group"></i> Type</label><div class="value"><?php echo htmlspecialchars($disaster['type_name']); ?></div></div>
+    <div class="detail-section"><label><i class="fas fa-bolt"></i> Severity</label><div class="value"><?php echo htmlspecialchars($disaster['severity_display']); ?></div></div>
+    <div class="detail-section"><label><i class="fas fa-flag"></i> Status</label><div class="value"><?php echo ucfirst(str_replace('_', ' ', $disaster['status'])); ?></div></div>
+    <div class="detail-section"><label><i class="fas fa-exclamation-triangle"></i> Priority</label><div class="value"><?php echo ucfirst($disaster['priority']); ?></div></div>
+    <div class="detail-section"><label><i class="fas fa-calendar-alt"></i> Reported At</label><div class="value"><?php echo date('M j, Y g:i A', strtotime($disaster['reported_at'])); ?></div></div>
+    <div class="detail-section"><label><i class="fas fa-map-marker-alt"></i> Location</label><div class="value"><?php echo htmlspecialchars($disaster['address']); ?></div></div>
+    <?php if ($disaster['landmark']): ?>
+    <div class="detail-section"><label><i class="fas fa-landmark"></i> Landmark</label><div class="value"><?php echo htmlspecialchars($disaster['landmark']); ?></div></div>
+    <?php endif; ?>
+    <div class="detail-section"><label><i class="fas fa-align-left"></i> Description</label><div class="value"><?php echo nl2br(htmlspecialchars($disaster['description'])); ?></div></div>
+    <?php if ($disaster['current_situation']): ?>
+    <div class="detail-section"><label><i class="fas fa-info-circle"></i> Current Situation</label><div class="value"><?php echo nl2br(htmlspecialchars($disaster['current_situation'])); ?></div></div>
+    <?php endif; ?>
+    <?php if ($disaster['people_affected']): ?>
+    <div class="detail-section"><label><i class="fas fa-users"></i> People Affected</label><div class="value"><?php echo htmlspecialchars($disaster['people_affected']); ?></div></div>
+    <?php endif; ?>
+    <?php if ($disaster['immediate_need']): ?>
+    <div class="detail-section"><label><i class="fas fa-ambulance"></i> Immediate Needs</label><div class="value"><?php echo htmlspecialchars($disaster['immediate_need']); ?></div></div>
+    <?php endif; ?>
     </div>
 </div>
 <?php include 'includes/footer.php'; ?>

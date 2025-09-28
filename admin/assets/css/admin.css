@@ -1,3 +1,68 @@
+/* --- Enhanced Disaster Details Report Info --- */
+.dashboard-card .card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(90deg, #2563eb 0%, #38bdf8 100%);
+    color: #fff;
+    border-radius: 12px 12px 0 0;
+    padding: 18px 24px 12px 24px;
+    margin: -32px -28px 18px -28px;
+    box-shadow: 0 2px 8px 0 rgba(37,99,235,0.08);
+}
+.dashboard-card .card-header h3 {
+    color: #fff;
+    font-size: 1.18rem;
+    margin: 0;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+.dashboard-card .card-header i {
+    font-size: 1.3em;
+    color: #fff;
+    margin-right: 6px;
+}
+.dashboard-card .card-content {
+    background: #f8fafc;
+    border-radius: 0 0 12px 12px;
+    padding: 18px 0 8px 0;
+}
+.detail-section {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 13px 0 13px 0;
+    border-bottom: 1px solid #e5e7eb;
+    position: relative;
+    transition: background 0.2s;
+}
+.detail-section:hover {
+    background: #e0f2fe;
+}
+.detail-section label {
+    min-width: 130px;
+    font-weight: 700;
+    color: #2563eb;
+    font-size: 1.04rem;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+.detail-section .value {
+    color: #222;
+    font-size: 1.04rem;
+    word-break: break-word;
+    font-weight: 500;
+}
+.detail-section i {
+    color: #38bdf8;
+    font-size: 1.1em;
+}
+.dashboard-card img {
+    margin-top: 6px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px 0 rgba(0,0,0,0.06);
+}
 /* --- Disaster Details Page Custom Styles --- */
 .dashboard-card {
     background: #fff;
