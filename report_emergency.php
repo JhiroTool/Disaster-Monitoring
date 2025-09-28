@@ -65,6 +65,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
         $selected_particular_color = sanitizeInput($_POST['particular_color'] ?? '');
         $selected_particular_detail_raw = $_POST['particular_detail'] ?? '';
 
+        // Fix: If green, allow multiple details (array), else single string
+        $selected_particular_detail = '';
+        if (is_array($selected_particular_detail_raw)) {
+            $sanitized_details = array_map('sanitizeInput', $selected_particular_detail_raw);
+            $selected_particular_detail = implode(', ', array_filter($sanitized_details));
+        } else {
+            $selected_particular_detail = sanitizeInput($selected_particular_detail_raw);
+        }
+
         // Combine address components
         $full_address = trim("$street, $barangay, $city, $province");
 
@@ -72,8 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
         $required_fields = [
             'particular' => $selected_particular,
             'particular_color' => $selected_particular_color,
-            // normalize potential array into a string for validation
-            'particular_detail' => is_array($selected_particular_detail_raw) ? implode(', ', array_map('sanitizeInput', $selected_particular_detail_raw)) : sanitizeInput($selected_particular_detail_raw),
+            'particular_detail' => $selected_particular_detail,
             'street_address' => $street,
             'barangay' => $barangay,
             'city' => $city,
@@ -83,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
         ];
 
         $validation_errors = validateRequired($required_fields);
-        
+
         // Validate phone number
         if (!empty($required_fields['phone']) && !validatePhone($required_fields['phone'])) {
             $validation_errors[] = "Invalid phone number format";
@@ -92,25 +100,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
         if (empty($validation_errors)) {
             // Generate tracking ID
             $tracking_id = generateTrackingId();
-            
+
             // Prepare optional fields
             $reporter_name = sanitizeInput($_POST['reporter_name'] ?? '');
             $alternate_contact = sanitizeInput($_POST['alternate_contact'] ?? '');
             $landmark = sanitizeInput($_POST['landmark'] ?? '');
             $people_affected = sanitizeInput($_POST['people_affected'] ?? '');
             $current_situation = sanitizeInput($_POST['current_situation'] ?? '');
-            // Particular selection: one of the 9 assessment items
-            $selected_particular = sanitizeInput($_POST['particular'] ?? '');
-            $selected_particular_color = sanitizeInput($_POST['particular_color'] ?? '');
-            // particular_detail can be a single string or an array (when multiple green options selected)
-            $selected_particular_detail_raw = $_POST['particular_detail'] ?? '';
-            if (is_array($selected_particular_detail_raw)) {
-                $sanitized_details = array_map('sanitizeInput', $selected_particular_detail_raw);
-                // store as comma-separated for backward compatibility
-                $selected_particular_detail = implode(', ', array_filter($sanitized_details));
-            } else {
-                $selected_particular_detail = sanitizeInput($selected_particular_detail_raw);
-            }
+            // $selected_particular, $selected_particular_color, $selected_particular_detail already set above
+
             // Capture structured rapid assessment choices (optional)
             $assessments = [];
             if (!empty($_POST['assessments']) && is_array($_POST['assessments'])) {
@@ -336,123 +334,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                 // ignore
             }
 
-            if ($has_severity_color_column) {
-                if ($has_assessments_column) {
-                    $sql = "INSERT INTO disasters (
-                        tracking_id, disaster_name, type_id, severity_level, severity_display,
-                        severity_color, assessments, address, city, province, state,
-                        reporter_phone, description, image_path, source, status, created_at
-                    ) VALUES (
-                        :tracking_id, :disaster_name, :type_id, :severity_level, :severity_display,
-                        :severity_color, :assessments, :address, :city, :province, :state,
-                        :reporter_phone, :description, :image_path, :source, 'pending', NOW()
-                    )";
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->execute([
-                        ':tracking_id' => $tracking_id,
-                        ':disaster_name' => $disaster_name,
-                        ':type_id' => $type_id,
-                        ':severity_level' => $severity_level,
-                        ':severity_display' => $severity_display,
-                        ':severity_color' => $severity_color,
-                        ':assessments' => $assessments_json,
-                        ':address' => $full_address,
-                        ':city' => $city,
-                        ':province' => $province,
-                        ':state' => $region,
-                        ':reporter_phone' => $phone,
-                        ':description' => $description,
-                        ':image_path' => $image_path,
-                        ':source' => 'web_form'
-                    ]);
-                } else {
-                    $sql = "INSERT INTO disasters (
-                        tracking_id, disaster_name, type_id, severity_level, severity_display,
-                        severity_color, address, city, province, state,
-                        reporter_phone, description, image_path, source, status, created_at
-                    ) VALUES (
-                        :tracking_id, :disaster_name, :type_id, :severity_level, :severity_display,
-                        :severity_color, :address, :city, :province, :state,
-                        :reporter_phone, :description, :image_path, :source, 'pending', NOW()
-                    )";
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->execute([
-                        ':tracking_id' => $tracking_id,
-                        ':disaster_name' => $disaster_name,
-                        ':type_id' => $type_id,
-                        ':severity_level' => $severity_level,
-                        ':severity_display' => $severity_display,
-                        ':severity_color' => $severity_color,
-                        ':address' => $full_address,
-                        ':city' => $city,
-                        ':province' => $province,
-                        ':state' => $region,
-                        ':reporter_phone' => $phone,
-                        ':description' => $description,
-                        ':image_path' => $image_path,
-                        ':source' => 'web_form'
-                    ]);
-                }
-            } else {
-                // Fallback: include color in severity_display to preserve information
-                if ($severity_color) {
-                    $severity_display = $severity_display . ' (' . ucfirst($severity_color) . ')';
-                }
-                if ($has_assessments_column) {
-                    $sql = "INSERT INTO disasters (
-                        tracking_id, disaster_name, type_id, severity_level, severity_display,
-                        assessments, address, city, province, state,
-                        reporter_phone, description, image_path, source, status, created_at
-                    ) VALUES (
-                        :tracking_id, :disaster_name, :type_id, :severity_level, :severity_display,
-                        :assessments, :address, :city, :province, :state,
-                        :reporter_phone, :description, :image_path, :source, 'pending', NOW()
-                    )";
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->execute([
-                        ':tracking_id' => $tracking_id,
-                        ':disaster_name' => $disaster_name,
-                        ':type_id' => $type_id,
-                        ':severity_level' => $severity_level,
-                        ':severity_display' => $severity_display,
-                        ':assessments' => $assessments_json,
-                        ':address' => $full_address,
-                        ':city' => $city,
-                        ':province' => $province,
-                        ':state' => $region,
-                        ':reporter_phone' => $phone,
-                        ':description' => $description,
-                        ':image_path' => $image_path,
-                        ':source' => 'web_form'
-                    ]);
-                } else {
-                    $sql = "INSERT INTO disasters (
-                        tracking_id, disaster_name, type_id, severity_level, severity_display,
-                        address, city, province, state,
-                        reporter_phone, description, image_path, source, status, created_at
-                    ) VALUES (
-                        :tracking_id, :disaster_name, :type_id, :severity_level, :severity_display,
-                        :address, :city, :province, :state,
-                        :reporter_phone, :description, :image_path, :source, 'pending', NOW()
-                    )";
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->execute([
-                        ':tracking_id' => $tracking_id,
-                        ':disaster_name' => $disaster_name,
-                        ':type_id' => $type_id,
-                        ':severity_level' => $severity_level,
-                        ':severity_display' => $severity_display,
-                        ':address' => $full_address,
-                        ':city' => $city,
-                        ':province' => $province,
-                        ':state' => $region,
-                        ':reporter_phone' => $phone,
-                        ':description' => $description,
-                        ':image_path' => $image_path,
-                        ':source' => 'web_form'
-                    ]);
-                }
-            }
+            // Add landmark, people_affected, current_situation, immediate_needs to insert if columns exist
+            $has_landmark = false;
+            $has_people_affected = false;
+            $has_current_situation = false;
+            $has_immediate_needs = false;
+            try {
+                $cols = $pdo->query("SHOW COLUMNS FROM disasters LIKE 'landmark'")->fetchAll();
+                if (!empty($cols)) $has_landmark = true;
+            } catch (Exception $e) {}
+            try {
+                $cols = $pdo->query("SHOW COLUMNS FROM disasters LIKE 'people_affected'")->fetchAll();
+                if (!empty($cols)) $has_people_affected = true;
+            } catch (Exception $e) {}
+            try {
+                $cols = $pdo->query("SHOW COLUMNS FROM disasters LIKE 'current_situation'")->fetchAll();
+                if (!empty($cols)) $has_current_situation = true;
+            } catch (Exception $e) {}
+            try {
+                $cols = $pdo->query("SHOW COLUMNS FROM disasters LIKE 'immediate_needs'")->fetchAll();
+                if (!empty($cols)) $has_immediate_needs = true;
+            } catch (Exception $e) {}
+
+            // Build dynamic insert
+            $fields = [
+                'tracking_id', 'disaster_name', 'type_id', 'severity_level', 'severity_display',
+                $has_severity_color_column ? 'severity_color' : null,
+                $has_assessments_column ? 'assessments' : null,
+                'address', 'city', 'province', 'state',
+                'reporter_phone', 'description', 'image_path', 'source',
+                $has_landmark ? 'landmark' : null,
+                $has_people_affected ? 'people_affected' : null,
+                $has_current_situation ? 'current_situation' : null,
+                $has_immediate_needs ? 'immediate_needs' : null,
+                'status', 'created_at'
+            ];
+            $fields = array_filter($fields); // remove nulls
+            $placeholders = array_map(function($f) { return ':' . $f; }, $fields);
+            $sql = "INSERT INTO disasters (" . implode(', ', $fields) . ") VALUES (" . implode(', ', $placeholders) . ")";
+            $stmt = $pdo->prepare($sql);
+            $params = [
+                ':tracking_id' => $tracking_id,
+                ':disaster_name' => $disaster_name,
+                ':type_id' => $type_id,
+                ':severity_level' => $severity_level,
+                ':severity_display' => $severity_display,
+                ':address' => $full_address,
+                ':city' => $city,
+                ':province' => $province,
+                ':state' => $region,
+                ':reporter_phone' => $phone,
+                ':description' => $description,
+                ':image_path' => $image_path,
+                ':source' => 'web_form',
+                ':status' => 'pending',
+                ':created_at' => date('Y-m-d H:i:s')
+            ];
+            if ($has_severity_color_column) $params[':severity_color'] = $severity_color;
+            if ($has_assessments_column) $params[':assessments'] = $assessments_json;
+            if ($has_landmark) $params[':landmark'] = $landmark;
+            if ($has_people_affected) $params[':people_affected'] = $people_affected;
+            if ($has_current_situation) $params[':current_situation'] = $current_situation;
+            if ($has_immediate_needs) $params[':immediate_needs'] = $immediate_needs_json;
+            $stmt->execute($params);
             $disaster_id = $pdo->lastInsertId();
             
             // Create initial disaster update entry
@@ -748,6 +692,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                                     Internet connection services
                                 </label>
                             </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="current_situation">Current Situation</label>
+                            <textarea id="current_situation" name="current_situation" rows="2" placeholder="Describe the current situation (optional)"><?php echo htmlspecialchars($_POST['current_situation'] ?? ''); ?></textarea>
                         </div>
 
                         <div class="form-group">

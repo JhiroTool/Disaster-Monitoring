@@ -116,7 +116,7 @@ function getPriorityBadgeClass($priority) {
     <style>
         .tracking-page {
             min-height: 100vh;
-            padding: 80px 0 40px;
+            padding: 50px 0 0px;
             background: linear-gradient(135deg, #f8faff 0%, #e6f3ff 100%);
         }
         
@@ -456,11 +456,12 @@ function getPriorityBadgeClass($priority) {
         
         .report-description,
         .report-image {
-            margin: 25px 0;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 12px 0 18px 0;
+            padding: 22px 24px;
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 12px rgba(102, 126, 234, 0.10);
         }
         
         .report-description h4,
@@ -469,14 +470,15 @@ function getPriorityBadgeClass($priority) {
             align-items: center;
             gap: 10px;
             margin-bottom: 15px;
-            color: white;
-            font-weight: 600;
+            color: #4f46e5;
+            font-weight: 700;
         }
         
         .report-description p {
-            color: rgba(255, 255, 255, 0.9);
-            line-height: 1.6;
+            color: #1e293b;
+            line-height: 1.7;
             margin: 0;
+            font-size: 1.08em;
         }
         
         .image-container {
@@ -728,21 +730,41 @@ function getPriorityBadgeClass($priority) {
                                     <p><?php echo date('M d, Y \a\t g:i A', strtotime($disaster_data['resolved_at'])); ?></p>
                                 </div>
                             <?php endif; ?>
-                        </div>
-                        
-                        <!-- Description Section -->
-                        <?php if ($disaster_data['description']): ?>
-                            <div class="report-description">
-                                <h4><i class="fas fa-file-alt"></i> Report Description</h4>
-                                <p><?php echo nl2br(htmlspecialchars($disaster_data['description'])); ?></p>
+                        <?php if (!empty($disaster_data['people_affected'])): ?>
+                            <div class="info-item">
+                                <h4>People Affected</h4>
+                                <p><?php echo htmlspecialchars($disaster_data['people_affected']); ?></p>
                             </div>
                         <?php endif; ?>
-                        
-                        <!-- Emergency Image Section -->
-                        <?php if ($disaster_data['image_path'] && file_exists($disaster_data['image_path'])): ?>
-                            <div class="report-image">
-                                <h4><i class="fas fa-camera"></i> Emergency Photo</h4>
-                                <div class="image-container">
+                        <?php if (!empty($disaster_data['immediate_need'])): ?>
+                            <div class="info-item">
+                                <h4>Immediate Needs</h4>
+                                <p><?php echo htmlspecialchars($disaster_data['immediate_need']); ?></p>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (!empty($disaster_data['landmark'])): ?>
+                            <div class="info-item">
+                                <h4>Landmark</h4>
+                                <p><?php echo htmlspecialchars($disaster_data['landmark']); ?></p>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (!empty($disaster_data['current_situation'])): ?>
+                            <div class="info-item">
+                                <h4>Current Situation</h4>
+                                <p><?php echo htmlspecialchars($disaster_data['current_situation']); ?></p>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (!empty($disaster_data['incident_time'])): ?>
+                            <div class="info-item">
+                                <h4>Time of Incident</h4>
+                                <p><?php echo date('M d, Y \a\t g:i A', strtotime($disaster_data['incident_time'])); ?></p>
+                            </div>
+                        <?php endif; ?>
+                        <?php if (!empty($disaster_data['image_path']) && file_exists($disaster_data['image_path'])): ?>
+                            </div> <!-- close .info-grid -->
+                            <div style="width:100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0 0 16px 16px; text-align:center; padding: 28px 0 16px 0; margin-top: -20px;">
+                                <h4 style="color:white; margin-bottom:18px;"><i class="fas fa-camera"></i> Emergency Photo</h4>
+                                <div class="image-container" style="margin:auto;">
                                     <img src="<?php echo htmlspecialchars($disaster_data['image_path']); ?>" 
                                          alt="Emergency Photo" 
                                          class="emergency-photo"
@@ -753,7 +775,19 @@ function getPriorityBadgeClass($priority) {
                                     </div>
                                 </div>
                             </div>
+                            <div class="info-grid"> <!-- reopen .info-grid for any content after -->
                         <?php endif; ?>
+                        </div>
+                        
+                        <!-- Description Section -->
+                        <?php if (!empty($disaster_data['description'])): ?>
+                            <div class="report-description">
+                                <h4><i class="fas fa-file-alt"></i> Report Description</h4>
+                                <p><?php echo nl2br(htmlspecialchars($disaster_data['description'])); ?></p>
+                            </div>
+                        <?php endif; ?>
+
+                        <!-- Emergency Image Section moved into info grid for compact layout -->
                         
                         <?php if ($disaster_data['lgu_name'] && $disaster_data['lgu_phone']): ?>
                             <div class="contact-lgu">
