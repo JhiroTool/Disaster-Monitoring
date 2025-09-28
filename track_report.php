@@ -35,11 +35,11 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['track_report'])) || 
             if ($disaster_data) {
                 // Fetch updates for this disaster
                 $updates_stmt = $pdo->prepare("
-                    SELECT du.*, CONCAT(u.first_name, ' ', u.last_name) as user_name
+                    SELECT du.*, CONCAT(u.first_name, ' ', u.last_name) as user_name, u.role as user_role
                     FROM disaster_updates du
                     LEFT JOIN users u ON du.user_id = u.user_id
-                    WHERE du.disaster_id = ? AND du.is_public = TRUE
-                    ORDER BY du.created_at DESC
+                    WHERE du.disaster_id = ?
+                    ORDER BY du.created_at ASC
                 ");
                 $updates_stmt->execute([$disaster_data['disaster_id']]);
                 $updates = $updates_stmt->fetchAll();
@@ -786,9 +786,12 @@ function getPriorityBadgeClass($priority) {
                                     <div class="update-content">
                                         <div class="update-title">
                                             <?php echo htmlspecialchars($update['title']); ?>
+                                            <?php if (!empty($update['user_role']) && $update['user_role'] === 'admin'): ?>
+                                                <span style="background:#e0e7ff;color:#3730a3;font-size:12px;padding:2px 8px;border-radius:8px;margin-left:8px;">Admin</span>
+                                            <?php endif; ?>
                                         </div>
                                         <div class="update-description">
-                                            <?php echo htmlspecialchars($update['description']); ?>
+                                            <?php echo nl2br(htmlspecialchars($update['description'])); ?>
                                         </div>
                                         <div class="update-meta">
                                             <span>

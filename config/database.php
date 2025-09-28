@@ -51,9 +51,18 @@ function sanitizeInput($data) {
  */
 function validateRequired($fields) {
     $errors = [];
+    // Friendly label mapping for common form keys
+    $labelMap = [
+        'particular' => 'Particular',
+        'particular_color' => 'Color',
+        'particular_detail' => 'Detail',
+        'street_address' => 'Street address',
+        'phone' => 'Contact number'
+    ];
     foreach ($fields as $field => $value) {
         if (empty($value)) {
-            $errors[] = ucfirst(str_replace('_', ' ', $field)) . " is required";
+            $label = $labelMap[$field] ?? ucfirst(str_replace('_', ' ', $field));
+            $errors[] = $label . " is required";
         }
     }
     return $errors;
