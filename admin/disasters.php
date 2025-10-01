@@ -28,16 +28,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_status'])) {
             $comments ?: "Status changed by " . getUserName()
         ]);
         
-        // Set acknowledged timestamp if status is acknowledged
-        if ($new_status === 'acknowledged') {
-            $ack_stmt = $pdo->prepare("UPDATE disasters SET acknowledged_at = NOW() WHERE disaster_id = ?");
-            $ack_stmt->execute([$disaster_id]);
+                // Set acknowledged timestamp if status is IN PROGRESS
+        if ($new_status === 'IN PROGRESS') {
+            $stmt = $pdo->prepare("UPDATE disasters SET acknowledged_at = NOW() WHERE disaster_id = ? AND acknowledged_at IS NULL");
+            $stmt->execute([$disaster_id]);
         }
         
-        // Set resolved timestamp if status is resolved
-        if ($new_status === 'resolved') {
-            $resolve_stmt = $pdo->prepare("UPDATE disasters SET resolved_at = NOW() WHERE disaster_id = ?");
-            $resolve_stmt->execute([$disaster_id]);
+        // Set resolved timestamp if status is COMPLETED
+        if ($new_status === 'COMPLETED') {
+            $stmt = $pdo->prepare("UPDATE disasters SET resolved_at = NOW() WHERE disaster_id = ? AND resolved_at IS NULL");
+            $stmt->execute([$disaster_id]);
         }
         
         $success_message = "Disaster status updated successfully.";
@@ -147,13 +147,9 @@ include 'includes/header.php';
             <label for="status">Status</label>
             <select name="status" id="status">
                 <option value="">All Statuses</option>
-                <option value="pending" <?php echo $status_filter === 'pending' ? 'selected' : ''; ?>>Pending</option>
-                <option value="assigned" <?php echo $status_filter === 'assigned' ? 'selected' : ''; ?>>Assigned</option>
-                <option value="acknowledged" <?php echo $status_filter === 'acknowledged' ? 'selected' : ''; ?>>Acknowledged</option>
-                <option value="in_progress" <?php echo $status_filter === 'in_progress' ? 'selected' : ''; ?>>In Progress</option>
-                <option value="resolved" <?php echo $status_filter === 'resolved' ? 'selected' : ''; ?>>Resolved</option>
-                <option value="closed" <?php echo $status_filter === 'closed' ? 'selected' : ''; ?>>Closed</option>
-                <option value="escalated" <?php echo $status_filter === 'escalated' ? 'selected' : ''; ?>>Escalated</option>
+                <option value="ON GOING" <?php echo $status_filter === 'ON GOING' ? 'selected' : ''; ?>>On Going</option>
+                <option value="IN PROGRESS" <?php echo $status_filter === 'IN PROGRESS' ? 'selected' : ''; ?>>In Progress</option>
+                <option value="COMPLETED" <?php echo $status_filter === 'COMPLETED' ? 'selected' : ''; ?>>Completed</option>
             </select>
         </div>
         
@@ -369,13 +365,9 @@ include 'includes/header.php';
             <div class="form-group">
                 <label for="modal-status">New Status</label>
                 <select name="status" id="modal-status" required>
-                    <option value="pending">Pending</option>
-                    <option value="assigned">Assigned</option>
-                    <option value="acknowledged">Acknowledged</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="resolved">Resolved</option>
-                    <option value="closed">Closed</option>
-                    <option value="escalated">Escalated</option>
+                    <option value="ON GOING">On Going</option>
+                    <option value="IN PROGRESS">In Progress</option>
+                    <option value="COMPLETED">Completed</option>
                 </select>
             </div>
             

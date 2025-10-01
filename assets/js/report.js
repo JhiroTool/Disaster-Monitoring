@@ -159,75 +159,73 @@ document.addEventListener('DOMContentLoaded', function() {
     const particularDetails = window.PARTICULARS_DETAILS ? window.PARTICULARS_DETAILS.DETAILS : {};
 
     function populateParticularDetail() {
-        if (!particularDetailSelect) return;
-
-        // Clear existing options
-        particularDetailSelect.innerHTML = '';
-
-        const p = particularSelect ? particularSelect.value : '';
-        const c = particularColorSelect ? particularColorSelect.value : '';
-
-        // If nothing selected, show a placeholder
-        const placeholder = document.createElement('option');
-        placeholder.value = '';
-        placeholder.textContent = 'Choose detail...';
-        particularDetailSelect.appendChild(placeholder);
-
-        if (p && particularDetails[p]) {
-            // Build grouped options so users can see all choices but only select those matching the chosen color
-            ['green', 'orange', 'red'].forEach(colorKey => {
-                if (!particularDetails[p][colorKey]) return;
-                const groupLabel = colorKey.charAt(0).toUpperCase() + colorKey.slice(1);
-                // Use optgroup for clarity
-                const optGroup = document.createElement('optgroup');
-                optGroup.label = groupLabel;
-
-                particularDetails[p][colorKey].forEach(detail => {
-                    const opt = document.createElement('option');
-                    opt.value = detail;
-                    opt.textContent = detail;
-                    opt.dataset.color = colorKey;
-                    // Enable only if it matches the selected color
-                    opt.disabled = (c && colorKey !== c);
-                    optGroup.appendChild(opt);
-                });
-
-                particularDetailSelect.appendChild(optGroup);
-            });
-
-            // Make select multi-select when color is green (allow choosing multiple green details)
-            if (c === 'green') {
-                particularDetailSelect.multiple = true;
-                particularDetailSelect.size = Math.max(3, particularDetailSelect.querySelectorAll('option').length);
-                // When multiple, submit as an array
-                particularDetailSelect.name = 'particular_detail[]';
-            } else {
-                particularDetailSelect.multiple = false;
-                particularDetailSelect.size = 1;
-                particularDetailSelect.name = 'particular_detail';
-            }
-
-            // Restore previous selection(s) if available
-            if (formDefaults.particular_detail) {
-                const prev = formDefaults.particular_detail;
-                // support comma-separated previous selections
-                const vals = String(prev).split(',').map(s => s.trim()).filter(Boolean);
-                if (vals.length) {
-                    // For single-select, pick the first matching enabled option
-                    if (!particularDetailSelect.multiple) {
-                        const first = vals.find(v => Array.from(particularDetailSelect.options).some(o => !o.disabled && o.value === v));
-                        if (first) particularDetailSelect.value = first;
-                    } else {
-                        // multiple select: mark options as selected
-                        Array.from(particularDetailSelect.options).forEach(o => {
-                            if (vals.includes(o.value) && !o.disabled) {
-                                o.selected = true;
-                            }
-                        });
-                    }
-                }
-            }
+        console.log('=== STARTING populateParticularDetail ===');
+        
+        if (!particularDetailSelect) {
+            console.error('ERROR: particularDetailSelect element not found!');
+            return;
         }
+
+        // Get current selections
+        const selectedParticular = particularSelect ? particularSelect.value : '';
+        const selectedColor = particularColorSelect ? particularColorSelect.value : '';
+        
+        console.log('Current selections - Particular:', selectedParticular, 'Color:', selectedColor);
+
+        // NUCLEAR OPTION: Completely rebuild the select element
+        particularDetailSelect.innerHTML = '';
+        particularDetailSelect.multiple = false;
+        particularDetailSelect.size = 1;
+        particularDetailSelect.name = 'particular_detail';
+        particularDetailSelect.removeAttribute('class');
+
+        // Add default placeholder
+        const defaultOption = document.createElement('option');
+        defaultOption.value = '';
+        defaultOption.textContent = 'Choose detail...';
+        defaultOption.disabled = true;
+        defaultOption.selected = true;
+        particularDetailSelect.appendChild(defaultOption);
+
+        // Exit early if no selections made
+        if (!selectedParticular || !selectedColor) {
+            console.log('No particular/color selected, showing placeholder only');
+            return;
+        }
+
+        // Check data availability
+        if (!window.PARTICULARS_DETAILS || !window.PARTICULARS_DETAILS.DETAILS) {
+            console.error('ERROR: PARTICULARS_DETAILS not available');
+            return;
+        }
+
+        const data = window.PARTICULARS_DETAILS.DETAILS;
+        if (!data[selectedParticular]) {
+            console.error('ERROR: No data for particular:', selectedParticular);
+            return;
+        }
+
+        if (!data[selectedParticular][selectedColor]) {
+            console.error('ERROR: No data for color:', selectedColor, 'in particular:', selectedParticular);
+            return;
+        }
+
+        // Get the exact details for this color ONLY
+        const detailsForSelectedColor = data[selectedParticular][selectedColor];
+        console.log('Details found for', selectedColor, ':', detailsForSelectedColor);
+
+        // Add ONLY the details for the selected color
+        if (Array.isArray(detailsForSelectedColor) && detailsForSelectedColor.length > 0) {
+            detailsForSelectedColor.forEach((detailText, idx) => {
+                const opt = document.createElement('option');
+                opt.value = detailText;
+                opt.textContent = detailText;
+                particularDetailSelect.appendChild(opt);
+                console.log('Added option #' + (idx + 1) + ':', detailText);
+            });
+        }
+
+        console.log('=== FINISHED populateParticularDetail ===');
     }
 
     if (particularSelect) {

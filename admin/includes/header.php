@@ -21,9 +21,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title ?? 'Admin Dashboard'; ?> - iMSafe System</title>
     <link rel="stylesheet" href="assets/css/admin.css">
+    <?php if ($current_page === 'dashboard.php'): ?>
+    <link rel="stylesheet" href="assets/css/dashboard-modern.css">
+    <?php endif; ?>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    
+    <!-- Chart.js for Dashboard Charts -->
+    <?php if ($current_page === 'dashboard.php'): ?>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <?php endif; ?>
 </head>
 <body>
     <div class="admin-container">

@@ -394,13 +394,9 @@ include 'includes/header.php';
                 <div class="form-group">
                     <label for="status">New Status</label>
                     <select name="status" id="status" required>
-                        <option value="pending" <?php echo $disaster['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
-                        <option value="assigned" <?php echo $disaster['status'] === 'assigned' ? 'selected' : ''; ?>>Assigned</option>
-                        <option value="acknowledged" <?php echo $disaster['status'] === 'acknowledged' ? 'selected' : ''; ?>>Acknowledged</option>
-                        <option value="in_progress" <?php echo $disaster['status'] === 'in_progress' ? 'selected' : ''; ?>>In Progress</option>
-                        <option value="resolved" <?php echo $disaster['status'] === 'resolved' ? 'selected' : ''; ?>>Resolved</option>
-                        <option value="closed" <?php echo $disaster['status'] === 'closed' ? 'selected' : ''; ?>>Closed</option>
-                        <option value="escalated" <?php echo $disaster['status'] === 'escalated' ? 'selected' : ''; ?>>Escalated</option>
+                        <option value="ON GOING" <?php echo $disaster['status'] === 'ON GOING' ? 'selected' : ''; ?>>On Going</option>
+                        <option value="IN PROGRESS" <?php echo $disaster['status'] === 'IN PROGRESS' ? 'selected' : ''; ?>>In Progress</option>
+                        <option value="COMPLETED" <?php echo $disaster['status'] === 'COMPLETED' ? 'selected' : ''; ?>>Completed</option>
                     </select>
                 </div>
                 

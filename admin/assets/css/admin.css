@@ -870,19 +870,9 @@ input:focus, select:focus, textarea:focus {
     text-transform: uppercase;
 }
 
-.status-pending {
+.status-on-going {
     background-color: #fef3c7;
     color: #92400e;
-}
-
-.status-assigned {
-    background-color: #dbeafe;
-    color: #1e40af;
-}
-
-.status-acknowledged {
-    background-color: #e0e7ff;
-    color: #3730a3;
 }
 
 .status-in-progress {
@@ -890,19 +880,9 @@ input:focus, select:focus, textarea:focus {
     color: #6b21a8;
 }
 
-.status-resolved {
+.status-completed {
     background-color: #d1fae5;
     color: #065f46;
-}
-
-.status-closed {
-    background-color: #f3f4f6;
-    color: #374151;
-}
-
-.status-escalated {
-    background-color: #fee2e2;
-    color: #991b1b;
 }
 
 .time-ago {

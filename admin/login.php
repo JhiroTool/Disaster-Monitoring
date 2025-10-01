@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/database.php';
+require_once 'includes/notification_helper.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
@@ -42,6 +43,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                     // Log activity
                     $log_stmt = $pdo->prepare("INSERT INTO activity_logs (user_id, action, ip_address, user_agent) VALUES (?, 'login', ?, ?)");
                     $log_stmt->execute([$user['user_id'], $_SERVER['REMOTE_ADDR'] ?? '', $_SERVER['HTTP_USER_AGENT'] ?? '']);
+                    
+                    // Check for new disaster reports and create notifications (for admins only)
+                    if ($user['role'] === 'admin' || $user['role'] === 'lgu_admin') {
+                        try {
+                            $notified = checkAndNotifyNewReports($pdo);
+                            if ($notified > 0) {
+                                error_log("Created {$notified} notifications for new disaster reports");
+                            }
+                        } catch (Exception $e) {
+                            error_log("Error creating notifications on login: " . $e->getMessage());
+                        }
+                    }
                     
                     header('Location: dashboard.php');
                     exit;

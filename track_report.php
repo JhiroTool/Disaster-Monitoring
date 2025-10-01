@@ -68,27 +68,19 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['track_report'])) || 
 // Function to get status badge class
 function getStatusBadgeClass($status) {
     switch ($status) {
-        case 'pending': return 'status-pending';
-        case 'assigned': return 'status-assigned';
-        case 'acknowledged': return 'status-acknowledged';
-        case 'in_progress': return 'status-progress';
-        case 'resolved': return 'status-resolved';
-        case 'closed': return 'status-closed';
-        case 'escalated': return 'status-escalated';
-        default: return 'status-pending';
+        case 'ON GOING': return 'status-on-going';
+        case 'IN PROGRESS': return 'status-in-progress';
+        case 'COMPLETED': return 'status-completed';
+        default: return 'status-on-going';
     }
 }
 
 // Function to get status display text
 function getStatusDisplayText($status) {
     switch ($status) {
-        case 'pending': return 'Pending Review';
-        case 'assigned': return 'Assigned to LGU';
-        case 'acknowledged': return 'Acknowledged by LGU';
-        case 'in_progress': return 'Response in Progress';
-        case 'resolved': return 'Resolved';
-        case 'closed': return 'Closed';
-        case 'escalated': return 'Escalated to Higher Authority';
+        case 'ON GOING': return 'On Going';
+        case 'IN PROGRESS': return 'In Progress';
+        case 'COMPLETED': return 'Completed';
         default: return ucfirst($status);
     }
 }
@@ -252,13 +244,9 @@ function getPriorityBadgeClass($priority) {
             letter-spacing: 0.5px;
         }
         
-        .status-pending { background: #fef3c7; color: #92400e; }
-        .status-assigned { background: #dbeafe; color: #1e40af; }
-        .status-acknowledged { background: #d1fae5; color: #065f46; }
-        .status-progress { background: #e0e7ff; color: #3730a3; }
-        .status-resolved { background: #d1fae5; color: #065f46; }
-        .status-closed { background: #f3f4f6; color: #374151; }
-        .status-escalated { background: #fecaca; color: #991b1b; }
+        .status-on-going { background: #fef3c7; color: #92400e; }
+        .status-in-progress { background: #e0e7ff; color: #3730a3; }
+        .status-completed { background: #d1fae5; color: #065f46; }
         
         .priority-badge {
             display: inline-flex;
@@ -574,9 +562,6 @@ function getPriorityBadgeClass($priority) {
             </div>
             <div class="nav-menu" id="nav-menu">
                 <a href="index.php" class="nav-link">Home</a>
-                <a href="index.php#features" class="nav-link">Features</a>
-                <a href="index.php#about" class="nav-link">About</a>
-                <a href="index.php#contact" class="nav-link">Contact</a>
                 <a href="admin/dashboard.php" class="nav-link btn-login">Admin Panel</a>
             </div>
             <div class="hamburger" id="hamburger">
@@ -599,7 +584,18 @@ function getPriorityBadgeClass($priority) {
                 <h1><i class="fas fa-search"></i> Track Your Emergency Report</h1>
                 <p>Enter your tracking ID to check the status and updates of your emergency report.</p>
                 
-                <?php if (!empty($auto_tracking_id)): ?>
+                <?php if (!empty($auto_tracking_id) && $tracking_result === null): ?>
+                    <div class="auto-fill-notice">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Automatically searching for tracking ID: <?php echo htmlspecialchars($auto_tracking_id); ?>
+                    </div>
+                    <script>
+                        // Immediately submit the form when tracking ID is provided via URL
+                        document.addEventListener('DOMContentLoaded', function() {
+                            document.querySelector('form').submit();
+                        });
+                    </script>
+                <?php elseif (!empty($auto_tracking_id)): ?>
                     <div class="auto-fill-notice">
                         <i class="fas fa-info-circle"></i>
                         Tracking ID automatically filled from your recent report submission.
@@ -644,163 +640,7 @@ function getPriorityBadgeClass($priority) {
                 <?php endif; ?>
             <?php endif; ?>
             
-            <!-- Display report details if found -->
             <?php if ($disaster_data): ?>
-                <div class="report-details">
-                    <div class="report-header">
-                        <div class="report-tracking-id"><?php echo htmlspecialchars($disaster_data['tracking_id']); ?></div>
-                        <h2 style="margin: 10px 0; font-size: 1.3em; font-weight: 600;"><?php echo htmlspecialchars($disaster_data['type_name'] ?? 'Emergency Report'); ?></h2>
-                        <p style="margin: 8px 0 0 0; opacity: 1; font-size: 1.1em; font-weight: 500; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);"><?php echo htmlspecialchars($disaster_data['disaster_name']); ?></p>
-                        <div style="margin-top: 15px; display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.95em;">
-                            <span style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 15px;">
-                                <i class="fas fa-map-marker-alt"></i> <?php echo htmlspecialchars($disaster_data['city'] ?? 'Location'); ?>
-                            </span>
-                            <span style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 15px;">
-                                <i class="fas fa-clock"></i> <?php echo date('M d, Y', strtotime($disaster_data['reported_at'])); ?>
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <div class="report-info">
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <h4>Current Status</h4>
-                                <p>
-                                    <span class="status-badge <?php echo getStatusBadgeClass($disaster_data['status']); ?>">
-                                        <i class="fas fa-circle"></i>
-                                        <?php echo getStatusDisplayText($disaster_data['status']); ?>
-                                    </span>
-                                </p>
-                            </div>
-                            
-                            <div class="info-item">
-                                <h4>Priority Level</h4>
-                                <p>
-                                    <span class="priority-badge <?php echo getPriorityBadgeClass($disaster_data['priority']); ?>">
-                                        <i class="fas fa-flag"></i>
-                                        <?php echo ucfirst($disaster_data['priority']); ?>
-                                    </span>
-                                </p>
-                            </div>
-                            
-                            <div class="info-item">
-                                <h4>Disaster Type</h4>
-                                <p><?php echo htmlspecialchars($disaster_data['type_name'] ?? 'N/A'); ?></p>
-                            </div>
-                            
-                            <div class="info-item">
-                                <h4>Severity Level</h4>
-                                <p><?php echo htmlspecialchars($disaster_data['severity_display']); ?></p>
-                            </div>
-                            
-                            <div class="info-item">
-                                <h4>Reported Date</h4>
-                                <p><?php echo date('M d, Y \a\t g:i A', strtotime($disaster_data['reported_at'])); ?></p>
-                            </div>
-                            
-                            <div class="info-item">
-                                <h4>Location</h4>
-                                <p><?php echo htmlspecialchars($disaster_data['address']); ?></p>
-                            </div>
-                            
-                            <?php if ($disaster_data['assigned_lgu_id']): ?>
-                                <div class="info-item">
-                                    <h4>Assigned LGU</h4>
-                                    <p><?php echo htmlspecialchars($disaster_data['lgu_name']); ?></p>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if ($disaster_data['assigned_user_name']): ?>
-                                <div class="info-item">
-                                    <h4>Assigned Officer</h4>
-                                    <p><?php echo htmlspecialchars($disaster_data['assigned_user_name']); ?></p>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if ($disaster_data['acknowledged_at']): ?>
-                                <div class="info-item">
-                                    <h4>Acknowledged Date</h4>
-                                    <p><?php echo date('M d, Y \a\t g:i A', strtotime($disaster_data['acknowledged_at'])); ?></p>
-                                </div>
-                            <?php endif; ?>
-                            
-                            <?php if ($disaster_data['resolved_at']): ?>
-                                <div class="info-item">
-                                    <h4>Resolved Date</h4>
-                                    <p><?php echo date('M d, Y \a\t g:i A', strtotime($disaster_data['resolved_at'])); ?></p>
-                                </div>
-                            <?php endif; ?>
-                        <?php if (!empty($disaster_data['people_affected'])): ?>
-                            <div class="info-item">
-                                <h4>People Affected</h4>
-                                <p><?php echo htmlspecialchars($disaster_data['people_affected']); ?></p>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (!empty($disaster_data['immediate_need'])): ?>
-                            <div class="info-item">
-                                <h4>Immediate Needs</h4>
-                                <p><?php echo htmlspecialchars($disaster_data['immediate_need']); ?></p>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (!empty($disaster_data['landmark'])): ?>
-                            <div class="info-item">
-                                <h4>Landmark</h4>
-                                <p><?php echo htmlspecialchars($disaster_data['landmark']); ?></p>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (!empty($disaster_data['current_situation'])): ?>
-                            <div class="info-item">
-                                <h4>Current Situation</h4>
-                                <p><?php echo htmlspecialchars($disaster_data['current_situation']); ?></p>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (!empty($disaster_data['incident_time'])): ?>
-                            <div class="info-item">
-                                <h4>Time of Incident</h4>
-                                <p><?php echo date('M d, Y \a\t g:i A', strtotime($disaster_data['incident_time'])); ?></p>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (!empty($disaster_data['image_path']) && file_exists($disaster_data['image_path'])): ?>
-                            </div> <!-- close .info-grid -->
-                            <div style="width:100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0 0 16px 16px; text-align:center; padding: 28px 0 16px 0; margin-top: -20px;">
-                                <h4 style="color:white; margin-bottom:18px;"><i class="fas fa-camera"></i> Emergency Photo</h4>
-                                <div class="image-container" style="margin:auto;">
-                                    <img src="<?php echo htmlspecialchars($disaster_data['image_path']); ?>" 
-                                         alt="Emergency Photo" 
-                                         class="emergency-photo"
-                                         onclick="openImageModal(this.src)">
-                                    <div class="image-overlay">
-                                        <i class="fas fa-expand-alt"></i>
-                                        <span>Click to enlarge</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="info-grid"> <!-- reopen .info-grid for any content after -->
-                        <?php endif; ?>
-                        </div>
-                        
-                        <!-- Description Section -->
-                        <?php if (!empty($disaster_data['description'])): ?>
-                            <div class="report-description">
-                                <h4><i class="fas fa-file-alt"></i> Report Description</h4>
-                                <p><?php echo nl2br(htmlspecialchars($disaster_data['description'])); ?></p>
-                            </div>
-                        <?php endif; ?>
-
-                        <!-- Emergency Image Section moved into info grid for compact layout -->
-                        
-                        <?php if ($disaster_data['lgu_name'] && $disaster_data['lgu_phone']): ?>
-                            <div class="contact-lgu">
-                                <h4><i class="fas fa-phone"></i> Contact Assigned LGU</h4>
-                                <p>
-                                    <strong><?php echo htmlspecialchars($disaster_data['lgu_name']); ?></strong><br>
-                                    Phone: <a href="tel:<?php echo htmlspecialchars($disaster_data['lgu_phone']); ?>" class="lgu-phone"><?php echo htmlspecialchars($disaster_data['lgu_phone']); ?></a>
-                                </p>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                
                 <!-- Updates Section -->
                 <div class="updates-section">
                     <div class="updates-header">
@@ -904,17 +744,6 @@ function getPriorityBadgeClass($priority) {
                 let value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
                 e.target.value = value;
             });
-            
-            // Auto-submit form if tracking ID is provided via URL parameter and no results are shown yet
-            const urlParams = new URLSearchParams(window.location.search);
-            const trackingIdFromUrl = urlParams.get('tracking_id');
-            
-            if (trackingIdFromUrl && trackingInput.value && !document.querySelector('.report-details')) {
-                // Auto-submit the form after a short delay
-                setTimeout(function() {
-                    document.querySelector('form').submit();
-                }, 500);
-            }
             
             // Save tracking ID to local storage when searching
             document.querySelector('form').addEventListener('submit', function() {

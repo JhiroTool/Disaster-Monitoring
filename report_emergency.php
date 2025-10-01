@@ -48,7 +48,8 @@ $submission_result = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
     try {
         // Update the address handling section
-        $street = sanitizeInput($_POST['street'] ?? '');
+        $house_no = sanitizeInput($_POST['house_no'] ?? '');
+        $purok = sanitizeInput($_POST['purok'] ?? '');
         $barangay = sanitizeInput($_POST['barangay'] ?? '');
         $city = sanitizeInput($_POST['city'] ?? '');
         $province = sanitizeInput($_POST['province'] ?? '');
@@ -65,24 +66,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
         $selected_particular_color = sanitizeInput($_POST['particular_color'] ?? '');
         $selected_particular_detail_raw = $_POST['particular_detail'] ?? '';
 
-        // Fix: If green, allow multiple details (array), else single string
-        $selected_particular_detail = '';
-        if (is_array($selected_particular_detail_raw)) {
-            $sanitized_details = array_map('sanitizeInput', $selected_particular_detail_raw);
-            $selected_particular_detail = implode(', ', array_filter($sanitized_details));
-        } else {
-            $selected_particular_detail = sanitizeInput($selected_particular_detail_raw);
-        }
+        // Handle particular detail as single selection (consistent for all colors)
+        $selected_particular_detail = sanitizeInput($selected_particular_detail_raw);
 
         // Combine address components
-        $full_address = trim("$street, $barangay, $city, $province");
+        $full_address = trim("$house_no, $purok, $barangay, $city, $province, $region");
 
         // Validate required fields - require the new rapid-assessment fields and address/contact
         $required_fields = [
             'particular' => $selected_particular,
             'particular_color' => $selected_particular_color,
             'particular_detail' => $selected_particular_detail,
-            'street_address' => $street,
+            'purok' => $purok,
+            'house_no' => $house_no,
             'barangay' => $barangay,
             'city' => $city,
             'province' => $province,
@@ -361,8 +357,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                 'tracking_id', 'disaster_name', 'type_id', 'severity_level', 'severity_display',
                 $has_severity_color_column ? 'severity_color' : null,
                 $has_assessments_column ? 'assessments' : null,
-                'address', 'city', 'province', 'state',
-                'reporter_phone', 'description', 'image_path', 'source',
+                'address', 'purok', 'house_no', 'city', 'province', 'state',
+                'reporter_name', 'reporter_phone', 'alternate_contact', 'description', 'image_path', 'source',
                 $has_landmark ? 'landmark' : null,
                 $has_people_affected ? 'people_affected' : null,
                 $has_current_situation ? 'current_situation' : null,
@@ -380,14 +376,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                 ':severity_level' => $severity_level,
                 ':severity_display' => $severity_display,
                 ':address' => $full_address,
+                ':purok' => $purok,
+                ':house_no' => $house_no,
                 ':city' => $city,
                 ':province' => $province,
                 ':state' => $region,
+                ':reporter_name' => $reporter_name,
                 ':reporter_phone' => $phone,
+                ':alternate_contact' => $alternate_contact,
                 ':description' => $description,
                 ':image_path' => $image_path,
                 ':source' => 'web_form',
-                ':status' => 'pending',
+                ':status' => 'ON GOING',
                 ':created_at' => date('Y-m-d H:i:s')
             ];
             if ($has_severity_color_column) $params[':severity_color'] = $severity_color;
@@ -415,11 +415,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
             // Commit transaction
             $pdo->commit();
             
-            $submission_result = [
-                'success' => true,
-                'tracking_id' => $tracking_id,
-                'message' => 'Report submitted successfully!'
-            ];
+            // Create notifications for admins about the new report
+            try {
+                require_once 'admin/includes/notification_helper.php';
+                $notified_count = createDisasterNotification($pdo, $disaster_id);
+                if ($notified_count) {
+                    error_log("Created notifications for {$notified_count} admin users for disaster report #{$disaster_id}");
+                }
+            } catch (Exception $notif_error) {
+                // Log error but don't stop the submission process
+                error_log("Error creating notifications: " . $notif_error->getMessage());
+            }
+            
+            // Redirect to success page
+            header('Location: success.php?tracking_id=' . urlencode($tracking_id));
+            exit;
             
         } else {
             $submission_result = [
@@ -463,10 +473,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                 <span>iMSafe System</span>
             </div>
             <div class="nav-menu" id="nav-menu">
-                <a href="index.php" class="nav-link">Home</a>
-                <a href="index.php#features" class="nav-link">Features</a>
-                <a href="index.php#about" class="nav-link">About</a>
-                <a href="index.php#contact" class="nav-link">Contact</a>
+                <a href="track_report.php" class="nav-link">Track Report</a>
                 <a href="admin/dashboard.php" class="nav-link btn-login">Admin Panel</a>
             </div>
             <div class="hamburger" id="hamburger">
@@ -480,10 +487,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
     <!-- Emergency Report Section -->
     <section class="emergency-page">
         <div class="container">
-            <a href="index.php" class="back-button">
-                <i class="fas fa-arrow-left"></i>
-                Back to Home
-            </a>
             
             <div class="emergency-header">
                 <h1><i class="fas fa-exclamation-triangle"></i> Report an Emergency</h1>
@@ -492,76 +495,87 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
             
             <!-- Display submission result -->
             <?php if ($submission_result): ?>
-                <?php if ($submission_result['success']): ?>
-                    <div class="tracking-info">
-                        <i class="fas fa-check-circle" style="font-size: 2em; margin-bottom: 10px;"></i>
-                        <h3>Report Submitted Successfully!</h3>
-                        <div class="tracking-id"><?php echo htmlspecialchars($submission_result['tracking_id']); ?></div>
-                        <p>Your emergency report has been submitted and assigned to the appropriate LGU. You will receive acknowledgment within 24-48 hours. Save your tracking ID for reference.</p>
-                        <p><strong>Next Steps:</strong> The LGU will contact you at the provided phone number. Keep your phone accessible.</p>
-                        <div style="margin-top: 20px;">
-                            <a href="index.php" class="btn btn-secondary">Return to Home</a>
-                            <a href="track_report.php?tracking_id=<?php echo urlencode($submission_result['tracking_id']); ?>" class="btn btn-primary" style="margin-left: 10px;">Track This Report</a>
-                            <a href="report_emergency.php" class="btn btn-primary" style="margin-left: 10px;">Submit Another Report</a>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <?php if (isset($submission_result['errors'])): ?>
-                            <strong>Please fix the following errors:</strong>
-                            <ul style="margin: 10px 0 0 20px;">
-                                <?php foreach ($submission_result['errors'] as $error): ?>
-                                    <li><?php echo htmlspecialchars($error); ?></li>
-                                <?php endforeach; ?>
-                            </ul>
-                        <?php else: ?>
-                            <?php echo htmlspecialchars($submission_result['message']); ?>
-                        <?php endif; ?>
-                    </div>
-                <?php endif; ?>
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <?php if (isset($submission_result['errors'])): ?>
+                        <strong>Please fix the following errors:</strong>
+                        <ul style="margin: 10px 0 0 20px;">
+                            <?php foreach ($submission_result['errors'] as $error): ?>
+                                <li><?php echo htmlspecialchars($error); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php else: ?>
+                        <?php echo htmlspecialchars($submission_result['message']); ?>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
             
             <div class="emergency-form-container">
                 <form method="POST" action="report_emergency.php" class="emergency-form" enctype="multipart/form-data">
                     <div class="form-section section-incident">
-                        <h3 class="section-title">Rapid assessment</h3>
+                        <h3 class="section-title">Rapid Assessment</h3>
+                        
+                        <!-- Color Legend -->
+                        <div class="color-legend">
+                            <h4 class="legend-title">LEGEND (COLORS)</h4>
+                            <div class="legend-items">
+                                <div class="legend-item">
+                                    <div class="color-indicator green"></div>
+                                    <span class="color-label"><strong>GREEN</strong> - GOOD</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="color-indicator orange"></div>
+                                    <span class="color-label"><strong>ORANGE</strong> - MODERATE</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="color-indicator red"></div>
+                                    <span class="color-label"><strong>RED</strong> - CRITICAL</span>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="form-row">
-                        <div class="form-group">
-                            <label for="particular">Particular</label>
-                            <select id="particular" name="particular" required>
-                                <option value="">Select particular...</option>
-                                <option value="home_state" <?php echo (isset($_POST['particular']) && $_POST['particular']=='home_state') ? 'selected' : ''; ?>>Current state of home/building after the typhoon</option>
-                                <option value="accessibility" <?php echo (isset($_POST['particular']) && $_POST['particular']=='accessibility') ? 'selected' : ''; ?>>Accessibility to road</option>
-                                <option value="power" <?php echo (isset($_POST['particular']) && $_POST['particular']=='power') ? 'selected' : ''; ?>>Power Supply Status</option>
-                                <option value="water" <?php echo (isset($_POST['particular']) && $_POST['particular']=='water') ? 'selected' : ''; ?>>Clean Water Supply</option>
-                                <option value="food" <?php echo (isset($_POST['particular']) && $_POST['particular']=='food') ? 'selected' : ''; ?>>Food and essential supplies availability</option>
-                                <option value="flooding" <?php echo (isset($_POST['particular']) && $_POST['particular']=='flooding') ? 'selected' : ''; ?>>Level of flooding</option>
-                                <option value="safety" <?php echo (isset($_POST['particular']) && $_POST['particular']=='safety') ? 'selected' : ''; ?>>Level of safety</option>
-                                <option value="readiness" <?php echo (isset($_POST['particular']) && $_POST['particular']=='readiness') ? 'selected' : ''; ?>>Readiness to go back to school</option>
-                                <option value="transport" <?php echo (isset($_POST['particular']) && $_POST['particular']=='transport') ? 'selected' : ''; ?>>Transportation Status</option>
-                            </select>
+                            <div class="form-group">
+                                <label for="particular">Particular</label>
+                                <select id="particular" name="particular" required>
+                                    <option value="">Select particular...</option>
+                                    <option value="home_state" <?php echo (isset($_POST['particular']) && $_POST['particular']=='home_state') ? 'selected' : ''; ?>>Current state of home/building after the typhoon</option>
+                                    <option value="accessibility" <?php echo (isset($_POST['particular']) && $_POST['particular']=='accessibility') ? 'selected' : ''; ?>>Accessibility to road</option>
+                                    <option value="power" <?php echo (isset($_POST['particular']) && $_POST['particular']=='power') ? 'selected' : ''; ?>>Power Supply Status</option>
+                                    <option value="water" <?php echo (isset($_POST['particular']) && $_POST['particular']=='water') ? 'selected' : ''; ?>>Clean Water Supply</option>
+                                    <option value="food" <?php echo (isset($_POST['particular']) && $_POST['particular']=='food') ? 'selected' : ''; ?>>Food and essential supplies availability</option>
+                                    <option value="flooding" <?php echo (isset($_POST['particular']) && $_POST['particular']=='flooding') ? 'selected' : ''; ?>>Level of flooding</option>
+                                    <option value="safety" <?php echo (isset($_POST['particular']) && $_POST['particular']=='safety') ? 'selected' : ''; ?>>Level of safety</option>
+                                    <option value="readiness" <?php echo (isset($_POST['particular']) && $_POST['particular']=='readiness') ? 'selected' : ''; ?>>Readiness to go back to school</option>
+                                    <option value="transport" <?php echo (isset($_POST['particular']) && $_POST['particular']=='transport') ? 'selected' : ''; ?>>Transportation Status</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="particular_color">Color</label>
+                                <select id="particular_color" name="particular_color" required>
+                                    <option value="">Select color...</option>
+                                    <option value="green" <?php echo (isset($_POST['particular_color']) && $_POST['particular_color']=='green') ? 'selected' : ''; ?>>Green</option>
+                                    <option value="orange" <?php echo (isset($_POST['particular_color']) && $_POST['particular_color']=='orange') ? 'selected' : ''; ?>>Orange</option>
+                                    <option value="red" <?php echo (isset($_POST['particular_color']) && $_POST['particular_color']=='red') ? 'selected' : ''; ?>>Red</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="particular_color">Color</label>
-                            <select id="particular_color" name="particular_color" required>
-                                <option value="">Select color...</option>
-                                <option value="green" <?php echo (isset($_POST['particular_color']) && $_POST['particular_color']=='green') ? 'selected' : ''; ?>>Green</option>
-                                <option value="orange" <?php echo (isset($_POST['particular_color']) && $_POST['particular_color']=='orange') ? 'selected' : ''; ?>>Orange</option>
-                                <option value="red" <?php echo (isset($_POST['particular_color']) && $_POST['particular_color']=='red') ? 'selected' : ''; ?>>Red</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="particular_detail">Detail</label>
-                            <select id="particular_detail" name="particular_detail" required>
-                                <option value="">Choose detail...</option>
-                            </select>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="particular_detail">Detail</label>
+                                <select id="particular_detail" name="particular_detail" required>
+                                    <option value="">Choose detail...</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="form-section section-address">
-                        <h3 class="section-title">Address</h3>
-                        <div class="form-row">
+                    <!-- Location Information -->
+                    <div class="form-section section-location">
+                        <h3 class="section-title">📍 Location Information</h3>
+                        
+                        <!-- Region & Province -->
+                        <div class="form-grid-2">
                             <div class="form-group">
                                 <label for="region">Region</label>
                                 <select id="region" name="region" required>
@@ -582,7 +596,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                             </div>
                         </div>
 
-                        <div class="form-row">
+                        <!-- City & Barangay -->
+                        <div class="form-grid-2">
                             <div class="form-group">
                                 <label for="city">City/Municipality</label>
                                 <select id="city" name="city" required>
@@ -597,34 +612,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                             </div>
                         </div>
 
-                        <div class="form-group">
-                            <label for="street">Street Address</label>
-                            <input type="text" id="street" name="street" 
-                                   value="<?php echo htmlspecialchars($_POST['street'] ?? ''); ?>"
-                                   placeholder="House number and street name" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-section section-contact">
-                        <h3 class="section-title">Contact</h3>
-                        <div class="form-row">
+                        <!-- Purok & House No. -->
+                        <div class="form-grid-2">
                             <div class="form-group">
-                                <label for="phone">Contact Number</label>
-                                <input type="tel" id="phone" name="phone" 
-                                       value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>"
-                                       placeholder="+63 9XX XXX XXXX" required>
+                                <label for="purok">Purok</label>
+                                <input type="text" id="purok" name="purok" 
+                                       value="<?php echo htmlspecialchars($_POST['purok'] ?? ''); ?>"
+                                       placeholder="Purok name or number" required>
                             </div>
                             <div class="form-group">
-                                <!-- Empty for balance -->
+                                <label for="house_no">House No.</label>
+                                <input type="text" id="house_no" name="house_no" 
+                                       value="<?php echo htmlspecialchars($_POST['house_no'] ?? ''); ?>"
+                                       placeholder="House number" required>
                             </div>
                         </div>
 
-                        <div class="form-row">
+                        <!-- Nearby Landmark -->
+                        <div class="form-group">
+                            <label for="landmark">Nearby Landmark</label>
+                            <input type="text" id="landmark" name="landmark" 
+                                   value="<?php echo htmlspecialchars($_POST['landmark'] ?? ''); ?>"
+                                   placeholder="e.g., Near SM Mall, City Hall, etc.">
+                        </div>
+                    </div>
+                    
+                    <!-- Contact Information -->
+                    <div class="form-section section-contact">
+                        <h3 class="section-title">📞 Contact Information</h3>
+                        
+                        <!-- Primary & Alternate Contact -->
+                        <div class="form-grid-2">
                             <div class="form-group">
-                                <label for="reporterName">Your Name (Optional)</label>
-                                <input type="text" id="reporterName" name="reporter_name" 
-                                       value="<?php echo htmlspecialchars($_POST['reporter_name'] ?? ''); ?>"
-                                       placeholder="Full name (optional for anonymous reporting)">
+                                <label for="phone">Primary Contact Number *</label>
+                                <input type="tel" id="phone" name="phone" 
+                                       value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>"
+                                       placeholder="+63 9XX XXX XXXX" required>
                             </div>
                             <div class="form-group">
                                 <label for="alternateContact">Alternate Contact (Optional)</label>
@@ -634,25 +657,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                             </div>
                         </div>
 
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="landmark">Nearby Landmark</label>
-                                <input type="text" id="landmark" name="landmark" 
-                                       value="<?php echo htmlspecialchars($_POST['landmark'] ?? ''); ?>"
-                                       placeholder="e.g., Near SM Mall, City Hall, etc.">
-                            </div>
-                            <div class="form-group">
-                                <label for="peopleAffected">People Affected</label>
-                                <select id="peopleAffected" name="people_affected">
-                                    <option value="">Select range...</option>
-                                    <option value="1-5" <?php echo (isset($_POST['people_affected']) && $_POST['people_affected'] == '1-5') ? 'selected' : ''; ?>>1-5 people</option>
-                                    <option value="6-10" <?php echo (isset($_POST['people_affected']) && $_POST['people_affected'] == '6-10') ? 'selected' : ''; ?>>6-10 people</option>
-                                    <option value="11-25" <?php echo (isset($_POST['people_affected']) && $_POST['people_affected'] == '11-25') ? 'selected' : ''; ?>>11-25 people</option>
-                                    <option value="26-50" <?php echo (isset($_POST['people_affected']) && $_POST['people_affected'] == '26-50') ? 'selected' : ''; ?>>26-50 people</option>
-                                    <option value="51-100" <?php echo (isset($_POST['people_affected']) && $_POST['people_affected'] == '51-100') ? 'selected' : ''; ?>>51-100 people</option>
-                                    <option value="100+" <?php echo (isset($_POST['people_affected']) && $_POST['people_affected'] == '100+') ? 'selected' : ''; ?>>More than 100 people</option>
-                                </select>
-                            </div>
+                        <!-- Reporter Name -->
+                        <div class="form-group">
+                            <label for="reporterName">Your Name (Optional)</label>
+                            <input type="text" id="reporterName" name="reporter_name" 
+                                   value="<?php echo htmlspecialchars($_POST['reporter_name'] ?? ''); ?>"
+                                   placeholder="Full name (optional for anonymous reporting)">
+                            <small class="form-help">Leave blank for anonymous reporting</small>
                         </div>
                     </div>
 
@@ -759,8 +770,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                         <i class="fas fa-shield-alt"></i>
                         <span>iMSafe System</span>
                     </div>
-                    <ul class="footer-links">
+                    <p>Protecting communities through advanced disaster monitoring and coordinated emergency response.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.php#home">Home</a></li>
+                        <li><a href="index.php#features">Features</a></li>
+                        <li><a href="index.php#about">About</a></li>
+                        <li><a href="admin/dashboard.php">Admin Panel</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Emergency</h4>
+                    <ul>
                         <li><a href="report_emergency.php">Report Emergency</a></li>
+                        <li><a href="track_report.php">Track Your Report</a></li>
                         <li><a href="tel:911">Call 911</a></li>
                         <li><a href="index.php#contact">Contact Support</a></li>
                     </ul>
@@ -788,13 +813,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
             province: '<?php echo htmlspecialchars($_POST['province'] ?? ''); ?>',
             city: '<?php echo htmlspecialchars($_POST['city'] ?? ''); ?>',
             barangay: '<?php echo htmlspecialchars($_POST['barangay'] ?? ''); ?>',
+            purok: '<?php echo htmlspecialchars($_POST['purok'] ?? ''); ?>',
+            house_no: '<?php echo htmlspecialchars($_POST['house_no'] ?? ''); ?>',
             severity_color: '<?php echo htmlspecialchars($_POST['severity_color'] ?? ''); ?>',
             particular: '<?php echo htmlspecialchars($_POST['particular'] ?? ''); ?>',
             particular_color: '<?php echo htmlspecialchars($_POST['particular_color'] ?? ''); ?>',
             particular_detail: '<?php echo htmlspecialchars($_POST['particular_detail'] ?? ''); ?>'
         };
     </script>
-    <script src="assets/js/particulars.js"></script>
-    <script src="assets/js/report.js"></script>
+    <script src="assets/js/particulars.js?v=<?php echo time(); ?>"></script>
+    <script src="assets/js/report.js?v=<?php echo time(); ?>"></script>
 </body>
 </html>
