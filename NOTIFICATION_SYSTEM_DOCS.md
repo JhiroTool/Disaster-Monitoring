@@ -41,7 +41,7 @@ Notifications are categorized by priority level:
 - `markNotificationAsRead($pdo, $notification_id, $user_id)` - Marks notification as read
 - `createStatusUpdateNotification($pdo, $disaster_id, $old_status, $new_status, $updated_by)` - Creates notification when status changes
 
-### 2. `/admin/login.php` (MODIFIED)
+### 2. `/login.php` (MODIFIED)
 **Changes**:
 - Added `require_once 'includes/notification_helper.php'`
 - After successful login, calls `checkAndNotifyNewReports($pdo)` for admins

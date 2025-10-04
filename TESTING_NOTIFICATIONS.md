@@ -17,7 +17,7 @@ Your database has been updated with:
    - Note the tracking ID
 
 2. **Login as admin**:
-   - Go to: `http://localhost/Disaster-Monitoring/admin/login.php`
+   - Go to: `http://localhost/Disaster-Monitoring/login.php`
    - Login with admin credentials
    - Look at the notification bell icon (top right)
    - You should see a badge with notification count

@@ -51,7 +51,7 @@
             </div>
             <div class="nav-menu" id="nav-menu">
                 <a href="track_report.php" class="nav-link">Track Report</a>
-                <a href="admin/dashboard.php" class="nav-link btn-login">Admin Panel</a>
+                <a href="login.php" class="nav-link btn-login">Admin Login</a>
             </div>
             <div class="hamburger" id="hamburger">
                 <span class="bar"></span>

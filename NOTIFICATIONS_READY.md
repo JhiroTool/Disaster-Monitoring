@@ -18,7 +18,7 @@
 ## 🔔 What You'll See Now
 
 When you login to the admin panel at:
-`http://localhost/Disaster-Monitoring/admin/login.php`
+`http://localhost/Disaster-Monitoring/login.php`
 
 You should see:
 
@@ -62,7 +62,7 @@ Here are your actual notifications:
 ## 🚀 Next Steps
 
 1. **Login to Admin Panel**
-   - Go to: `http://localhost/Disaster-Monitoring/admin/login.php`
+   - Go to: `http://localhost/Disaster-Monitoring/login.php`
    - Login with username: `admin` or `Admin_01`
    - Look for the bell icon 🔔 with (37) badge
 

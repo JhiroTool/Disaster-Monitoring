@@ -1,16 +1,26 @@
 <?php
 session_start();
-require_once '../config/database.php';
-require_once 'includes/notification_helper.php';
+require_once 'config/database.php';
+require_once 'admin/includes/notification_helper.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
-    header('Location: dashboard.php');
+    header('Location: admin/dashboard.php');
     exit;
 }
 
 $error_message = '';
 $success_message = '';
+
+// Handle logout message
+if (isset($_GET['logged_out'])) {
+    $success_message = 'You have been logged out successfully.';
+}
+
+// Handle timeout message
+if (isset($_GET['timeout'])) {
+    $error_message = 'Your session has expired. Please log in again.';
+}
 
 // Handle login form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
@@ -56,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                         }
                     }
                     
-                    header('Location: dashboard.php');
+                    header('Location: admin/dashboard.php');
                     exit;
                 } else {
                     $error_message = 'Your account has been deactivated. Please contact the administrator.';
@@ -78,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - iMSafe System</title>
-    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="admin/assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -463,7 +473,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             </form>
             
             <div class="login-footer">
-                <p><a href="../index.php">Back to Main Site</a></p>
+                <p><a href="index.php">Back to Main Site</a></p>
             </div>
         </div>
         

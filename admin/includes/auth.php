@@ -1,7 +1,7 @@
 <?php
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php');
+    header('Location: ../login.php');
     exit;
 }
 
@@ -40,7 +40,7 @@ $timeout_duration = 3600; // 1 hour
 if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity']) > $timeout_duration) {
     session_unset();
     session_destroy();
-    header('Location: login.php?timeout=1');
+    header('Location: ../login.php?timeout=1');
     exit;
 }
 $_SESSION['last_activity'] = time();

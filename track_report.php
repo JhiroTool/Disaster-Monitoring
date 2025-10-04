@@ -562,7 +562,7 @@ function getPriorityBadgeClass($priority) {
             </div>
             <div class="nav-menu" id="nav-menu">
                 <a href="index.php" class="nav-link">Home</a>
-                <a href="admin/dashboard.php" class="nav-link btn-login">Admin Panel</a>
+                <a href="login.php" class="nav-link btn-login">Admin Login</a>
             </div>
             <div class="hamburger" id="hamburger">
                 <span class="bar"></span>
@@ -706,7 +706,7 @@ function getPriorityBadgeClass($priority) {
                         <li><a href="index.php">Home</a></li>
                         <li><a href="index.php#features">Features</a></li>
                         <li><a href="index.php#about">About</a></li>
-                        <li><a href="admin/dashboard.php">Admin Panel</a></li>
+                        <li><a href="login.php">Admin Login</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">
