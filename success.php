@@ -181,7 +181,7 @@ if (empty($tracking_id)) {
             <div class="nav-menu" id="nav-menu">
                 <a href="track_report.php" class="nav-link">Track Report</a>
                 <a href="register.php" class="nav-link">Register</a>
-                <a href="login.php" class="nav-link btn-login">Admin Login</a>
+                <a href="login.php" class="nav-link btn-login">Login</a>
             </div>
             <div class="hamburger" id="hamburger">
                 <span class="bar"></span>
@@ -233,7 +233,7 @@ if (empty($tracking_id)) {
                         <li><a href="index.php#features">Features</a></li>
                         <li><a href="index.php#about">About</a></li>
                         <li><a href="register.php">Register as Reporter</a></li>
-                        <li><a href="login.php">Admin Login</a></li>
+                        <li><a href="login.php">Login</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">

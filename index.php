@@ -231,60 +231,7 @@ $user_role = $is_logged_in ? $_SESSION['role'] : '';
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <i class="fas fa-shield-alt"></i>
-                <span>iMSafe Disaster Monitoring System</span>
-            </div>
-            <div class="nav-menu" id="nav-menu">
-                <?php if ($is_logged_in): ?>
-                    <span class="nav-welcome">Welcome, <?php echo htmlspecialchars($user_name); ?></span>
-                    <?php if ($user_role === 'reporter'): ?>
-                        <div class="nav-dropdown">
-                            <button class="nav-dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-user-shield"></i>
-                                Your Reporter Dashboard
-                                <i class="fas fa-chevron-down chevron" aria-hidden="true"></i>
-                            </button>
-                            <div class="nav-dropdown-menu" role="menu">
-                                <div class="nav-dropdown-header">Quick Actions</div>
-                                <a href="report_emergency.php" class="nav-dropdown-item" role="menuitem">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    Report New Emergency
-                                </a>
-                                <a href="track_report.php" class="nav-dropdown-item" role="menuitem">
-                                    <i class="fas fa-list-alt"></i>
-                                    View All My Reports
-                                </a>
-                                <a href="track_report.php#track-report-form" class="nav-dropdown-item" role="menuitem">
-                                    <i class="fas fa-search"></i>
-                                    Track Specific Report
-                                </a>
-                                <div class="nav-dropdown-footer">Stay updated with your latest submissions anytime.</div>
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <a href="track_report.php" class="nav-link">Track Report</a>
-                    <?php endif; ?>
-                    <?php if ($user_role === 'admin'): ?>
-                        <a href="admin/dashboard.php" class="nav-link">Admin Dashboard</a>
-                    <?php endif; ?>
-                    <a href="logout.php" class="nav-link btn-logout">Logout</a>
-                <?php else: ?>
-                    <a href="track_report.php" class="nav-link">Track Report</a>
-                    <a href="report_emergency.php" class="nav-link">Report Emergency</a>
-                    <a href="register.php" class="nav-link">Create Account</a>
-                    <a href="login.php" class="nav-link btn-login">Login</a>
-                <?php endif; ?>
-            </div>
-            <div class="hamburger" id="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-        </div>
-    </nav>
+    <?php require_once __DIR__ . '/includes/public_nav.php'; ?>
 
     <!-- Alert Messages -->
     <?php if ($success_message): ?>
@@ -399,47 +346,7 @@ $user_role = $is_logged_in ? $_SESSION['role'] : '';
    
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>iMSafe System</span>
-                    </div>
-                    <p>Protecting communities through advanced disaster monitoring and coordinated emergency response.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#about">About</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Emergency</h4>
-                    <ul>
-                        <li><a href="report_emergency.php">Report Emergency</a></li>
-                        <li><a href="track_report.php">Track Your Report</a></li>
-                        <li><a href="tel:911">Call 911</a></li>
-                        <li><a href="#contact">Contact Support</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 iMSafe Disaster Monitoring System. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <?php require_once __DIR__ . '/includes/public_footer.php'; ?>
 
     <!-- Scripts -->
     <script src="assets/js/script.js"></script>

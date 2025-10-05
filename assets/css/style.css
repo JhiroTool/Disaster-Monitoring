@@ -114,6 +114,22 @@ p {
     font-weight: 500;
 }
 
+.btn-logout {
+    background-color: #dc3545;
+    color: #ffffff !important;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover,
+.btn-logout:focus {
+    background-color: #c82333;
+    transform: translateY(-2px);
+    color: #ffffff !important;
+}
+
 .btn-register {
     background: linear-gradient(135deg, #3b82f6, #1d4ed8);
     color: white !important;
@@ -161,6 +177,19 @@ p {
     display: flex;
     align-items: center;
     gap: 2rem;
+}
+
+.nav-welcome {
+    color: #667eea;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    margin-right: 0.75rem;
+}
+
+.nav-welcome::before {
+    content: "👋";
+    margin-right: 0.5rem;
 }
 
 .nav-dropdown {
@@ -468,8 +497,8 @@ p {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-                      radial-gradient(circle at 75% 75%, rgba(139, 69, 19, 0.05) 0%, transparent 50%);
+    background-image: radial-gradient(circle at 25% 25%, rgba(59, 130, 246, 0.1) 0%, transparent 100%),
+                      radial-gradient(circle at 75% 75%, rgba(139, 69, 19, 0.05) 0%, transparent 100%);
 }
 
 /* Emergency Report Section */

@@ -129,41 +129,102 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
             $upload_error = null;
             
             if (isset($_FILES['emergency_image']) && $_FILES['emergency_image']['error'] === UPLOAD_ERR_OK) {
-                $upload_dir = 'uploads/emergency_images/';
-                $allowed_types = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                $upload_base_dir = __DIR__ . '/uploads/emergency_images/';
+                $relative_upload_dir = 'uploads/emergency_images/';
+                $allowed_mime_types = [
+                    'image/jpeg' => 'jpg',
+                    'image/jpg' => 'jpg',
+                    'image/pjpeg' => 'jpg',
+                    'image/png' => 'png',
+                    'image/gif' => 'gif',
+                    'image/webp' => 'webp'
+                ];
+                $allowed_extension_types = [
+                    'jpg' => 'image/jpeg',
+                    'jpeg' => 'image/jpeg',
+                    'png' => 'image/png',
+                    'gif' => 'image/gif',
+                    'webp' => 'image/webp'
+                ];
                 $max_size = 5 * 1024 * 1024; // 5MB
-                
+
+                $tmp_name = $_FILES['emergency_image']['tmp_name'];
                 $file_type = $_FILES['emergency_image']['type'];
                 $file_size = $_FILES['emergency_image']['size'];
                 $original_name = $_FILES['emergency_image']['name'];
-                
+
+                // Detect mime using finfo for additional safety
+                $detected_type = null;
+                if (function_exists('finfo_open')) {
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    if ($finfo) {
+                        $detected_type = finfo_file($finfo, $tmp_name) ?: null;
+                        finfo_close($finfo);
+                    }
+                }
+                $mime_to_check = $detected_type ?: $file_type;
+                $normalized_mime = $mime_to_check ? strtolower((string)$mime_to_check) : '';
+                $file_extension = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
+
+                $final_extension = null;
+                if ($normalized_mime && isset($allowed_mime_types[$normalized_mime])) {
+                    $final_extension = $allowed_mime_types[$normalized_mime];
+                }
+
+                if ($final_extension === null && $file_extension && isset($allowed_extension_types[$file_extension])) {
+                    $final_extension = $file_extension === 'jpeg' ? 'jpg' : $file_extension;
+                    if (empty($normalized_mime)) {
+                        $normalized_mime = $allowed_extension_types[$file_extension];
+                    }
+                    error_log('Image upload accepted via extension fallback. Reported MIME: ' . ($mime_to_check ?: 'none') . ' using extension .' . $final_extension);
+                }
+
                 // Validate file type and size
-                if (!in_array($file_type, $allowed_types)) {
-                    $upload_error = "Invalid file type. Please upload JPG, PNG, or GIF files only.";
+                if ($final_extension === null) {
+                    $upload_error = "Invalid file type. Please upload JPG, PNG, GIF, or WEBP files only.";
+                    error_log('Upload rejected due to unsupported MIME/extension. Reported MIME: ' . ($mime_to_check ?: 'none') . ' original name: ' . $original_name);
                 } elseif ($file_size > $max_size) {
                     $upload_error = "File too large. Maximum size is 5MB.";
+                } elseif (function_exists('getimagesize') && @getimagesize($tmp_name) === false) {
+                    $upload_error = "Invalid image file.";
+                    error_log('Upload rejected because getimagesize failed for file: ' . $original_name);
                 } else {
                     // Create unique filename
-                    $file_extension = pathinfo($original_name, PATHINFO_EXTENSION);
-                    $filename = 'emergency_' . time() . '_' . uniqid() . '.' . strtolower($file_extension);
-                    $upload_path = $upload_dir . $filename;
-                    
-                    // Check if upload directory exists and is writable
-                    if (!is_dir($upload_dir)) {
-                        mkdir($upload_dir, 0777, true);
+                    $filename = 'emergency_' . time() . '_' . uniqid() . '.' . $final_extension;
+                    $target_path = $upload_base_dir . $filename;
+
+                    // Ensure upload directory exists and is writable
+                    if (!is_dir($upload_base_dir)) {
+                        if (!mkdir($upload_base_dir, 0775, true) && !is_dir($upload_base_dir)) {
+                            $upload_error = "Failed to create upload directory.";
+                            error_log('Failed to create directory: ' . $upload_base_dir);
+                        }
                     }
-                    
-                    if (!is_writable($upload_dir)) {
-                        $upload_error = "Upload directory is not writable.";
-                        error_log("Upload directory not writable: " . $upload_dir);
-                    } else {
-                        // Attempt to move uploaded file
-                        if (move_uploaded_file($_FILES['emergency_image']['tmp_name'], $upload_path)) {
-                            $image_path = $upload_path;
-                            error_log("Image uploaded successfully: " . $upload_path);
+
+                    if (empty($upload_error) && !is_writable($upload_base_dir)) {
+                        $attempt_chmod = @chmod($upload_base_dir, 0775);
+                        clearstatcache(true, $upload_base_dir);
+
+                        if ((!$attempt_chmod || !is_writable($upload_base_dir)) && @chmod($upload_base_dir, 0777)) {
+                            clearstatcache(true, $upload_base_dir);
+                        }
+
+                        if (!is_writable($upload_base_dir)) {
+                            $upload_error = "Upload directory is not writable.";
+                            error_log('Upload directory not writable: ' . $upload_base_dir);
+                        } else {
+                            error_log('Upload directory permissions adjusted automatically: ' . $upload_base_dir . ' (current mode: ' . substr(sprintf('%o', fileperms($upload_base_dir)), -4) . ')');
+                        }
+                    }
+
+                    if (empty($upload_error)) {
+                        if (move_uploaded_file($tmp_name, $target_path)) {
+                            $image_path = $relative_upload_dir . $filename;
+                            @chmod($target_path, 0644);
+                            error_log('Image uploaded successfully: ' . $target_path);
                         } else {
                             $upload_error = "Failed to save uploaded image.";
-                            error_log("Failed to move uploaded file to: " . $upload_path);
+                            error_log('Failed to move uploaded file to: ' . $target_path . ' (tmp: ' . $tmp_name . ')');
                         }
                     }
                 }
@@ -475,24 +536,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="nav-logo">
-                <i class="fas fa-shield-alt"></i>
-                <span>iMSafe System</span>
-            </div>
-            <div class="nav-menu" id="nav-menu">
-                <a href="track_report.php" class="nav-link">Track Report</a>
-                <a href="register.php" class="nav-link">Register</a>
-                <a href="login.php" class="nav-link btn-login">Admin Login</a>
-            </div>
-            <div class="hamburger" id="hamburger">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-            </div>
-        </div>
-    </nav>
+    <?php require_once __DIR__ . '/includes/public_nav.php'; ?>
 
     <!-- Emergency Report Section -->
     <section class="emergency-page">
@@ -772,49 +816,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
     </section>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>iMSafe System</span>
-                    </div>
-                    <p>Protecting communities through advanced disaster monitoring and coordinated emergency response.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="index.php#home">Home</a></li>
-                        <li><a href="index.php#features">Features</a></li>
-                        <li><a href="index.php#about">About</a></li>
-                        <li><a href="register.php">Register as Reporter</a></li>
-                        <li><a href="login.php">Admin Login</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Emergency</h4>
-                    <ul>
-                        <li><a href="report_emergency.php">Report Emergency</a></li>
-                        <li><a href="track_report.php">Track Your Report</a></li>
-                        <li><a href="tel:911">Call 911</a></li>
-                        <li><a href="index.php#contact">Contact Support</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 iMSafe Disaster Monitoring System. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <?php require_once __DIR__ . '/includes/public_footer.php'; ?>
 
     <!-- Scripts -->
     <script src="assets/js/script.js"></script>
