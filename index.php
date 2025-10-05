@@ -1,10 +1,52 @@
 
 <?php
 session_start();
+require_once __DIR__ . '/config/database.php';
 
 // Handle messages
 $success_message = '';
 $error_message = '';
+$status_flash_message = $_SESSION['nav_status_update_message'] ?? '';
+$status_flash_type = $_SESSION['nav_status_update_type'] ?? '';
+unset($_SESSION['nav_status_update_message'], $_SESSION['nav_status_update_type']);
+
+$is_logged_in = isset($_SESSION['user_id']);
+$user_id = $is_logged_in ? (int)($_SESSION['user_id'] ?? 0) : null;
+$user_role = $is_logged_in ? ($_SESSION['role'] ?? '') : '';
+
+$first_name = $is_logged_in ? trim($_SESSION['first_name'] ?? '') : '';
+$last_name = $is_logged_in ? trim($_SESSION['last_name'] ?? '') : '';
+$user_name = $is_logged_in ? trim($first_name . ' ' . $last_name) : '';
+if ($is_logged_in && $user_name === '') {
+    $user_name = $_SESSION['username'] ?? '';
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nav_update_status'])) {
+    $new_status = trim($_POST['status_value'] ?? '');
+    $valid_statuses = ["I'm fine", "Need help"];
+
+    if (!$is_logged_in || $user_role !== 'reporter') {
+        $_SESSION['nav_status_update_type'] = 'error';
+        $_SESSION['nav_status_update_message'] = 'You must be logged in as a reporter to update your status.';
+    } elseif (!in_array($new_status, $valid_statuses, true)) {
+        $_SESSION['nav_status_update_type'] = 'error';
+        $_SESSION['nav_status_update_message'] = 'Invalid status selection. Please try again.';
+    } else {
+        try {
+            $stmt = $pdo->prepare("UPDATE users SET status = ? WHERE user_id = ?");
+            $stmt->execute([$new_status, $user_id]);
+            $_SESSION['nav_status_update_type'] = 'success';
+            $_SESSION['nav_status_update_message'] = 'Your status has been updated.';
+        } catch (Exception $e) {
+            error_log('Reporter nav status update error: ' . $e->getMessage());
+            $_SESSION['nav_status_update_type'] = 'error';
+            $_SESSION['nav_status_update_message'] = 'We could not update your status. Please try again.';
+        }
+    }
+
+    header('Location: index.php');
+    exit;
+}
 
 if (isset($_GET['logged_in'])) {
     $success_message = 'Welcome back! You are now logged in as a reporter.';
@@ -14,9 +56,25 @@ if (isset($_GET['error']) && $_GET['error'] === 'access_denied') {
     $error_message = 'Access denied. Only administrators can access the admin panel.';
 }
 
-$is_logged_in = isset($_SESSION['user_id']);
-$user_name = $is_logged_in ? ($_SESSION['first_name'] . ' ' . $_SESSION['last_name']) : '';
-$user_role = $is_logged_in ? $_SESSION['role'] : '';
+$reporter_status_value = null;
+$reporter_status_updated_at = null;
+
+if ($is_logged_in && $user_role === 'reporter') {
+    try {
+        $status_stmt = $pdo->prepare("SELECT status, updated_at FROM users WHERE user_id = ?");
+        $status_stmt->execute([$user_id]);
+        $status_row = $status_stmt->fetch(PDO::FETCH_ASSOC);
+        if ($status_row) {
+            $reporter_status_value = $status_row['status'] ?? null;
+            $reporter_status_updated_at = $status_row['updated_at'] ?? null;
+        }
+    } catch (Exception $e) {
+        error_log('Reporter status fetch error: ' . $e->getMessage());
+    }
+}
+
+$nav_reporter_status = $reporter_status_value;
+$nav_reporter_status_updated_at = $reporter_status_updated_at;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -248,6 +306,15 @@ $user_role = $is_logged_in ? $_SESSION['role'] : '';
             <div class="alert alert-error">
                 <i class="fas fa-exclamation-triangle"></i>
                 <?php echo htmlspecialchars($error_message); ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($status_flash_message): ?>
+        <div class="container">
+            <div class="alert <?php echo $status_flash_type === 'success' ? 'alert-success' : 'alert-error'; ?>">
+                <i class="fas <?php echo $status_flash_type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'; ?>"></i>
+                <?php echo htmlspecialchars($status_flash_message); ?>
             </div>
         </div>
     <?php endif; ?>

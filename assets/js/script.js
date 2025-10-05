@@ -97,6 +97,121 @@ document.addEventListener('DOMContentLoaded', function() {
             closeAllDropdowns();
         }
     });
+
+    const statusControls = document.querySelectorAll('.nav-status-control');
+
+    const closeStatusDropdown = (control) => {
+        const dropdown = control.querySelector('.nav-status-dropdown');
+        const trigger = control.querySelector('.nav-status-trigger');
+        if (dropdown && trigger) {
+            dropdown.classList.remove('open');
+            dropdown.setAttribute('aria-hidden', 'true');
+            trigger.setAttribute('aria-expanded', 'false');
+        }
+    };
+
+    const closeAllStatusDropdowns = () => {
+        statusControls.forEach(control => closeStatusDropdown(control));
+    };
+
+    const updateStatusUI = (control, value) => {
+        const trigger = control.querySelector('.nav-status-trigger');
+        const label = control.querySelector('.nav-status-trigger-label');
+        const hiddenInput = control.querySelector('input[name="status_value"]');
+        const statusPill = control.closest('.nav-reporter-status');
+        const statusIcon = statusPill ? (() => {
+            const form = statusPill.querySelector('form');
+            return form ? form.previousElementSibling : statusPill.querySelector('i.fas');
+        })() : null;
+        const dropdown = control.querySelector('.nav-status-dropdown');
+
+        if (!trigger || !label || !hiddenInput || !statusPill || !dropdown) {
+            return;
+        }
+
+        const isHelp = value === 'Need help';
+        hiddenInput.value = value;
+        label.textContent = value;
+
+        trigger.classList.toggle('nav-status-trigger-help', isHelp);
+        trigger.classList.toggle('nav-status-trigger-fine', !isHelp);
+        statusPill.classList.toggle('nav-reporter-status-help', isHelp);
+        statusPill.classList.toggle('nav-reporter-status-fine', !isHelp);
+
+        if (statusIcon) {
+            statusIcon.classList.remove('fa-user-check', 'fa-life-ring');
+            statusIcon.classList.add(isHelp ? 'fa-life-ring' : 'fa-user-check');
+        }
+
+        const options = dropdown.querySelectorAll('.nav-status-option');
+        options.forEach(option => {
+            const optionValue = option.dataset.value;
+            const optionIsHelp = optionValue === 'Need help';
+            option.classList.toggle('active', optionValue === value);
+            option.classList.toggle('active-help', optionIsHelp && optionValue === value);
+            option.classList.toggle('active-fine', !optionIsHelp && optionValue === value);
+        });
+
+        dropdown.classList.toggle('nav-status-dropdown-help', isHelp);
+        dropdown.classList.toggle('nav-status-dropdown-fine', !isHelp);
+    };
+
+    statusControls.forEach(control => {
+        const trigger = control.querySelector('.nav-status-trigger');
+        const dropdown = control.querySelector('.nav-status-dropdown');
+        const hiddenInput = control.querySelector('input[name="status_value"]');
+        const form = control.closest('form');
+
+        if (!trigger || !dropdown || !hiddenInput || !form) {
+            return;
+        }
+
+        updateStatusUI(control, hiddenInput.value);
+
+        trigger.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const isOpen = dropdown.classList.contains('open');
+            closeAllStatusDropdowns();
+
+            if (!isOpen) {
+                dropdown.classList.add('open');
+                dropdown.setAttribute('aria-hidden', 'false');
+                trigger.setAttribute('aria-expanded', 'true');
+            }
+        });
+
+        const options = dropdown.querySelectorAll('.nav-status-option');
+        options.forEach(option => {
+            option.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                const value = option.dataset.value;
+                if (!value) {
+                    return;
+                }
+
+                updateStatusUI(control, value);
+                closeStatusDropdown(control);
+                form.submit();
+            });
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        statusControls.forEach(control => {
+            if (!control.contains(event.target)) {
+                closeStatusDropdown(control);
+            }
+        });
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeAllStatusDropdowns();
+        }
+    });
     
     // Smooth Scrolling for Navigation Links
     const scrollLinks = document.querySelectorAll('a[href^="#"]');

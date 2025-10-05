@@ -19,6 +19,44 @@ if ($is_logged_in && $nav_user_name === '') {
 }
 
 $nav_user_name = $nav_user_name ?: 'User';
+
+$db_path = __DIR__ . '/../config/database.php';
+if (!isset($pdo) && file_exists($db_path)) {
+    require_once $db_path;
+}
+
+$nav_reporter_status_value = null;
+$nav_reporter_status_updated_at_value = null;
+
+if ($nav_user_role === 'reporter') {
+    if (isset($nav_reporter_status)) {
+        $nav_reporter_status_value = $nav_reporter_status;
+    } elseif (isset($reporter_status_value)) {
+        $nav_reporter_status_value = $reporter_status_value;
+    }
+
+    if (isset($nav_reporter_status_updated_at)) {
+        $nav_reporter_status_updated_at_value = $nav_reporter_status_updated_at;
+    } elseif (isset($reporter_status_updated_at)) {
+        $nav_reporter_status_updated_at_value = $reporter_status_updated_at;
+    }
+
+    if ($nav_reporter_status_value === null && isset($pdo) && $is_logged_in) {
+        try {
+            $status_stmt = $pdo->prepare("SELECT status, updated_at FROM users WHERE user_id = ?");
+            $status_stmt->execute([$_SESSION['user_id']]);
+            $status_row = $status_stmt->fetch(PDO::FETCH_ASSOC);
+            if ($status_row) {
+                $nav_reporter_status_value = $status_row['status'] ?? null;
+                $nav_reporter_status_updated_at_value = $status_row['updated_at'] ?? null;
+            }
+        } catch (Exception $e) {
+            error_log('Nav reporter status fetch error: ' . $e->getMessage());
+        }
+    }
+
+    $nav_reporter_status_value = $nav_reporter_status_value ?: "I'm fine";
+}
 ?>
 <nav class="navbar">
     <div class="nav-container">
@@ -28,8 +66,52 @@ $nav_user_name = $nav_user_name ?: 'User';
         </div>
         <div class="nav-menu" id="nav-menu">
             <?php if ($is_logged_in): ?>
-                <span class="nav-welcome">Welcome, <?php echo htmlspecialchars($nav_user_name); ?></span>
                 <?php if ($nav_user_role === 'reporter'): ?>
+                    <?php
+                        $nav_status_suffix = ($nav_reporter_status_value === 'Need help') ? 'help' : 'fine';
+                        $nav_status_icon = $nav_reporter_status_value === 'Need help' ? 'fa-life-ring' : 'fa-user-check';
+                        $nav_status_updated_label = $nav_reporter_status_updated_at_value
+                            ? date('M j, Y g:i A', strtotime($nav_reporter_status_updated_at_value))
+                            : '';
+                    ?>
+                    <div class="nav-reporter-status nav-reporter-status-<?php echo $nav_status_suffix; ?>"<?php echo $nav_status_updated_label ? ' title="Last updated ' . htmlspecialchars($nav_status_updated_label, ENT_QUOTES) . '"' : ''; ?>>
+                        <i class="fas <?php echo $nav_status_icon; ?>" aria-hidden="true"></i>
+                        <form method="POST" action="index.php" class="nav-status-form">
+                            <input type="hidden" name="nav_update_status" value="1">
+                            <div class="nav-status-control" data-current-status="<?php echo htmlspecialchars($nav_reporter_status_value, ENT_QUOTES); ?>">
+                                <button type="button"
+                                        class="nav-status-trigger nav-status-trigger-<?php echo $nav_status_suffix; ?>"
+                                        aria-haspopup="true"
+                                        aria-expanded="false"
+                                        aria-controls="nav-status-menu">
+                                    <span class="nav-status-trigger-label"><?php echo htmlspecialchars($nav_reporter_status_value); ?></span>
+                                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                                </button>
+                                <div class="nav-status-dropdown nav-status-dropdown-<?php echo $nav_status_suffix; ?>" id="nav-status-menu" role="menu" aria-hidden="true">
+                                    <button type="button" class="nav-status-option nav-status-option-fine" data-value="I'm fine" role="menuitem">
+                                        <i class="fas fa-user-check" aria-hidden="true"></i>
+                                        <span>I'm fine</span>
+                                    </button>
+                                    <button type="button" class="nav-status-option nav-status-option-help" data-value="Need help" role="menuitem">
+                                        <i class="fas fa-life-ring" aria-hidden="true"></i>
+                                        <span>Need help</span>
+                                    </button>
+                                </div>
+                                <input type="hidden" name="status_value" value="<?php echo htmlspecialchars($nav_reporter_status_value, ENT_QUOTES); ?>">
+                            </div>
+                            <noscript>
+                                <label for="nav-status-select" class="visually-hidden">Update my well-being status</label>
+                                <select id="nav-status-select"
+                                        name="status_value"
+                                        class="nav-status-select-fallback nav-status-select-<?php echo $nav_status_suffix; ?>"
+                                        onchange="this.form.submit()">
+                                    <option value="I'm fine" <?php echo $nav_reporter_status_value === "I'm fine" ? 'selected' : ''; ?>>I'm fine</option>
+                                    <option value="Need help" <?php echo $nav_reporter_status_value === 'Need help' ? 'selected' : ''; ?>>Need help</option>
+                                </select>
+                                <button type="submit" class="nav-status-submit">Update</button>
+                            </noscript>
+                        </form>
+                    </div>
                     <div class="nav-dropdown">
                         <button class="nav-dropdown-toggle" type="button" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-user-shield"></i>
@@ -50,6 +132,11 @@ $nav_user_name = $nav_user_name ?: 'User';
                                 <i class="fas fa-search"></i>
                                 Track Specific Report
                             </a>
+                            <div class="nav-dropdown-divider" role="separator"></div>
+                            <a href="logout.php" class="nav-dropdown-item nav-dropdown-item-danger" role="menuitem">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </a>
                             <div class="nav-dropdown-footer">Stay updated with your latest submissions anytime.</div>
                         </div>
                     </div>
@@ -60,7 +147,9 @@ $nav_user_name = $nav_user_name ?: 'User';
                 <?php if ($nav_user_role === 'admin'): ?>
                     <a href="admin/dashboard.php" class="nav-link">Admin Dashboard</a>
                 <?php endif; ?>
-                <a href="logout.php" class="nav-link btn-logout">Logout</a>
+                <?php if ($nav_user_role !== 'reporter'): ?>
+                    <a href="logout.php" class="nav-link btn-logout">Logout</a>
+                <?php endif; ?>
             <?php else: ?>
                 <a href="track_report.php" class="nav-link">Track Report</a>
                 <a href="report_emergency.php" class="nav-link">Report Emergency</a>

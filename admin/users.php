@@ -9,187 +9,112 @@ if (!hasRole(['admin'])) {
     exit;
 }
 
-$page_title = 'User Management';
+$page_title = 'Reporter Management';
 
-// Handle user actions
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['create_user'])) {
-        $first_name = sanitizeInput($_POST['first_name']);
-        $last_name = sanitizeInput($_POST['last_name']);
-        $username = sanitizeInput($_POST['username']); // ADD THIS LINE - it was missing!
-        $email = sanitizeInput($_POST['email']);
-        $phone = sanitizeInput($_POST['phone']);
-        $role = sanitizeInput($_POST['role']);
-        $lgu_id = intval($_POST['lgu_id']) ?: null;
-        $password = $_POST['password'];
-        
-        // Validate username uniqueness
-        $username_check = $pdo->prepare("SELECT COUNT(*) FROM users WHERE username = ?");
-        $username_check->execute([$username]);
-        
-        // Validate email uniqueness
-        $email_check = $pdo->prepare("SELECT COUNT(*) FROM users WHERE email = ?");
-        $email_check->execute([$email]);
-        
-        if ($username_check->fetchColumn() > 0) {
-            $error_message = "Username already exists.";
-        } elseif ($email_check->fetchColumn() > 0) {
-            $error_message = "Email address already exists.";
-        } elseif (strlen($password) < 8) {
-            $error_message = "Password must be at least 8 characters long.";
-        } elseif (empty($username)) {
-            $error_message = "Username is required.";
-        } else {
-            try {
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                
-                // FIXED: Corrected the INSERT statement
-                $stmt = $pdo->prepare("
-                    INSERT INTO users (first_name, last_name, username, email, phone, password_hash, role, lgu_id, is_active, created_at)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1, NOW())
-                ");
-                $stmt->execute([$first_name, $last_name, $username, $email, $phone, $hashed_password, $role, $lgu_id]);
-
-                $success_message = "User created successfully.";
-                
-                // Clear form data after successful creation
-                unset($_POST);
-                
-            } catch (Exception $e) {
-                error_log("User creation error: " . $e->getMessage());
-                $error_message = "Error creating user: " . $e->getMessage();
-            }
-        }
-    }
-    
-    if (isset($_POST['update_status'])) {
-        $user_id = intval($_POST['user_id']);
-        $is_active = $_POST['is_active'] === '1' ? 1 : 0;
-        
-        try {
-            $stmt = $pdo->prepare("UPDATE users SET is_active = ? WHERE user_id = ?");
-            $stmt->execute([$is_active, $user_id]);
-            
-            $success_message = "User status updated successfully.";
-        } catch (Exception $e) {
-            error_log("User status update error: " . $e->getMessage());
-            $error_message = "Error updating user status.";
-        }
-    }
-    
-    if (isset($_POST['reset_password'])) {
-        $user_id = intval($_POST['user_id']);
-        $new_password = $_POST['new_password'];
-        
-        if (strlen($new_password) < 8) {
-            $error_message = "Password must be at least 8 characters long.";
-        } else {
-            try {
-                $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
-                
-                $stmt = $pdo->prepare("UPDATE users SET password_hash = ? WHERE user_id = ?");
-                $stmt->execute([$hashed_password, $user_id]);
-                
-                $success_message = "Password reset successfully.";
-            } catch (Exception $e) {
-                error_log("Password reset error: " . $e->getMessage());
-                $error_message = "Error resetting password: " . $e->getMessage();
-            }
-        }
-    }
-}
-
-// Fetch users
+// Fetch reporters and their activity metrics
 try {
-    $stmt = $pdo->query("
-        SELECT u.*, l.lgu_name,
-               COUNT(d.disaster_id) as assigned_disasters
+    $stmt = $pdo->prepare("
+        SELECT u.*,
+               COUNT(d.disaster_id) AS total_reports,
+               COALESCE(SUM(CASE WHEN d.status = 'ON GOING' THEN 1 ELSE 0 END), 0) AS ongoing_reports,
+               COALESCE(SUM(CASE WHEN d.status = 'IN PROGRESS' THEN 1 ELSE 0 END), 0) AS in_progress_reports,
+               COALESCE(SUM(CASE WHEN d.status = 'COMPLETED' THEN 1 ELSE 0 END), 0) AS completed_reports,
+               MAX(d.created_at) AS last_report_at
         FROM users u
-        LEFT JOIN lgus l ON u.lgu_id = l.lgu_id
-        LEFT JOIN disasters d ON u.user_id = d.assigned_user_id AND d.status NOT IN ('resolved', 'closed')
+        LEFT JOIN disasters d ON u.user_id = d.reported_by_user_id
+        WHERE u.role = 'reporter'
         GROUP BY u.user_id
         ORDER BY u.created_at DESC
     ");
-    $users = $stmt->fetchAll();
-    
-    // Fetch LGUs for dropdown
-    $lgus_stmt = $pdo->query("SELECT lgu_id, lgu_name FROM lgus WHERE is_active = TRUE ORDER BY lgu_name");
-    $lgus = $lgus_stmt->fetchAll();
+    $stmt->execute();
+    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
 } catch (Exception $e) {
     error_log("Users fetch error: " . $e->getMessage());
     $users = [];
-    $lgus = [];
 }
+
+$total_reporters = count($users);
+$reporters_need_help = count(array_filter($users, fn($u) => ($u['status'] ?? '') === 'Need help'));
+$reporters_safe = count(array_filter($users, fn($u) => ($u['status'] ?? '') === "I'm fine"));
+$report_totals = array_reduce($users, function ($carry, $user) {
+    $carry['total'] += (int)($user['total_reports'] ?? 0);
+    $carry['ongoing'] += (int)($user['ongoing_reports'] ?? 0);
+    $carry['in_progress'] += (int)($user['in_progress_reports'] ?? 0);
+    $carry['completed'] += (int)($user['completed_reports'] ?? 0);
+    return $carry;
+}, ['total' => 0, 'ongoing' => 0, 'in_progress' => 0, 'completed' => 0]);
+$open_reports = max(0, $report_totals['total'] - $report_totals['completed']);
 
 include 'includes/header.php';
 ?>
 
 <div class="page-header">
     <div class="page-title">
-        <h2><i class="fas fa-users"></i> User Management</h2>
-        <p>Manage system users and their permissions</p>
-    </div>
-    <div class="page-actions">
-        <button onclick="showCreateModal()" class="btn btn-primary">
-            <i class="fas fa-user-plus"></i> Add User
-        </button>
+        <h2><i class="fas fa-users"></i> Reporter Management</h2>
+        <p>Monitor reporter activity, workload, and account health</p>
     </div>
 </div>
 
-<?php if (isset($success_message)): ?>
-    <div class="alert alert-success">
-        <i class="fas fa-check-circle"></i>
-        <?php echo htmlspecialchars($success_message); ?>
-    </div>
-<?php endif; ?>
-
-<?php if (isset($error_message)): ?>
-    <div class="alert alert-error">
-        <i class="fas fa-exclamation-triangle"></i>
-        <?php echo htmlspecialchars($error_message); ?>
-    </div>
-<?php endif; ?>
-
-<!-- Users Statistics -->
+<!-- Reporter Statistics -->
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-icon info">
-            <i class="fas fa-users"></i>
+            <i class="fas fa-id-badge"></i>
         </div>
         <div class="stat-content">
-            <div class="stat-number"><?php echo count($users); ?></div>
-            <div class="stat-label">Total Users</div>
+            <div class="stat-number"><?php echo $total_reporters; ?></div>
+            <div class="stat-label">Total Reporters</div>
         </div>
     </div>
     
+    <div class="stat-card">
+        <div class="stat-icon danger">
+            <i class="fas fa-hands-helping"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number"><?php echo $reporters_need_help; ?></div>
+            <div class="stat-label">Need Help</div>
+        </div>
+    </div>
+
     <div class="stat-card">
         <div class="stat-icon success">
-            <i class="fas fa-user-check"></i>
+            <i class="fas fa-heart"></i>
         </div>
         <div class="stat-content">
-            <div class="stat-number"><?php echo count(array_filter($users, fn($u) => $u['is_active'])); ?></div>
-            <div class="stat-label">Active Users</div>
-        </div>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-icon warning">
-            <i class="fas fa-user-shield"></i>
-        </div>
-        <div class="stat-content">
-            <div class="stat-number"><?php echo count(array_filter($users, fn($u) => $u['role'] === 'admin')); ?></div>
-            <div class="stat-label">Administrators</div>
+            <div class="stat-number"><?php echo $reporters_safe; ?></div>
+            <div class="stat-label">I'm Fine</div>
         </div>
     </div>
     
     <div class="stat-card">
         <div class="stat-icon primary">
-            <i class="fas fa-building"></i>
+            <i class="fas fa-clipboard-list"></i>
         </div>
         <div class="stat-content">
-            <div class="stat-number"><?php echo count(array_filter($users, fn($u) => $u['role'] === 'reporter')); ?></div>
-            <div class="stat-label">Reporters</div>
+            <div class="stat-number"><?php echo number_format($report_totals['total']); ?></div>
+            <div class="stat-label">Reports Filed</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-exclamation-circle"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number"><?php echo number_format($open_reports); ?></div>
+            <div class="stat-label">Open Reports</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon success">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number"><?php echo number_format($report_totals['completed']); ?></div>
+            <div class="stat-label">Completed Reports</div>
         </div>
     </div>
 </div>
@@ -197,9 +122,9 @@ include 'includes/header.php';
 <!-- Users Table -->
 <div class="dashboard-card">
     <div class="card-header">
-        <h3>All Users</h3>
+        <h3>All Reporters</h3>
         <div class="search-box">
-            <input type="text" id="userSearch" placeholder="Search users..." onkeyup="filterUsers()">
+            <input type="text" id="userSearch" placeholder="Search reporters..." onkeyup="filterUsers()">
             <i class="fas fa-search"></i>
         </div>
     </div>
@@ -211,12 +136,10 @@ include 'includes/header.php';
                         <th>Name</th>
                         <th>Email</th>
                         <th>Phone</th>
-                        <th>Role</th>
-                        <th>LGU</th>
+                        <th>Reports Filed</th>
                         <th>Status</th>
-                        <th>Assigned Disasters</th>
+                        <th>Report Statuses</th>
                         <th>Last Login</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -248,24 +171,65 @@ include 'includes/header.php';
                                 <?php endif; ?>
                             </td>
                             <td>
-                                <span class="role-badge role-<?php echo $user['role']; ?>">
-                                    <?php echo ucfirst(str_replace('_', ' ', $user['role'])); ?>
+                                <?php
+                                    $totalReports = (int)($user['total_reports'] ?? 0);
+                                    $lastReportAt = $user['last_report_at'] ?? null;
+                                ?>
+                                <div class="report-count-wrapper">
+                                    <span class="report-count" title="Total reports filed">
+                                        <?php echo number_format($totalReports); ?>
+                                    </span>
+                                    <div class="report-meta">
+                                        <small><?php echo $totalReports === 1 ? 'Report' : 'Reports'; ?></small>
+                                        <small class="last-report">
+                                            <?php echo $lastReportAt ? 'Last: ' . date('M j, Y', strtotime($lastReportAt)) : 'No reports yet'; ?>
+                                        </small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <?php $reporterStatus = $user['status'] ?? "I'm fine"; ?>
+                                <span class="reporter-status reporter-status-<?php echo $reporterStatus === 'Need help' ? 'help' : 'fine'; ?>">
+                                    <i class="fas <?php echo $reporterStatus === 'Need help' ? 'fa-life-ring' : 'fa-user-check'; ?>"></i>
+                                    <?php echo htmlspecialchars($reporterStatus); ?>
                                 </span>
                             </td>
                             <td>
-                                <?php echo $user['lgu_name'] ? htmlspecialchars($user['lgu_name']) : '<span class="text-muted">—</span>'; ?>
-                            </td>
-                            <td>
-                                <span class="status-badge <?php echo $user['is_active'] ? 'status-active' : 'status-inactive'; ?>">
-                                    <?php echo $user['is_active'] ? 'Active' : 'Inactive'; ?>
-                                </span>
-                            </td>
-                            <td>
-                                <?php if ($user['assigned_disasters'] > 0): ?>
-                                    <span class="disaster-count"><?php echo $user['assigned_disasters']; ?></span>
-                                <?php else: ?>
-                                    <span class="text-muted">0</span>
-                                <?php endif; ?>
+                                <?php
+                                    $ongoingReports = (int)($user['ongoing_reports'] ?? 0);
+                                    $inProgressReports = (int)($user['in_progress_reports'] ?? 0);
+                                    $completedReports = (int)($user['completed_reports'] ?? 0);
+                                    $otherReports = $totalReports - ($ongoingReports + $inProgressReports + $completedReports);
+                                    if ($otherReports < 0) {
+                                        $otherReports = 0;
+                                    }
+                                ?>
+                                <div class="report-statuses">
+                                    <?php if ($totalReports === 0): ?>
+                                        <span class="text-muted">No reports yet</span>
+                                    <?php else: ?>
+                                        <?php if ($ongoingReports > 0): ?>
+                                            <span class="status-chip status-chip-ongoing" title="On Going reports">
+                                                On Going <strong><?php echo $ongoingReports; ?></strong>
+                                            </span>
+                                        <?php endif; ?>
+                                        <?php if ($inProgressReports > 0): ?>
+                                            <span class="status-chip status-chip-progress" title="In Progress reports">
+                                                In Progress <strong><?php echo $inProgressReports; ?></strong>
+                                            </span>
+                                        <?php endif; ?>
+                                        <?php if ($completedReports > 0): ?>
+                                            <span class="status-chip status-chip-completed" title="Completed reports">
+                                                Completed <strong><?php echo $completedReports; ?></strong>
+                                            </span>
+                                        <?php endif; ?>
+                                        <?php if ($otherReports > 0): ?>
+                                            <span class="status-chip status-chip-other" title="Reports with other statuses">
+                                                Other <strong><?php echo $otherReports; ?></strong>
+                                            </span>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
                             </td>
                             <td>
                                 <?php if ($user['last_login']): ?>
@@ -276,147 +240,11 @@ include 'includes/header.php';
                                     <span class="text-muted">Never</span>
                                 <?php endif; ?>
                             </td>
-                            <td>
-                                <div class="action-buttons">
-                                    <button onclick="editUser(<?php echo $user['user_id']; ?>)" 
-                                            class="btn btn-xs btn-secondary" title="Edit User">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    
-                                    <button onclick="toggleUserStatus(<?php echo $user['user_id']; ?>, <?php echo $user['is_active'] ? 0 : 1; ?>)" 
-                                            class="btn btn-xs <?php echo $user['is_active'] ? 'btn-warning' : 'btn-success'; ?>" 
-                                            title="<?php echo $user['is_active'] ? 'Deactivate' : 'Activate'; ?> User">
-                                        <i class="fas fa-<?php echo $user['is_active'] ? 'ban' : 'check'; ?>"></i>
-                                    </button>
-                                    
-                                    <button onclick="resetPassword(<?php echo $user['user_id']; ?>)" 
-                                            class="btn btn-xs btn-info" title="Reset Password">
-                                        <i class="fas fa-key"></i>
-                                    </button>
-                                </div>
-                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
-
-<!-- Create User Modal -->
-<div id="createUserModal" class="modal">
-    <div class="modal-content modal-lg">
-        <div class="modal-header">
-            <h3>Create New User</h3>
-            <button class="modal-close" onclick="closeCreateModal()">&times;</button>
-        </div>
-        <form method="POST" class="modal-form">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="first_name">First Name *</label>
-                    <input type="text" name="first_name" id="first_name" required>
-                </div>
-                <div class="form-group">
-                    <label for="last_name">Last Name *</label>
-                    <input type="text" name="last_name" id="last_name" required>
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="username">Username *</label>
-                    <input type="text" name="username" id="username" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email Address *</label>
-                    <input type="email" name="email" id="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" name="phone" id="phone" placeholder="+63 9XX XXX XXXX">
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="role">Role *</label>
-                    <select name="role" id="role" required onchange="toggleLguField()">
-                        <option value="">Select role...</option>
-                        <option value="admin">System Administrator</option>
-                        <option value="reporter">Emergency Reporter</option>
-                    </select>
-                </div>
-                <div class="form-group" id="lgu-field" style="display: none;">
-                    <label for="lgu_id">Assigned LGU</label>
-                    <select name="lgu_id" id="lgu_id">
-                        <option value="">Select LGU...</option>
-                        <?php foreach ($lgus as $lgu): ?>
-                            <option value="<?php echo $lgu['lgu_id']; ?>">
-                                <?php echo htmlspecialchars($lgu['lgu_name']); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Password *</label>
-                <input type="password" name="password" id="password" required minlength="8">
-                <small class="form-help">Minimum 8 characters required</small>
-            </div>
-            
-            <div class="form-actions">
-                <button type="button" onclick="closeCreateModal()" class="btn btn-secondary">Cancel</button>
-                <button type="submit" name="create_user" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Create User
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Status Update Modal -->
-<div id="statusModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Update User Status</h3>
-            <button class="modal-close" onclick="closeStatusModal()">&times;</button>
-        </div>
-        <form method="POST" class="modal-form">
-            <input type="hidden" name="user_id" id="status-user-id">
-            <input type="hidden" name="is_active" id="status-is-active">
-            
-            <p id="status-confirmation-text"></p>
-            
-            <div class="form-actions">
-                <button type="button" onclick="closeStatusModal()" class="btn btn-secondary">Cancel</button>
-                <button type="submit" name="update_status" class="btn btn-primary">Confirm</button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Password Reset Modal -->
-<div id="passwordModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>Reset User Password</h3>
-            <button class="modal-close" onclick="closePasswordModal()">&times;</button>
-        </div>
-        <form method="POST" class="modal-form">
-            <input type="hidden" name="user_id" id="password-user-id">
-            
-            <div class="form-group">
-                <label for="new_password">New Password *</label>
-                <input type="password" name="new_password" id="new_password" required minlength="8">
-                <small class="form-help">Minimum 8 characters required</small>
-            </div>
-            
-            <div class="form-actions">
-                <button type="button" onclick="closePasswordModal()" class="btn btn-secondary">Cancel</button>
-                <button type="submit" name="reset_password" class="btn btn-primary">Reset Password</button>
-            </div>
-        </form>
     </div>
 </div>
 
@@ -523,6 +351,109 @@ include 'includes/header.php';
     font-weight: 600;
 }
 
+.report-count-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.report-count {
+    background: var(--primary-color);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    min-width: 44px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(30, 64, 175, 0.18);
+}
+
+.report-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.report-meta .last-report {
+    font-size: 11px;
+}
+
+.report-statuses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.reporter-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.01em;
+    text-transform: none;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.reporter-status i {
+    font-size: 13px;
+}
+
+.reporter-status-fine {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.reporter-status-help {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+.status-chip strong {
+    font-size: 12px;
+}
+
+.status-chip-ongoing {
+    background: #fff7e6;
+    color: #d97706;
+}
+
+.status-chip-progress {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.status-chip-completed {
+    background: #e6f4ea;
+    color: #1b7d2f;
+}
+
+.status-chip-other {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.stat-icon.danger {
+    background-color: #fee2e2;
+    color: #b91c1c;
+}
+
 .last-login {
     color: var(--text-muted);
     font-size: 12px;
@@ -559,57 +490,6 @@ include 'includes/header.php';
 </style>
 
 <script>
-function showCreateModal() {
-    document.getElementById('createUserModal').style.display = 'block';
-}
-
-function closeCreateModal() {
-    document.getElementById('createUserModal').style.display = 'none';
-}
-
-function toggleLguField() {
-    const role = document.getElementById('role').value;
-    const lguField = document.getElementById('lgu-field');
-    
-    if (role === 'lgu_admin' || role === 'lgu_staff' || role === 'responder') {
-        lguField.style.display = 'block';
-        document.getElementById('lgu_id').required = true;
-    } else {
-        lguField.style.display = 'none';
-        document.getElementById('lgu_id').required = false;
-        document.getElementById('lgu_id').value = '';
-    }
-}
-
-function toggleUserStatus(userId, newStatus) {
-    document.getElementById('status-user-id').value = userId;
-    document.getElementById('status-is-active').value = newStatus;
-    
-    const action = newStatus === 1 ? 'activate' : 'deactivate';
-    document.getElementById('status-confirmation-text').textContent = 
-        `Are you sure you want to ${action} this user?`;
-    
-    document.getElementById('statusModal').style.display = 'block';
-}
-
-function closeStatusModal() {
-    document.getElementById('statusModal').style.display = 'none';
-}
-
-function resetPassword(userId) {
-    document.getElementById('password-user-id').value = userId;
-    document.getElementById('passwordModal').style.display = 'block';
-}
-
-function closePasswordModal() {
-    document.getElementById('passwordModal').style.display = 'none';
-}
-
-function editUser(userId) {
-    // This would open an edit modal - for now, just show message
-    alert('Edit functionality would be implemented here');
-}
-
 function filterUsers() {
     const input = document.getElementById('userSearch');
     const filter = input.value.toLowerCase();
@@ -618,24 +498,13 @@ function filterUsers() {
     
     for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        const name = row.cells[0].textContent.toLowerCase();
-        const email = row.cells[1].textContent.toLowerCase();
-        const role = row.cells[3].textContent.toLowerCase();
+        const searchableText = Array.from(row.getElementsByTagName('td'))
+            .map(cell => cell.textContent.toLowerCase())
+            .join(' ');
         
-        if (name.includes(filter) || email.includes(filter) || role.includes(filter)) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
+        row.style.display = searchableText.includes(filter) ? '' : 'none';
     }
 }
-
-// Close modals when clicking outside
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('modal')) {
-        e.target.style.display = 'none';
-    }
-});
 </script>
 
 <?php include 'includes/footer.php'; ?>

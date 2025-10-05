@@ -98,7 +98,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <li class="<?php echo $current_page === 'users.php' ? 'active' : ''; ?>">
                         <a href="users.php">
                             <i class="fas fa-users"></i>
-                            <span>User Management</span>
+                            <span>User</span>
                         </a>
                     </li>
                     <li class="<?php echo $current_page === 'lgus.php' ? 'active' : ''; ?>">
