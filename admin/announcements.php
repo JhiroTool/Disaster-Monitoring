@@ -197,8 +197,8 @@ include 'includes/header.php';
                     <select name="target_audience" id="target_audience" required>
                         <option value="">Select audience...</option>
                         <option value="public">General Public</option>
-                        <option value="lgu_staff">LGU Staff</option>
-                        <option value="emergency_responders">Emergency Responders</option>
+                        <option value="lgus">LGUs</option>
+                        <option value="responders">Emergency Responders</option>
                         <option value="specific_area">Specific Area</option>
                     </select>
                 </div>

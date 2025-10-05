@@ -1,6 +1,13 @@
 <?php
+session_start();
 // Include database connection
 require_once 'config/database.php';
+
+// Check if user is logged in
+$is_logged_in = isset($_SESSION['user_id']);
+$user_id = $is_logged_in ? $_SESSION['user_id'] : null;
+$user_role = $is_logged_in ? $_SESSION['role'] : '';
+$user_name = $is_logged_in ? ($_SESSION['first_name'] . ' ' . $_SESSION['last_name']) : '';
 
 // Optional overrides file (create config/overrides.php to force static values)
 if (file_exists(__DIR__ . '/config/overrides.php')) {
@@ -363,6 +370,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                 $has_people_affected ? 'people_affected' : null,
                 $has_current_situation ? 'current_situation' : null,
                 $has_immediate_needs ? 'immediate_needs' : null,
+                'reported_by_user_id', // Add this field to link disasters to users
                 'status', 'created_at'
             ];
             $fields = array_filter($fields); // remove nulls
@@ -387,6 +395,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                 ':description' => $description,
                 ':image_path' => $image_path,
                 ':source' => 'web_form',
+                ':reported_by_user_id' => $user_id, // Link to logged-in user, or NULL for anonymous
                 ':status' => 'ON GOING',
                 ':created_at' => date('Y-m-d H:i:s')
             ];
@@ -474,6 +483,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
             </div>
             <div class="nav-menu" id="nav-menu">
                 <a href="track_report.php" class="nav-link">Track Report</a>
+                <a href="register.php" class="nav-link">Register</a>
                 <a href="login.php" class="nav-link btn-login">Admin Login</a>
             </div>
             <div class="hamburger" id="hamburger">
@@ -778,6 +788,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                         <li><a href="index.php#home">Home</a></li>
                         <li><a href="index.php#features">Features</a></li>
                         <li><a href="index.php#about">About</a></li>
+                        <li><a href="register.php">Register as Reporter</a></li>
                         <li><a href="login.php">Admin Login</a></li>
                     </ul>
                 </div>

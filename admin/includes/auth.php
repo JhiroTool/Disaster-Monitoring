@@ -5,6 +5,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Check if user is admin (only admins can access admin panel)
+if ($_SESSION['role'] !== 'admin') {
+    header('Location: ../index.php?error=access_denied');
+    exit;
+}
+
 // Function to check if user has required role
 function hasRole($required_roles) {
     if (!is_array($required_roles)) {
@@ -18,9 +24,9 @@ function isAdmin() {
     return ($_SESSION['role'] ?? '') === 'admin';
 }
 
-// Function to check if user is LGU admin
+// Function to check if user is admin (renamed from isLguAdmin)
 function isLguAdmin() {
-    return in_array($_SESSION['role'] ?? '', ['admin', 'lgu_admin']);
+    return ($_SESSION['role'] ?? '') === 'admin';
 }
 
 // Function to get user's full name

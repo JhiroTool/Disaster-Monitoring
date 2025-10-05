@@ -1,18 +1,55 @@
 # iMSafe Disaster Monitoring System
 
-A comprehensive disaster monitoring and emergency response system designed for Local Government Units (LGUs) to effectively manage and coordinate disaster response activities.
+A comprehensive disaster monitoring a## 📁 Project Structure
 
-## Features
+```
+Disaster-Monitoring/
+├── admin/                 # Administrative interface
+│   ├── dashboard.php       # Admin dashboard
+│   ├── disasters.php       # Disaster management
+│   ├── users.php          # User management
+│   ├── resources.php      # Resource tracking
+│   ├── notifications.php  # Notification system
+│   └── assets/            # Admin-specific assets
+├── assets/                # Public assets (CSS, JS, images)
+├── config/                # Configuration files
+│   └── database.php       # Database connection and utilities
+├── docs/                  # Documentation
+│   ├── README.md          # Documentation index
+│   ├── NOTIFICATION_SYSTEM_DOCS.md
+│   ├── NOTIFICATIONS_READY.md
+│   └── TESTING_NOTIFICATIONS.md
+├── sql/                   # Database files
+│   ├── README.md          # SQL files documentation
+│   ├── disaster_monitoring_complete.sql  # Main database schema
+│   ├── migrate_roles.sql  # Role migration script
+│   └── alter_status.sql   # Status update script
+├── uploads/               # File upload directory
+│   └── emergency_images/  # Emergency report images
+├── index.php             # Main landing page
+├── login.php             # User authentication
+├── register.php          # Reporter registration
+├── logout.php            # User logout
+├── report_emergency.php  # Emergency reporting form
+└── track_report.php      # Report tracking interface
+```e system designed for Local Government Units (LGUs) to effectively manage and coordinate disaster response activities.
 
-### Public Interface
+## 🚀 Features
+
+### 👥 User System
+- **Reporter Registration**: Citizens can register as emergency reporters
+- **Admin Dashboard**: Administrative interface for system management
+- **Role-based Access**: Simplified admin/reporter role system
+
+### 🚨 Emergency Management
 - **Emergency Reporting**: Citizens can report disasters with location, severity, and optional image uploads
 - **Report Tracking**: Real-time tracking of emergency reports with unique tracking IDs
 - **Auto-tracking**: Streamlined report tracking with automatic ID population
 
-### Administrative Panel
+### 🏛️ Administrative Panel
 - **Dashboard**: Comprehensive overview of all disaster activities
 - **Disaster Management**: Complete disaster lifecycle management
-- **User Management**: LGU user accounts and permissions
+- **User Management**: Admin and reporter account management
 - **Resource Tracking**: Management of emergency resources and supplies
 - **Notification System**: Real-time notifications for emergency updates
 - **Reporting**: Detailed analytics and reports
@@ -41,8 +78,8 @@ A comprehensive disaster monitoring and emergency response system designed for L
 
 2. **Database Setup**
    ```bash
-   # Import the database schema
-   mysql -u root -p disaster_monitoring < disaster_monitoring.sql
+   # Import the complete database schema
+   mysql -u root -p disaster_monitoring < sql/disaster_monitoring_complete.sql
    ```
 
 3. **Configure Database Connection**

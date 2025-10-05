@@ -5,7 +5,11 @@ require_once 'admin/includes/notification_helper.php';
 
 // Redirect if already logged in
 if (isset($_SESSION['user_id'])) {
-    header('Location: admin/dashboard.php');
+    if ($_SESSION['role'] === 'admin') {
+        header('Location: admin/dashboard.php');
+    } else {
+        header('Location: index.php?logged_in=1');
+    }
     exit;
 }
 
@@ -55,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                     $log_stmt->execute([$user['user_id'], $_SERVER['REMOTE_ADDR'] ?? '', $_SERVER['HTTP_USER_AGENT'] ?? '']);
                     
                     // Check for new disaster reports and create notifications (for admins only)
-                    if ($user['role'] === 'admin' || $user['role'] === 'lgu_admin') {
+                    if ($user['role'] === 'admin') {
                         try {
                             $notified = checkAndNotifyNewReports($pdo);
                             if ($notified > 0) {
@@ -64,9 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                         } catch (Exception $e) {
                             error_log("Error creating notifications on login: " . $e->getMessage());
                         }
+                        
+                        // Redirect admin to dashboard
+                        header('Location: admin/dashboard.php');
+                    } else {
+                        // Redirect reporters to main page
+                        header('Location: index.php?logged_in=1');
                     }
-                    
-                    header('Location: admin/dashboard.php');
                     exit;
                 } else {
                     $error_message = 'Your account has been deactivated. Please contact the administrator.';
@@ -87,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login - iMSafe System</title>
+    <title>iMSafe System</title>
     <link rel="stylesheet" href="admin/assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -426,7 +434,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         <div class="login-left">
             <div class="login-header">
                 <h1>Welcome Back</h1>
-                <p>Sign in to your admin account</p>
+                <p>Sign in to your account</p>
             </div>
             
             <?php if ($error_message): ?>
@@ -473,6 +481,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             </form>
             
             <div class="login-footer">
+                <p>Don't have an account? <a href="register.php">Register as Reporter</a></p>
                 <p><a href="index.php">Back to Main Site</a></p>
             </div>
         </div>

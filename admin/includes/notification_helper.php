@@ -40,11 +40,11 @@ function createDisasterNotification($pdo, $disaster_id) {
             default => 'info'
         };
         
-        // Get all admin and LGU admin users
+        // Get all admin users
         $user_stmt = $pdo->prepare("
             SELECT user_id FROM users 
             WHERE is_active = TRUE 
-            AND role IN ('admin', 'lgu_admin')
+            AND role = 'admin'
         ");
         $user_stmt->execute();
         $users = $user_stmt->fetchAll();
@@ -177,7 +177,7 @@ function createStatusUpdateNotification($pdo, $disaster_id, $old_status, $new_st
         $user_stmt = $pdo->prepare("
             SELECT user_id FROM users 
             WHERE is_active = TRUE 
-            AND role IN ('admin', 'lgu_admin')
+            AND role = 'admin'
             AND user_id != ?
         ");
         $user_stmt->execute([$updated_by]);

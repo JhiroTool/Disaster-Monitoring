@@ -132,7 +132,7 @@ try {
         $users_stmt = $pdo->prepare("
             SELECT user_id, CONCAT(first_name, ' ', last_name) as full_name 
             FROM users 
-            WHERE lgu_id = ? AND role IN ('lgu_admin', 'lgu_staff') AND is_active = TRUE 
+            WHERE lgu_id = ? AND role = 'reporter' AND is_active = TRUE 
             ORDER BY full_name
         ");
         $users_stmt->execute([$disaster['assigned_lgu_id']]);
@@ -347,7 +347,7 @@ include 'includes/header.php';
                 </div>
             <?php endif; ?>
             
-            <?php if (hasRole(['admin', 'lgu_admin'])): ?>
+            <?php if (hasRole(['admin'])): ?>
             <form method="POST" class="assignment-form">
                 <div class="form-group">
                     <label for="lgu_id">Assign to LGU</label>
@@ -384,7 +384,7 @@ include 'includes/header.php';
     </div>
     
     <!-- Status Update Card -->
-    <?php if (hasRole(['admin', 'lgu_admin', 'lgu_staff'])): ?>
+    <?php if (hasRole(['admin'])): ?>
     <div class="dashboard-card">
         <div class="card-header">
             <h3><i class="fas fa-edit"></i> Update Status</h3>

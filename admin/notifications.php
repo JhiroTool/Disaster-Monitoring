@@ -376,9 +376,7 @@ include 'includes/header.php';
                     <select name="target_role" id="target_role">
                         <option value="all">All Roles</option>
                         <option value="admin">Admins</option>
-                        <option value="moderator">Moderators</option>
-                        <option value="lgu_user">LGU Users</option>
-                        <option value="citizen">Citizens</option>
+                        <option value="reporter">Reporters</option>
                     </select>
                 </div>
                 <div class="form-group">

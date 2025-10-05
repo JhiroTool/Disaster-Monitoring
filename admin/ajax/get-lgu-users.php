@@ -5,7 +5,7 @@ require_once '../includes/auth.php';
 
 header('Content-Type: application/json');
 
-if (!isset($_GET['lgu_id']) || !hasRole(['admin', 'lgu_admin'])) {
+if (!isset($_GET['lgu_id']) || !hasRole(['admin'])) {
     echo json_encode(['success' => false, 'message' => 'Invalid request']);
     exit;
 }
@@ -16,7 +16,7 @@ try {
     $stmt = $pdo->prepare("
         SELECT user_id, CONCAT(first_name, ' ', last_name) as full_name 
         FROM users 
-        WHERE lgu_id = ? AND role IN ('lgu_admin', 'lgu_staff') AND is_active = TRUE 
+        WHERE lgu_id = ? AND role = 'reporter' AND is_active = TRUE 
         ORDER BY full_name
     ");
     $stmt->execute([$lgu_id]);

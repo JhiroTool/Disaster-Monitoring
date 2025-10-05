@@ -378,7 +378,7 @@ function getActivityIcon($type) {
     color: #f57c00;
 }
 
-.role-lgu_admin {
+.role-reporter {
     background-color: #e8f5e8;
     color: #388e3c;
 }

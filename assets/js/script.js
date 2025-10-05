@@ -3,7 +3,7 @@
 // =====================================================
 
 // API Configuration
-const API_BASE_URL = '/Disaster_Monitoring/api/';
+const API_BASE_URL = '/Disaster-Monitoring/api/';
 
 document.addEventListener('DOMContentLoaded', function() {
     
@@ -25,9 +25,77 @@ document.addEventListener('DOMContentLoaded', function() {
     const navLinks = document.querySelectorAll('.nav-link');
     navLinks.forEach(link => {
         link.addEventListener('click', () => {
-            hamburger.classList.remove('active');
-            navMenu.classList.remove('active');
+            if (hamburger && navMenu) {
+                hamburger.classList.remove('active');
+                navMenu.classList.remove('active');
+            }
         });
+    });
+
+    const dropdowns = document.querySelectorAll('.nav-dropdown');
+
+    const closeDropdown = (dropdown) => {
+        if (!dropdown) return;
+        dropdown.classList.remove('open');
+        const toggle = dropdown.querySelector('.nav-dropdown-toggle');
+        if (toggle) {
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+    };
+
+    const closeAllDropdowns = () => {
+        dropdowns.forEach(dropdown => closeDropdown(dropdown));
+    };
+
+    dropdowns.forEach(dropdown => {
+        const toggle = dropdown.querySelector('.nav-dropdown-toggle');
+        const menu = dropdown.querySelector('.nav-dropdown-menu');
+
+        if (!toggle || !menu) {
+            return;
+        }
+
+        toggle.setAttribute('aria-expanded', 'false');
+
+        toggle.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const isOpen = dropdown.classList.contains('open');
+            closeAllDropdowns();
+
+            if (!isOpen) {
+                dropdown.classList.add('open');
+                toggle.setAttribute('aria-expanded', 'true');
+            } else {
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        const dropdownItems = dropdown.querySelectorAll('.nav-dropdown-item');
+        dropdownItems.forEach(item => {
+            item.addEventListener('click', () => {
+                closeDropdown(dropdown);
+                if (hamburger && navMenu) {
+                    hamburger.classList.remove('active');
+                    navMenu.classList.remove('active');
+                }
+            });
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        dropdowns.forEach(dropdown => {
+            if (!dropdown.contains(event.target)) {
+                closeDropdown(dropdown);
+            }
+        });
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeAllDropdowns();
+        }
     });
     
     // Smooth Scrolling for Navigation Links

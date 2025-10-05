@@ -188,8 +188,8 @@ include 'includes/header.php';
             <i class="fas fa-building"></i>
         </div>
         <div class="stat-content">
-            <div class="stat-number"><?php echo count(array_filter($users, fn($u) => in_array($u['role'], ['lgu_admin', 'lgu_staff']))); ?></div>
-            <div class="stat-label">LGU Staff</div>
+            <div class="stat-number"><?php echo count(array_filter($users, fn($u) => $u['role'] === 'reporter')); ?></div>
+            <div class="stat-label">Reporters</div>
         </div>
     </div>
 </div>
@@ -343,9 +343,7 @@ include 'includes/header.php';
                     <select name="role" id="role" required onchange="toggleLguField()">
                         <option value="">Select role...</option>
                         <option value="admin">System Administrator</option>
-                        <option value="lgu_admin">LGU Administrator</option>
-                        <option value="lgu_staff">LGU Staff</option>
-                        <option value="responder">Emergency Responder</option>
+                        <option value="reporter">Emergency Reporter</option>
                     </select>
                 </div>
                 <div class="form-group" id="lgu-field" style="display: none;">
@@ -511,19 +509,9 @@ include 'includes/header.php';
     color: #f57c00;
 }
 
-.role-lgu_admin {
+.role-reporter {
     background-color: #e8f5e8;
     color: #388e3c;
-}
-
-.role-lgu_staff {
-    background-color: #e3f2fd;
-    color: #1976d2;
-}
-
-.role-responder {
-    background-color: #fce4ec;
-    color: #c2185b;
 }
 
 .disaster-count {

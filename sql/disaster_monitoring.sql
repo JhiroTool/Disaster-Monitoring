@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 01, 2025 at 02:17 PM
+-- Generation Time: Oct 05, 2025 at 02:09 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -100,7 +100,29 @@ INSERT INTO `activity_logs` (`log_id`, `user_id`, `action`, `table_name`, `recor
 (30, 2, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36', '2025-09-28 05:37:38'),
 (31, 2, 'login', NULL, NULL, NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-09-28 05:40:47'),
 (32, 2, 'login', NULL, NULL, NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-09-28 10:55:14'),
-(33, 2, 'login', NULL, NULL, NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-10-01 08:54:23');
+(33, 2, 'login', NULL, NULL, NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-10-01 08:54:23'),
+(34, 3, 'register', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:44:02'),
+(35, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:44:30'),
+(36, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:44:42'),
+(37, 2, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:44:48'),
+(38, 2, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:45:03'),
+(39, 1, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:46:56'),
+(40, 1, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:47:02'),
+(41, 1, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:47:08'),
+(42, 1, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:47:11'),
+(43, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:50:08'),
+(44, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:51:56'),
+(45, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:53:44'),
+(46, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:55:03'),
+(47, 2, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:56:00'),
+(48, 2, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:56:03'),
+(49, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:56:12'),
+(50, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-04 23:57:59'),
+(51, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 00:01:10'),
+(52, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 00:07:01'),
+(53, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 00:07:34'),
+(54, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 00:07:42'),
+(55, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 00:07:54');
 
 -- --------------------------------------------------------
 
@@ -210,7 +232,8 @@ INSERT INTO `disasters` (`disaster_id`, `tracking_id`, `disaster_name`, `type_id
 (35, 'DM20251001-6631E5', 'Accessibility', 20, 'green-2', 'Intact homes & accessible roads', 1.00, '231, purok 3, Dalisay, Alitagtag, Batangas, CALABARZON, Philippines', 'purok 3', '231', 'Alitagtag', 'Batangas', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046166', '09151046255', 'hehe', '[\"food_water\"]', 'haha', 'uploads/emergency_images/emergency_1759308822_68dcec16631f4.png', 'COMPLETED', NULL, NULL, 'medium', '2025-10-01 08:53:42', NULL, '2025-10-01 09:55:06', NULL, 0, 'web_form', '2025-10-01 08:53:42', '2025-10-01 09:55:06'),
 (36, 'DM20251001-660C81', 'Accessibility', 20, 'green-2', 'Intact homes & accessible roads', 1.00, '231, purok 3, Halang, Lipa City, Batangas, CALABARZON, Philippines', 'purok 3', '231', 'Lipa City', 'Batangas', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046166', '09151046255', 'how are u', '[\"electricity_restoration\"]', 'hello', 'uploads/emergency_images/emergency_1759309750_68dcefb660c91.png', 'COMPLETED', NULL, NULL, 'medium', '2025-10-01 09:09:10', '2025-10-01 09:10:43', '2025-10-01 09:27:18', NULL, 0, 'web_form', '2025-10-01 09:09:10', '2025-10-01 09:27:18'),
 (37, 'DM20251001-86EC40', 'Accessibility', 20, 'green-2', 'Intact homes & accessible roads', 1.00, '231, purok 3, Sampaloc IV, Dasmariñas City, Cavite, CALABARZON, Philippines', 'purok 3', '231', 'Dasmariñas City', 'Cavite', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046167', '09151046255', 'hehe', '[\"food_water\"]', 'haha', 'uploads/emergency_images/emergency_1759316152_68dd08b86ec50.png', 'ON GOING', NULL, NULL, 'medium', '2025-10-01 10:55:52', NULL, NULL, NULL, 0, 'web_form', '2025-10-01 10:55:52', '2025-10-01 10:55:52'),
-(38, 'DM20251001-90B5C4', 'Home state', 20, 'orange-2', 'Minor structural damage', 1.00, '231, purok 3, Dalahican, Lucena City, Quezon, CALABARZON, Philippines', 'purok 3', '231', 'Lucena City', 'Quezon', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046169', '09151046255', 'htthth', '[\"electricity_restoration\"]', 'hththth', 'uploads/emergency_images/emergency_1759316633_68dd0a990b5d7.png', 'ON GOING', NULL, NULL, 'medium', '2025-10-01 11:03:53', NULL, NULL, NULL, 0, 'web_form', '2025-10-01 11:03:53', '2025-10-01 11:03:53');
+(38, 'DM20251001-90B5C4', 'Home state', 20, 'orange-2', 'Minor structural damage', 1.00, '231, purok 3, Dalahican, Lucena City, Quezon, CALABARZON, Philippines', 'purok 3', '231', 'Lucena City', 'Quezon', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046169', '09151046255', 'htthth', '[\"electricity_restoration\"]', 'hththth', 'uploads/emergency_images/emergency_1759316633_68dd0a990b5d7.png', 'ON GOING', NULL, NULL, 'medium', '2025-10-01 11:03:53', NULL, NULL, NULL, 0, 'web_form', '2025-10-01 11:03:53', '2025-10-01 11:03:53'),
+(39, 'DM20251005-0EEDCA', 'Accessibility', 20, 'orange-2', 'Minor structural damage', 1.00, '231, purok 3, Pooc, Santa Rosa City, Laguna, CALABARZON, Philippines', 'purok 3', '231', 'Santa Rosa City', 'Laguna', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046166', '', 'boi', '[\"electricity_restoration\"]', 'hehe', NULL, 'ON GOING', NULL, NULL, 'medium', '2025-10-05 00:02:09', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 00:02:09', '2025-10-05 00:02:09');
 
 -- --------------------------------------------------------
 
@@ -475,7 +498,8 @@ INSERT INTO `disaster_updates` (`update_id`, `disaster_id`, `user_id`, `update_t
 (60, 34, 2, 'status_change', 'Status updated to COMPLETED', 'Status changed by Admin istrator', NULL, NULL, 0, NULL, '2025-10-01 09:55:15'),
 (61, 33, 2, 'status_change', 'Status updated to COMPLETED', 'Status changed by Admin istrator', NULL, NULL, 0, NULL, '2025-10-01 09:55:21'),
 (62, 37, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-01 10:55:52'),
-(63, 38, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-01 11:03:53');
+(63, 38, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-01 11:03:53'),
+(64, 39, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 00:02:09');
 
 -- --------------------------------------------------------
 
@@ -551,7 +575,7 @@ CREATE TABLE `notifications` (
   `is_read` tinyint(1) DEFAULT 0,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `read_at` timestamp NULL DEFAULT NULL,
-  `target_role` enum('admin','moderator','lgu_user','citizen') DEFAULT NULL,
+  `target_role` enum('admin','reporter') DEFAULT NULL,
   `target_lgu_id` int(11) DEFAULT NULL,
   `expires_at` timestamp NULL DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT 1,
@@ -563,93 +587,95 @@ CREATE TABLE `notifications` (
 --
 
 INSERT INTO `notifications` (`notification_id`, `user_id`, `title`, `message`, `type`, `related_id`, `related_disaster_id`, `is_read`, `created_at`, `read_at`, `target_role`, `target_lgu_id`, `expires_at`, `is_active`, `created_by`) VALUES
-(7, 1, 'Welcome to iMSafe', 'Welcome to the iMSafe Disaster Monitoring System admin dashboard.', 'system', NULL, NULL, 0, '2025-09-27 03:29:45', NULL, NULL, NULL, NULL, 1, NULL),
-(8, 1, 'Disaster Assigned', 'A disaster report has been assigned to you and requires attention.', 'disaster_assigned', NULL, NULL, 0, '2025-09-27 03:29:45', NULL, NULL, NULL, NULL, 1, NULL),
-(9, 1, 'Status Update', 'The status of a disaster report has been updated.', 'status_update', NULL, NULL, 0, '2025-09-27 03:29:45', NULL, NULL, NULL, NULL, 1, NULL),
-(10, 1, 'Welcome to Disaster Monitoring System', 'Welcome! Please familiarize yourself with the system features.', 'system', NULL, NULL, 0, '2025-09-27 03:57:27', NULL, 'admin', NULL, NULL, 1, 1),
+(7, 1, 'Welcome to iMSafe', 'Welcome to the iMSafe Disaster Monitoring System admin dashboard.', 'system', NULL, NULL, 1, '2025-09-27 03:29:45', NULL, NULL, NULL, NULL, 1, NULL),
+(8, 1, 'Disaster Assigned', 'A disaster report has been assigned to you and requires attention.', 'disaster_assigned', NULL, NULL, 1, '2025-09-27 03:29:45', NULL, NULL, NULL, NULL, 1, NULL),
+(9, 1, 'Status Update', 'The status of a disaster report has been updated.', 'status_update', NULL, NULL, 1, '2025-09-27 03:29:45', NULL, NULL, NULL, NULL, 1, NULL),
+(10, 1, 'Welcome to Disaster Monitoring System', 'Welcome! Please familiarize yourself with the system features.', 'system', NULL, NULL, 1, '2025-09-27 03:57:27', NULL, 'admin', NULL, NULL, 1, 1),
 (11, 2, 'Welcome to Disaster Monitoring System', 'Welcome! Please familiarize yourself with the system features.', 'system', NULL, NULL, 1, '2025-09-27 03:57:27', NULL, '', NULL, NULL, 1, 1),
-(13, 1, 'Emergency Response Training', 'All personnel are required to attend emergency response training on Friday at 9 AM.', 'system', NULL, NULL, 0, '2025-09-27 03:57:27', NULL, 'admin', NULL, NULL, 1, 1),
-(14, 1, 'Welcome to Disaster Monitoring System', 'Welcome! Please familiarize yourself with the system features and emergency procedures.', 'system', NULL, NULL, 0, '2025-09-27 03:57:50', NULL, NULL, NULL, NULL, 1, 1),
+(13, 1, 'Emergency Response Training', 'All personnel are required to attend emergency response training on Friday at 9 AM.', 'system', NULL, NULL, 1, '2025-09-27 03:57:27', NULL, 'admin', NULL, NULL, 1, 1),
+(14, 1, 'Welcome to Disaster Monitoring System', 'Welcome! Please familiarize yourself with the system features and emergency procedures.', 'system', NULL, NULL, 1, '2025-09-27 03:57:50', NULL, NULL, NULL, NULL, 1, 1),
 (15, 2, 'Welcome to Disaster Monitoring System', 'Welcome! Please familiarize yourself with the system features and emergency procedures.', 'system', NULL, NULL, 1, '2025-09-27 03:57:50', NULL, NULL, NULL, NULL, 1, 1),
-(17, 1, 'System Maintenance Alert', 'Scheduled system maintenance will occur tonight from 10 PM to 2 AM.', 'system', NULL, NULL, 0, '2025-09-27 05:38:22', NULL, 'admin', NULL, NULL, 1, 1),
-(18, 1, 'New Disaster Report Assigned', 'A new flood disaster report has been assigned to your LGU for immediate response.', 'disaster_assigned', NULL, NULL, 0, '2025-09-27 05:38:22', NULL, 'lgu_user', NULL, NULL, 1, 1),
+(17, 1, 'System Maintenance Alert', 'Scheduled system maintenance will occur tonight from 10 PM to 2 AM.', 'system', NULL, NULL, 1, '2025-09-27 05:38:22', NULL, 'admin', NULL, NULL, 1, 1),
+(18, 1, 'New Disaster Report Assigned', 'A new flood disaster report has been assigned to your LGU for immediate response.', 'disaster_assigned', NULL, NULL, 1, '2025-09-27 05:38:22', NULL, '', NULL, NULL, 1, 1),
 (19, 2, 'Status Update Required', 'Please provide a status update on the ongoing earthquake response operations.', 'status_update', NULL, NULL, 1, '2025-09-27 05:38:22', NULL, NULL, NULL, NULL, 1, 1),
-(20, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251001-86EC40', 'info', NULL, 37, 0, '2025-10-01 11:01:27', NULL, NULL, NULL, NULL, 1, NULL),
+(20, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251001-86EC40', 'info', NULL, 37, 1, '2025-10-01 11:01:27', NULL, NULL, NULL, NULL, 1, NULL),
 (21, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251001-86EC40', 'info', NULL, 37, 1, '2025-10-01 11:01:27', NULL, NULL, NULL, NULL, 1, NULL),
-(22, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: COMPLETED\nTracking ID: DM20251001-660C81', 'info', NULL, 36, 0, '2025-10-01 11:01:27', NULL, NULL, NULL, NULL, 1, NULL),
+(22, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: COMPLETED\nTracking ID: DM20251001-660C81', 'info', NULL, 36, 1, '2025-10-01 11:01:27', NULL, NULL, NULL, NULL, 1, NULL),
 (23, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: COMPLETED\nTracking ID: DM20251001-660C81', 'info', NULL, 36, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
-(24, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Alitagtag, Batangas, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: COMPLETED\nTracking ID: DM20251001-6631E5', 'info', NULL, 35, 0, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
+(24, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Alitagtag, Batangas, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: COMPLETED\nTracking ID: DM20251001-6631E5', 'info', NULL, 35, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
 (25, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Alitagtag, Batangas, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: COMPLETED\nTracking ID: DM20251001-6631E5', 'info', NULL, 35, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
-(26, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: San Pablo City, Laguna, CALABARZON\nSeverity: Heavy devastation\nStatus: COMPLETED\nTracking ID: DM20251001-E09BA2', 'info', NULL, 34, 0, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
+(26, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: San Pablo City, Laguna, CALABARZON\nSeverity: Heavy devastation\nStatus: COMPLETED\nTracking ID: DM20251001-E09BA2', 'info', NULL, 34, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
 (27, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: San Pablo City, Laguna, CALABARZON\nSeverity: Heavy devastation\nStatus: COMPLETED\nTracking ID: DM20251001-E09BA2', 'info', NULL, 34, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
-(28, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Imus City, Cavite, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: COMPLETED\nTracking ID: DM20251001-55047A', 'info', NULL, 33, 0, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
+(28, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Imus City, Cavite, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: COMPLETED\nTracking ID: DM20251001-55047A', 'info', NULL, 33, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
 (29, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Imus City, Cavite, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: COMPLETED\nTracking ID: DM20251001-55047A', 'info', NULL, 33, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
-(30, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20251001-62C937', 'info', NULL, 32, 0, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
+(30, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20251001-62C937', 'info', NULL, 32, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
 (31, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20251001-62C937', 'info', NULL, 32, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
-(32, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: General Trias City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-DE23DD', 'info', NULL, 31, 0, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
+(32, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: General Trias City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-DE23DD', 'info', NULL, 31, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
 (33, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: General Trias City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-DE23DD', 'info', NULL, 31, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
-(34, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-A9351D', 'info', NULL, 30, 0, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
+(34, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-A9351D', 'info', NULL, 30, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
 (35, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-A9351D', 'info', NULL, 30, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
-(36, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-BCD38B', 'info', NULL, 29, 0, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
+(36, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-BCD38B', 'info', NULL, 29, 1, '2025-10-01 11:01:28', NULL, NULL, NULL, NULL, 1, NULL),
 (37, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-BCD38B', 'info', NULL, 29, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
-(38, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-512B87', 'info', NULL, 28, 0, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
+(38, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-512B87', 'info', NULL, 28, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
 (39, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-512B87', 'info', NULL, 28, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
-(40, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-AB0164', 'info', NULL, 27, 0, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
+(40, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-AB0164', 'info', NULL, 27, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
 (41, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-AB0164', 'info', NULL, 27, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
-(42, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20250928-50A6EE', 'info', NULL, 26, 0, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
+(42, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20250928-50A6EE', 'info', NULL, 26, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
 (43, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20250928-50A6EE', 'info', NULL, 26, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
-(44, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: San Pablo City, Laguna, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250928-5E7824', 'info', NULL, 25, 0, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
+(44, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: San Pablo City, Laguna, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250928-5E7824', 'info', NULL, 25, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
 (45, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: San Pablo City, Laguna, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250928-5E7824', 'info', NULL, 25, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
-(46, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Batangas City, Batangas, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20250928-D1B583', 'info', NULL, 24, 0, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
+(46, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Batangas City, Batangas, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20250928-D1B583', 'info', NULL, 24, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
 (47, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Batangas City, Batangas, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20250928-D1B583', 'info', NULL, 24, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
-(48, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250928-944CF0', 'info', NULL, 23, 0, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
+(48, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250928-944CF0', 'info', NULL, 23, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
 (49, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250928-944CF0', 'info', NULL, 23, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
-(50, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250928-C4B14F', 'info', NULL, 22, 0, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
+(50, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250928-C4B14F', 'info', NULL, 22, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
 (51, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250928-C4B14F', 'info', NULL, 22, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
-(52, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Santa Rosa City, Laguna, CALABARZON\nSeverity: Minor structural damage (Orange)\nStatus: ON GOING\nTracking ID: DM20250928-5490BA', 'info', NULL, 21, 0, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
+(52, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Santa Rosa City, Laguna, CALABARZON\nSeverity: Minor structural damage (Orange)\nStatus: ON GOING\nTracking ID: DM20250928-5490BA', 'info', NULL, 21, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
 (53, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Santa Rosa City, Laguna, CALABARZON\nSeverity: Minor structural damage (Orange)\nStatus: ON GOING\nTracking ID: DM20250928-5490BA', 'info', NULL, 21, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
-(54, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage (Orange)\nStatus: ON GOING\nTracking ID: DM20250928-20C3E6', 'info', NULL, 20, 0, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
+(54, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage (Orange)\nStatus: ON GOING\nTracking ID: DM20250928-20C3E6', 'info', NULL, 20, 1, '2025-10-01 11:01:29', NULL, NULL, NULL, NULL, 1, NULL),
 (55, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Dasmariñas City, Cavite, CALABARZON\nSeverity: Minor structural damage (Orange)\nStatus: ON GOING\nTracking ID: DM20250928-20C3E6', 'info', NULL, 20, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
-(56, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Minor structural damage (Orange)\nStatus: ON GOING\nTracking ID: DM20250928-B9A812', 'info', NULL, 19, 0, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
+(56, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Minor structural damage (Orange)\nStatus: ON GOING\nTracking ID: DM20250928-B9A812', 'info', NULL, 19, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
 (57, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Minor structural damage (Orange)\nStatus: ON GOING\nTracking ID: DM20250928-B9A812', 'info', NULL, 19, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
-(58, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Heavy devastation (Red)\nStatus: ON GOING\nTracking ID: DM20250928-492C85', 'info', NULL, 18, 0, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
+(58, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Heavy devastation (Red)\nStatus: ON GOING\nTracking ID: DM20250928-492C85', 'info', NULL, 18, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
 (59, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lipa City, Batangas, CALABARZON\nSeverity: Heavy devastation (Red)\nStatus: ON GOING\nTracking ID: DM20250928-492C85', 'info', NULL, 18, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
-(60, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-1528FF', 'info', NULL, 17, 0, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
+(60, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-1528FF', 'info', NULL, 17, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
 (61, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-1528FF', 'info', NULL, 17, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
-(62, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-D7A313', 'info', NULL, 16, 0, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
+(62, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-D7A313', 'info', NULL, 16, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
 (63, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-D7A313', 'info', NULL, 16, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
-(64, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-E19102', 'info', NULL, 15, 0, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
+(64, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-E19102', 'info', NULL, 15, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
 (65, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-E19102', 'info', NULL, 15, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
-(66, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-DDD3FC', 'info', NULL, 14, 0, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
+(66, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-DDD3FC', 'info', NULL, 14, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
 (67, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-DDD3FC', 'info', NULL, 14, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
-(68, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-E916FC', 'info', NULL, 13, 0, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
+(68, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-E916FC', 'info', NULL, 13, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
 (69, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-E916FC', 'info', NULL, 13, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
-(70, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-4CD3E6', 'info', NULL, 12, 0, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
+(70, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-4CD3E6', 'info', NULL, 12, 1, '2025-10-01 11:01:30', NULL, NULL, NULL, NULL, 1, NULL),
 (71, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-4CD3E6', 'info', NULL, 12, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
-(72, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-80C45A', 'info', NULL, 11, 0, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
+(72, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-80C45A', 'info', NULL, 11, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
 (73, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-80C45A', 'info', NULL, 11, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
-(74, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Final Test Location, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-89EA92', 'info', NULL, 10, 0, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
+(74, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Final Test Location, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-89EA92', 'info', NULL, 10, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
 (75, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Final Test Location, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-89EA92', 'info', NULL, 10, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
-(76, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Test Auto-Track Location, Philippines, Philippines\nSeverity: Partially accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-EE6AED', 'info', NULL, 9, 0, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
+(76, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Test Auto-Track Location, Philippines, Philippines\nSeverity: Partially accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-EE6AED', 'info', NULL, 9, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
 (77, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Test Auto-Track Location, Philippines, Philippines\nSeverity: Partially accessible roads\nStatus: ON GOING\nTracking ID: DM20250927-EE6AED', 'info', NULL, 9, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
-(78, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-2F3E8F', 'info', NULL, 8, 0, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
+(78, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-2F3E8F', 'info', NULL, 8, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
 (79, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-2F3E8F', 'info', NULL, 8, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
-(80, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-1250E8', 'info', NULL, 7, 0, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
+(80, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-1250E8', 'info', NULL, 7, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
 (81, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-1250E8', 'info', NULL, 7, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
-(82, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Test Location 2, Philippines, Philippines\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250927-1694F3', 'info', NULL, 6, 0, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
+(82, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Test Location 2, Philippines, Philippines\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250927-1694F3', 'info', NULL, 6, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
 (83, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Test Location 2, Philippines, Philippines\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250927-1694F3', 'info', NULL, 6, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
-(84, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-CB5364', 'info', NULL, 5, 0, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
+(84, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-CB5364', 'info', NULL, 5, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
 (85, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: ON GOING\nTracking ID: DM20250927-CB5364', 'info', NULL, 5, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
-(86, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Test Location, Philippines, Philippines\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20250927-ABA233', 'info', NULL, 4, 0, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
+(86, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Test Location, Philippines, Philippines\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20250927-ABA233', 'info', NULL, 4, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
 (87, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Test Location, Philippines, Philippines\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20250927-ABA233', 'info', NULL, 4, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
-(88, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250927-B8AEE7', 'info', NULL, 3, 0, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
+(88, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250927-B8AEE7', 'info', NULL, 3, 1, '2025-10-01 11:01:31', NULL, NULL, NULL, NULL, 1, NULL),
 (89, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20250927-B8AEE7', 'info', NULL, 3, 1, '2025-10-01 11:01:32', NULL, NULL, NULL, NULL, 1, NULL),
-(90, 1, 'New High Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: COMPLETED\nTracking ID: DM20250927-75065C', 'warning', NULL, 2, 0, '2025-10-01 11:01:32', NULL, NULL, NULL, NULL, 1, NULL),
+(90, 1, 'New High Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: COMPLETED\nTracking ID: DM20250927-75065C', 'warning', NULL, 2, 1, '2025-10-01 11:01:32', NULL, NULL, NULL, NULL, 1, NULL),
 (91, 2, 'New High Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Critical situations\nStatus: COMPLETED\nTracking ID: DM20250927-75065C', 'warning', NULL, 2, 1, '2025-10-01 11:01:32', NULL, NULL, NULL, NULL, 1, NULL),
-(92, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Widespread power loss\nStatus: ON GOING\nTracking ID: DM20250927-23CCE7', 'info', NULL, 1, 0, '2025-10-01 11:01:32', NULL, NULL, NULL, NULL, 1, NULL),
+(92, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Widespread power loss\nStatus: ON GOING\nTracking ID: DM20250927-23CCE7', 'info', NULL, 1, 1, '2025-10-01 11:01:32', NULL, NULL, NULL, NULL, 1, NULL),
 (93, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Purok 3, Philippines, Philippines\nSeverity: Widespread power loss\nStatus: ON GOING\nTracking ID: DM20250927-23CCE7', 'info', NULL, 1, 1, '2025-10-01 11:01:32', NULL, NULL, NULL, NULL, 1, NULL),
-(94, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lucena City, Quezon, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-90B5C4', 'info', NULL, 38, 0, '2025-10-01 11:03:53', NULL, NULL, NULL, NULL, 1, NULL),
-(95, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lucena City, Quezon, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-90B5C4', 'info', NULL, 38, 1, '2025-10-01 11:03:53', NULL, NULL, NULL, NULL, 1, NULL);
+(94, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lucena City, Quezon, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-90B5C4', 'info', NULL, 38, 1, '2025-10-01 11:03:53', NULL, NULL, NULL, NULL, 1, NULL),
+(95, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Lucena City, Quezon, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251001-90B5C4', 'info', NULL, 38, 1, '2025-10-01 11:03:53', NULL, NULL, NULL, NULL, 1, NULL),
+(96, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Santa Rosa City, Laguna, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251005-0EEDCA', 'info', NULL, 39, 0, '2025-10-05 00:02:09', NULL, NULL, NULL, NULL, 1, NULL),
+(97, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Santa Rosa City, Laguna, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251005-0EEDCA', 'info', NULL, 39, 0, '2025-10-05 00:02:09', NULL, NULL, NULL, NULL, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -761,7 +787,7 @@ CREATE TABLE `users` (
   `password_hash` varchar(255) NOT NULL,
   `first_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
-  `role` enum('admin','lgu_admin','lgu_staff','responder') NOT NULL DEFAULT 'lgu_staff',
+  `role` enum('admin','reporter') NOT NULL DEFAULT 'reporter',
   `lgu_assigned` varchar(100) DEFAULT NULL,
   `lgu_id` int(11) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
@@ -777,8 +803,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `first_name`, `last_name`, `role`, `lgu_assigned`, `lgu_id`, `phone`, `is_active`, `email_verified`, `created_at`, `updated_at`, `last_login`) VALUES
-(1, 'admin', 'admin@imsafe.gov.ph', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System', 'Administrator', 'admin', 'Quezon City LGU', 8, NULL, 1, 1, '2025-09-27 01:52:17', '2025-09-27 04:29:16', NULL),
-(2, 'Admin_01', 'administrator@email.com', '$2y$10$lGAlfpvVUFi1ZGXvmsnQ6OwALrcjpfLFKtAKEI8IeuZ1JzWzfskR6', 'Admin', 'istrator', 'admin', 'Manila City LGU', 9, '', 1, 0, '2025-09-27 02:09:54', '2025-10-01 08:54:23', '2025-10-01 08:54:23');
+(1, 'admin', 'admin@imsafe.gov.ph', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System', 'Administrator', 'admin', 'Quezon City LGU', 8, NULL, 1, 1, '2025-09-27 01:52:17', '2025-10-04 23:47:08', '2025-10-04 23:47:08'),
+(2, 'Admin_01', 'administrator@email.com', '$2y$10$lGAlfpvVUFi1ZGXvmsnQ6OwALrcjpfLFKtAKEI8IeuZ1JzWzfskR6', 'Admin', 'istrator', 'admin', 'Manila City LGU', 9, '', 1, 0, '2025-09-27 02:09:54', '2025-10-04 23:56:00', '2025-10-04 23:56:00'),
+(3, 'heheboi', 'jhiroramir@gmail.com', '$2y$10$iQy6EJx5ZDBNQ8XkZwGRb.NyDYZvTloxoPltP3HAZnCyrXtMZi1CO', 'Jhiro', 'Tool', 'reporter', '', NULL, '09151046166', 1, 0, '2025-10-04 23:44:01', '2025-10-05 00:07:54', '2025-10-05 00:07:54');
 
 -- --------------------------------------------------------
 
@@ -948,7 +975,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT for table `announcements`
@@ -960,7 +987,7 @@ ALTER TABLE `announcements`
 -- AUTO_INCREMENT for table `disasters`
 --
 ALTER TABLE `disasters`
-  MODIFY `disaster_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `disaster_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT for table `disaster_resources`
@@ -984,7 +1011,7 @@ ALTER TABLE `disaster_types`
 -- AUTO_INCREMENT for table `disaster_updates`
 --
 ALTER TABLE `disaster_updates`
-  MODIFY `update_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+  MODIFY `update_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `lgus`
@@ -996,7 +1023,7 @@ ALTER TABLE `lgus`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
 
 --
 -- AUTO_INCREMENT for table `notification_recipients`
@@ -1020,7 +1047,7 @@ ALTER TABLE `system_settings`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables

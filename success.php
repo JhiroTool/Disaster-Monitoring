@@ -180,6 +180,7 @@ if (empty($tracking_id)) {
             </div>
             <div class="nav-menu" id="nav-menu">
                 <a href="track_report.php" class="nav-link">Track Report</a>
+                <a href="register.php" class="nav-link">Register</a>
                 <a href="login.php" class="nav-link btn-login">Admin Login</a>
             </div>
             <div class="hamburger" id="hamburger">
@@ -231,6 +232,7 @@ if (empty($tracking_id)) {
                         <li><a href="index.php#home">Home</a></li>
                         <li><a href="index.php#features">Features</a></li>
                         <li><a href="index.php#about">About</a></li>
+                        <li><a href="register.php">Register as Reporter</a></li>
                         <li><a href="login.php">Admin Login</a></li>
                     </ul>
                 </div>

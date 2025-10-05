@@ -328,7 +328,7 @@ include 'includes/header.php';
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         
-                                        <?php if (hasRole(['admin', 'lgu_admin', 'lgu_staff'])): ?>
+                                        <?php if (hasRole(['admin'])): ?>
                                             <button onclick="showStatusModal(<?php echo $disaster['disaster_id']; ?>, '<?php echo $disaster['status']; ?>')" 
                                                     class="btn btn-xs btn-warning" title="Update Status">
                                                 <i class="fas fa-edit"></i>
