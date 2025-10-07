@@ -75,6 +75,9 @@ if ($is_logged_in && $user_role === 'reporter') {
 
 $nav_reporter_status = $reporter_status_value;
 $nav_reporter_status_updated_at = $reporter_status_updated_at;
+
+// Hero/dashboard imagery path (edit this string to swap the preview quickly)
+$dashboard_image_path = 'assets/images/dashboard2.png';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -379,9 +382,9 @@ $nav_reporter_status_updated_at = $reporter_status_updated_at;
                         </div>
                     </div>
                 </div>
-                <div class="hero-visual">
+                    <div class="hero-visual">
                     <div class="dashboard-preview">
-                        <div class="dashboard-image" role="img" aria-label="iMSafe Disaster Monitoring System logo"></div>
+                        <div class="dashboard-image" role="img" aria-label="iMSafe Disaster Monitoring System logo" style="background-image: url('<?php echo htmlspecialchars($dashboard_image_path, ENT_QUOTES); ?>');"></div>
                         <div class="floating-cards">
                             <div class="alert-card active">
                                 <i class="fas fa-exclamation-triangle"></i>

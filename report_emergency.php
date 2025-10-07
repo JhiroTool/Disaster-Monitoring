@@ -50,6 +50,8 @@ if (!empty($override_disaster_types) && is_array($override_disaster_types)) {
     }
 }
 
+$selected_disaster_type = isset($_POST['disaster_type']) ? (int)$_POST['disaster_type'] : null;
+
 // Handle form submission
 $submission_result = null;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
@@ -63,6 +65,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
         $region = sanitizeInput($_POST['region'] ?? '');
         // severity_color may come from the old field name or the new particular_color select
         $severity_color = sanitizeInput($_POST['severity_color'] ?? $_POST['particular_color'] ?? '');
+
+        $selected_disaster_type_value = isset($_POST['disaster_type']) ? sanitizeInput($_POST['disaster_type']) : '';
 
         // Basic contact/description fields
         $phone = sanitizeInput($_POST['phone'] ?? '');
@@ -81,6 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
 
         // Validate required fields - require the new rapid-assessment fields and address/contact
         $required_fields = [
+            'disaster_type' => $selected_disaster_type_value,
             'particular' => $selected_particular,
             'particular_color' => $selected_particular_color,
             'particular_detail' => $selected_particular_detail,
@@ -590,6 +595,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                         
                         <div class="form-row">
                             <div class="form-group">
+                                <label for="disaster_type">Disaster Type</label>
+                                <select id="disaster_type" name="disaster_type" required>
+                                    <option value="">Select disaster type...</option>
+                                    <?php if (!empty($disaster_types)): ?>
+                                        <?php foreach ($disaster_types as $type): ?>
+                                            <?php $type_id_val = (int)($type['type_id'] ?? 0); ?>
+                                            <option value="<?php echo htmlspecialchars($type_id_val); ?>" <?php echo ($selected_disaster_type === $type_id_val) ? 'selected' : ''; ?>>
+                                                <?php echo htmlspecialchars($type['type_name'] ?? ''); ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="particular">Particular</label>
                                 <select id="particular" name="particular" required>
                                     <option value="">Select particular...</option>
@@ -604,6 +624,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                                     <option value="transport" <?php echo (isset($_POST['particular']) && $_POST['particular']=='transport') ? 'selected' : ''; ?>>Transportation Status</option>
                                 </select>
                             </div>
+                        </div>
+
+                        <div class="form-row">
                             <div class="form-group">
                                 <label for="particular_color">Color</label>
                                 <select id="particular_color" name="particular_color" required>
@@ -613,8 +636,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                                     <option value="red" <?php echo (isset($_POST['particular_color']) && $_POST['particular_color']=='red') ? 'selected' : ''; ?>>Red</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="form-row">
+
                             <div class="form-group">
                                 <label for="particular_detail">Detail</label>
                                 <select id="particular_detail" name="particular_detail" required>
@@ -823,6 +845,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
     <script>
         // Set form defaults for JavaScript restoration
         window.formDefaults = {
+            disaster_type: '<?php echo htmlspecialchars($_POST['disaster_type'] ?? ''); ?>',
             province: '<?php echo htmlspecialchars($_POST['province'] ?? ''); ?>',
             city: '<?php echo htmlspecialchars($_POST['city'] ?? ''); ?>',
             barangay: '<?php echo htmlspecialchars($_POST['barangay'] ?? ''); ?>',

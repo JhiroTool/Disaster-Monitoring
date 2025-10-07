@@ -253,55 +253,96 @@ include 'includes/header.php';
                 </thead>
                 <tbody>
                     <?php foreach ($notifications as $notification): ?>
+                        <?php
+                            $target_description = 'All Users';
+                            if (!empty($notification['target_role']) && !empty($notification['lgu_name'])) {
+                                $target_description = ucfirst($notification['target_role']) . ' @ ' . $notification['lgu_name'];
+                            } elseif (!empty($notification['target_role'])) {
+                                $target_description = ucfirst($notification['target_role']) . ' (All LGUs)';
+                            } elseif (!empty($notification['lgu_name'])) {
+                                $target_description = $notification['lgu_name'] . ' (All Roles)';
+                            }
+
+                            $type_label = ucfirst(str_replace('_', ' ', $notification['type']));
+                            $read_rate = $notification['total_recipients'] > 0
+                                ? ($notification['read_count'] / $notification['total_recipients']) * 100
+                                : 0;
+                            $is_expired = $notification['expires_at'] && strtotime($notification['expires_at']) <= time();
+                            $status_class = $notification['is_active'] ? ($is_expired ? 'expired' : 'active') : 'inactive';
+                            $status_text = $notification['is_active'] ? ($is_expired ? 'Expired' : 'Active') : 'Inactive';
+
+                            $type_colors = [
+                                'system' => '#2563eb',
+                                'disaster_assigned' => '#0f766e',
+                                'status_update' => '#ca8a04',
+                                'escalation' => '#dc2626',
+                                'deadline_warning' => '#d97706'
+                            ];
+                            $accent_color = $type_colors[$notification['type']] ?? '#2563eb';
+
+                            $raw_message = trim($notification['message'] ?? '');
+                            $formatted_message_lines = array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $raw_message)));
+                        ?>
                         <tr>
                             <td>
                                 <input type="checkbox" class="notification-checkbox" 
                                        value="<?php echo $notification['notification_id']; ?>">
                             </td>
-                            <td>
-                                <div class="notification-title">
-                                    <?php echo htmlspecialchars($notification['title']); ?>
-                                    <?php if ($notification['message']): ?>
-                                        <div class="notification-preview">
-                                            <?php echo htmlspecialchars(substr($notification['message'], 0, 100)) . '...'; ?>
+                            <td class="notification-main">
+                                <div class="notification-card" style="--notification-accent: <?php echo htmlspecialchars($accent_color); ?>;">
+                                    <div class="notification-card-header">
+                                        <span class="notification-card-title"><?php echo htmlspecialchars($notification['title']); ?></span>
+                                        <div class="notification-card-meta-row">
+                                            <span class="type-badge type-<?php echo htmlspecialchars($notification['type']); ?>">
+                                                <?php echo htmlspecialchars($type_label); ?>
+                                            </span>
+                                            <span class="notification-issued"><i class="fas fa-user-shield"></i>
+                                                <?php echo htmlspecialchars($notification['created_by_name'] ?? 'System'); ?>
+                                                • <?php echo date('M d, Y H:i', strtotime($notification['created_at'])); ?>
+                                            </span>
                                         </div>
+                                    </div>
+                                    <?php if (!empty($formatted_message_lines)): ?>
+                                        <?php if (count($formatted_message_lines) === 1): ?>
+                                            <p class="notification-card-message single-line">
+                                                <?php echo htmlspecialchars(reset($formatted_message_lines)); ?>
+                                            </p>
+                                        <?php else: ?>
+                                            <ul class="notification-card-list">
+                                                <?php foreach ($formatted_message_lines as $line): ?>
+                                                    <li><?php echo htmlspecialchars($line); ?></li>
+                                                <?php endforeach; ?>
+                                            </ul>
+                                        <?php endif; ?>
                                     <?php endif; ?>
+                                    <div class="notification-card-meta">
+                                        <span><i class="fas fa-users"></i><?php echo htmlspecialchars($target_description); ?></span>
+                                        <?php if ($notification['expires_at']): ?>
+                                            <span><i class="fas fa-hourglass-end"></i>
+                                                Expires <?php echo date('M d, Y H:i', strtotime($notification['expires_at'])); ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span><i class="fas fa-infinity"></i>No expiry</span>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </td>
                             <td>
-                                <span class="type-badge type-<?php echo $notification['type']; ?>">
-                                    <?php echo ucfirst(str_replace('_', ' ', $notification['type'])); ?>
+                                <span class="type-badge type-<?php echo htmlspecialchars($notification['type']); ?>">
+                                    <?php echo htmlspecialchars($type_label); ?>
                                 </span>
                             </td>
                             <td>
-                                <?php if ($notification['target_role'] && $notification['lgu_name']): ?>
-                                    <?php echo ucfirst($notification['target_role']) . ' @ ' . $notification['lgu_name']; ?>
-                                <?php elseif ($notification['target_role']): ?>
-                                    <?php echo ucfirst($notification['target_role']) . ' (All LGUs)'; ?>
-                                <?php elseif ($notification['lgu_name']): ?>
-                                    <?php echo $notification['lgu_name'] . ' (All Roles)'; ?>
-                                <?php else: ?>
-                                    All Users
-                                <?php endif; ?>
+                                <?php echo htmlspecialchars($target_description); ?>
                             </td>
                             <td><?php echo $notification['total_recipients']; ?></td>
                             <td>
-                                <?php 
-                                $read_rate = $notification['total_recipients'] > 0 
-                                    ? ($notification['read_count'] / $notification['total_recipients']) * 100 
-                                    : 0;
-                                ?>
                                 <div class="progress-bar">
                                     <div class="progress-fill" style="width: <?php echo $read_rate; ?>%"></div>
                                 </div>
                                 <small><?php echo number_format($read_rate, 1); ?>% (<?php echo $notification['read_count']; ?>/<?php echo $notification['total_recipients']; ?>)</small>
                             </td>
                             <td>
-                                <?php
-                                $is_expired = $notification['expires_at'] && strtotime($notification['expires_at']) <= time();
-                                $status_class = $notification['is_active'] ? ($is_expired ? 'expired' : 'active') : 'inactive';
-                                $status_text = $notification['is_active'] ? ($is_expired ? 'Expired' : 'Active') : 'Inactive';
-                                ?>
                                 <span class="status-badge status-<?php echo $status_class; ?>">
                                     <?php echo $status_text; ?>
                                 </span>
@@ -431,15 +472,115 @@ include 'includes/header.php';
 </div>
 
 <style>
-.notification-title {
-    font-weight: 600;
-    color: var(--text-color);
+.notification-main {
+    min-width: 280px;
 }
 
-.notification-preview {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 2px;
+.notification-card {
+    background: var(--card-surface, #ffffff);
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: 14px;
+    padding: 16px 18px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    position: relative;
+    border-left: 6px solid var(--notification-accent, var(--primary-color, #2563eb));
+}
+
+.notification-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification-card-title {
+    font-weight: 600;
+    color: var(--text-color, #0f172a);
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.notification-card-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.notification-card-message {
+    margin: 0;
+    color: var(--text-muted, #475569);
+    font-size: 0.92rem;
+    line-height: 1.55;
+    display: -webkit-box;
+    line-clamp: 4;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    position: relative;
+}
+
+.notification-card-message.single-line {
+    display: block;
+    line-clamp: unset;
+    -webkit-line-clamp: unset;
+}
+
+.notification-card-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--text-muted, #475569);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.notification-card-list li::marker {
+    color: var(--notification-accent, var(--primary-color, #2563eb));
+}
+
+.notification-issued {
+    font-size: 0.78rem;
+    color: var(--text-muted, #64748b);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.notification-issued i {
+    color: var(--notification-accent, var(--primary-color, #2563eb));
+}
+
+.notification-card-message br {
+    display: block;
+    content: "";
+    margin-bottom: 4px;
+}
+
+.notification-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 18px;
+    font-size: 0.82rem;
+    color: var(--text-muted, #475569);
+}
+
+.notification-card-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: var(--surface-soft, #f1f5f9);
+}
+
+.notification-card-meta i {
+    color: var(--primary-color, #2563eb);
+    font-size: 0.8rem;
 }
 
 .type-badge {
@@ -448,6 +589,9 @@ include 'includes/header.php';
     font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .type-info { background: #e3f2fd; color: #1976d2; }
@@ -497,6 +641,18 @@ include 'includes/header.php';
 .status-expired {
     background-color: #ffebee;
     color: #d32f2f;
+}
+
+@media (max-width: 992px) {
+    .notification-card {
+        box-shadow: none;
+        border-radius: 12px;
+        border-left-width: 4px;
+    }
+    .notification-card-message {
+        line-clamp: 3;
+        -webkit-line-clamp: 3;
+    }
 }
 </style>
 

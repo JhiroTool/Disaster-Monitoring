@@ -942,6 +942,14 @@ async function loadDisasterTypes() {
                     option.textContent = type.type_name;
                     disasterTypeSelect.appendChild(option);
                 });
+
+                const defaultDisasterType = (window.formDefaults && window.formDefaults.disaster_type) ? String(window.formDefaults.disaster_type) : '';
+                if (defaultDisasterType) {
+                    const hasOption = Array.from(disasterTypeSelect.options).some(option => String(option.value) === defaultDisasterType);
+                    if (hasOption) {
+                        disasterTypeSelect.value = defaultDisasterType;
+                    }
+                }
             }
         }
     } catch (error) {

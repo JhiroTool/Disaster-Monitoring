@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 05, 2025 at 08:48 AM
+-- Generation Time: Oct 05, 2025 at 05:07 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -144,7 +144,18 @@ INSERT INTO `activity_logs` (`log_id`, `user_id`, `action`, `table_name`, `recor
 (74, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 04:59:28'),
 (75, 1, 'login', NULL, NULL, NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-10-05 05:21:29'),
 (76, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 05:51:41'),
-(77, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 06:19:54');
+(77, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 06:19:54'),
+(78, 1, 'login', NULL, NULL, NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-10-05 07:55:17'),
+(79, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 09:16:06'),
+(80, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 09:21:54'),
+(81, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 09:45:13'),
+(82, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 10:38:53'),
+(83, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 11:11:12'),
+(84, 1, 'login', NULL, NULL, NULL, NULL, '127.0.0.1', 'Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0', '2025-10-05 12:02:16'),
+(85, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 12:02:55'),
+(86, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 12:32:52'),
+(87, 3, 'logout', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 12:52:31'),
+(88, 3, 'login', NULL, NULL, NULL, NULL, '::1', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36', '2025-10-05 12:56:35');
 
 -- --------------------------------------------------------
 
@@ -262,7 +273,14 @@ INSERT INTO `disasters` (`disaster_id`, `tracking_id`, `disaster_name`, `type_id
 (42, 'DM20251005-B6B218', 'Power', 20, 'red-2', 'Heavy devastation', 1.00, '231, purok 3, Halang, Lipa City, Batangas, CALABARZON, Philippines', 'purok 3', '231', 'Lipa City', 'Batangas', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046166', '09678691260', 'Help', '[\"electricity_restoration\"]', 'help', NULL, 'ON GOING', NULL, NULL, 3, 'medium', '2025-10-05 06:12:27', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 06:12:27', '2025-10-05 06:12:27'),
 (43, 'DM20251005-B843D0', 'Accessibility', 20, 'orange-2', 'Minor structural damage', 1.00, '231, purok 3, Poblacion, Alitagtag, Batangas, CALABARZON, Philippines', 'purok 3', '231', 'Alitagtag', 'Batangas', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046166', '09678691260', 'help', '[\"medical_assistance\"]', 'help', NULL, 'ON GOING', NULL, NULL, 3, 'medium', '2025-10-05 06:16:11', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 06:16:11', '2025-10-05 06:16:11'),
 (44, 'DM20251005-ED72CB', 'Home state', 20, 'green-2', 'Intact homes & accessible roads', 1.00, '231, purok 3, Isabang, Tayabas City, Quezon, CALABARZON, Philippines', 'purok 3', '231', 'Tayabas City', 'Quezon', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046166', '', 'help', '[\"medical_assistance\"]', 'help', NULL, 'ON GOING', NULL, NULL, 3, 'medium', '2025-10-05 06:17:34', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 06:17:34', '2025-10-05 06:17:34'),
-(45, 'DM20251005-BA621C', 'Accessibility', 20, 'green-2', 'Intact homes & accessible roads', 1.00, '231, purok 3, San Antonio, Biñan City, Laguna, CALABARZON, Philippines', 'purok 3', '231', 'Biñan City', 'Laguna', 'CALABARZON', NULL, NULL, 'Near the school', '', '09151046166', '', 'test', '[\"communication_services\"]', 'test', NULL, 'ON GOING', NULL, NULL, NULL, 'medium', '2025-10-05 06:40:11', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 06:40:11', '2025-10-05 06:40:11');
+(45, 'DM20251005-BA621C', 'Accessibility', 20, 'green-2', 'Intact homes & accessible roads', 1.00, '231, purok 3, San Antonio, Biñan City, Laguna, CALABARZON, Philippines', 'purok 3', '231', 'Biñan City', 'Laguna', 'CALABARZON', NULL, NULL, 'Near the school', '', '09151046166', '', 'test', '[\"communication_services\"]', 'test', NULL, 'ON GOING', NULL, NULL, NULL, 'medium', '2025-10-05 06:40:11', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 06:40:11', '2025-10-05 06:40:11'),
+(46, 'DM20251005-EBB14D', 'Home state', 20, 'red-2', 'Heavy devastation', 1.00, '231, purok 3, San Juan, Cainta, Rizal, CALABARZON, Philippines', 'purok 3', '231', 'Cainta', 'Rizal', 'CALABARZON', NULL, NULL, 'Near the school', '', '09151046166', '', 'my house is destroyed', '[\"shelter_repair_materials\"]', 'help', NULL, 'ON GOING', NULL, NULL, NULL, 'medium', '2025-10-05 07:54:38', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 07:54:38', '2025-10-05 07:54:38'),
+(47, 'DM20251005-342B41', 'Home state', 20, 'green-2', 'Intact homes & accessible roads', 1.00, '231, purok 3, San Juan, Cainta, Rizal, CALABARZON, Philippines', 'purok 3', '231', 'Cainta', 'Rizal', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046166', '09678691260', 'boi', '[\"shelter_repair_materials\"]', 'hehe', NULL, 'ON GOING', NULL, NULL, NULL, 'medium', '2025-10-05 08:09:39', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 08:09:39', '2025-10-05 08:09:39'),
+(48, 'DM20251005-77602A', 'Home state', 20, 'green-2', 'Intact homes & accessible roads', 1.00, '231, purok 3, Santa Cruz, Antipolo City, Rizal, CALABARZON, Philippines', 'purok 3', '231', 'Antipolo City', 'Rizal', 'CALABARZON', NULL, NULL, 'near the school', 'jhiro', '09151046166', '09678691260', 'world', '[\"shelter_repair_materials\"]', 'hello', NULL, 'ON GOING', NULL, NULL, NULL, 'medium', '2025-10-05 08:11:19', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 08:11:19', '2025-10-05 08:11:19'),
+(49, 'DM20251005-280017', 'Home state', 20, 'red-2', 'Heavy devastation', 1.00, '231, purok 3, Santa Ana, Taytay, Rizal, CALABARZON, Philippines', 'purok 3', '231', 'Taytay', 'Rizal', 'CALABARZON', NULL, NULL, 'Near the school', '', '09151046166', '', 'im under the water', '[\"medical_assistance\",\"shelter_repair_materials\"]', 'help', NULL, 'ON GOING', NULL, NULL, NULL, 'medium', '2025-10-05 08:14:10', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 08:14:10', '2025-10-05 08:14:10'),
+(50, 'DM20251005-84C524', 'Accessibility', 20, 'red-2', 'Heavy devastation', 1.00, '231, purok 3, San Juan, Cainta, Rizal, CALABARZON, Philippines', 'purok 3', '231', 'Cainta', 'Rizal', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046166', '09151046255', 'me', '[\"communication_services\"]', 'help', 'uploads/emergency_images/emergency_1759652344_68e229f84c796.png', 'ON GOING', NULL, NULL, NULL, 'medium', '2025-10-05 08:19:04', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 08:19:04', '2025-10-05 08:19:04'),
+(51, 'DM20251005-7D5BE1', 'Home state', 20, 'orange-2', 'Minor structural damage', 1.00, '231, purok 3, Ayaas, Tayabas City, Quezon, CALABARZON, Philippines', 'purok 3', '231', 'Tayabas City', 'Quezon', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046166', '09151046255', 'need one', '[\"shelter_repair_materials\"]', 'help', 'uploads/emergency_images/emergency_1759655431_68e23607d5ece.png', 'ON GOING', NULL, NULL, NULL, 'medium', '2025-10-05 09:10:31', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 09:10:31', '2025-10-05 09:10:31'),
+(52, 'DM20251005-4421A3', 'Home state', 20, 'red-2', 'Heavy devastation', 1.00, '231, purok 3, San Isidro, Cainta, Rizal, CALABARZON, Philippines', 'purok 3', '231', 'Cainta', 'Rizal', 'CALABARZON', NULL, NULL, 'Near the school', 'jhiro', '09151046166', '09151046255', 'me', '[\"medical_assistance\",\"food_water\",\"shelter_repair_materials\"]', 'help', 'uploads/emergency_images/emergency_1759656036_68e2386442400.png', 'ON GOING', NULL, NULL, 3, 'medium', '2025-10-05 09:20:36', NULL, NULL, NULL, 0, 'web_form', '2025-10-05 09:20:36', '2025-10-05 09:20:36');
 
 -- --------------------------------------------------------
 
@@ -534,7 +552,14 @@ INSERT INTO `disaster_updates` (`update_id`, `disaster_id`, `user_id`, `update_t
 (67, 42, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 06:12:27'),
 (68, 43, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 06:16:11'),
 (69, 44, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 06:17:34'),
-(70, 45, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 06:40:11');
+(70, 45, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 06:40:11'),
+(71, 46, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 07:54:39'),
+(72, 47, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 08:09:39'),
+(73, 48, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 08:11:19'),
+(74, 49, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 08:14:10'),
+(75, 50, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 08:19:04'),
+(76, 51, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 09:10:31'),
+(77, 52, 1, 'general', 'Report Received', 'Your emergency report has been received and is being processed. You will be contacted within 24-48 hours depending on the severity level.', NULL, NULL, 1, NULL, '2025-10-05 09:20:36');
 
 -- --------------------------------------------------------
 
@@ -722,7 +747,21 @@ INSERT INTO `notifications` (`notification_id`, `user_id`, `title`, `message`, `
 (106, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Tayabas City, Quezon, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251005-ED72CB', 'info', NULL, 44, 0, '2025-10-05 06:17:35', NULL, NULL, NULL, NULL, 1, NULL),
 (107, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Tayabas City, Quezon, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251005-ED72CB', 'info', NULL, 44, 0, '2025-10-05 06:17:35', NULL, NULL, NULL, NULL, 1, NULL),
 (108, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Biñan City, Laguna, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251005-BA621C', 'info', NULL, 45, 0, '2025-10-05 06:40:11', NULL, NULL, NULL, NULL, 1, NULL),
-(109, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Biñan City, Laguna, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251005-BA621C', 'info', NULL, 45, 0, '2025-10-05 06:40:12', NULL, NULL, NULL, NULL, 1, NULL);
+(109, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Biñan City, Laguna, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251005-BA621C', 'info', NULL, 45, 0, '2025-10-05 06:40:12', NULL, NULL, NULL, NULL, 1, NULL),
+(110, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Cainta, Rizal, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20251005-EBB14D', 'info', NULL, 46, 0, '2025-10-05 07:54:39', NULL, NULL, NULL, NULL, 1, NULL),
+(111, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Cainta, Rizal, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20251005-EBB14D', 'info', NULL, 46, 0, '2025-10-05 07:54:39', NULL, NULL, NULL, NULL, 1, NULL),
+(112, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Cainta, Rizal, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251005-342B41', 'info', NULL, 47, 0, '2025-10-05 08:09:39', NULL, NULL, NULL, NULL, 1, NULL),
+(113, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Cainta, Rizal, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251005-342B41', 'info', NULL, 47, 0, '2025-10-05 08:09:39', NULL, NULL, NULL, NULL, 1, NULL),
+(114, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Antipolo City, Rizal, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251005-77602A', 'info', NULL, 48, 0, '2025-10-05 08:11:19', NULL, NULL, NULL, NULL, 1, NULL),
+(115, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Antipolo City, Rizal, CALABARZON\nSeverity: Intact homes & accessible roads\nStatus: ON GOING\nTracking ID: DM20251005-77602A', 'info', NULL, 48, 0, '2025-10-05 08:11:19', NULL, NULL, NULL, NULL, 1, NULL),
+(116, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Taytay, Rizal, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20251005-280017', 'info', NULL, 49, 0, '2025-10-05 08:14:10', NULL, NULL, NULL, NULL, 1, NULL),
+(117, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Taytay, Rizal, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20251005-280017', 'info', NULL, 49, 0, '2025-10-05 08:14:10', NULL, NULL, NULL, NULL, 1, NULL),
+(118, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Cainta, Rizal, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20251005-84C524', 'info', NULL, 50, 0, '2025-10-05 08:19:04', NULL, NULL, NULL, NULL, 1, NULL),
+(119, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Cainta, Rizal, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20251005-84C524', 'info', NULL, 50, 0, '2025-10-05 08:19:04', NULL, NULL, NULL, NULL, 1, NULL),
+(120, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Tayabas City, Quezon, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251005-7D5BE1', 'info', NULL, 51, 0, '2025-10-05 09:10:31', NULL, NULL, NULL, NULL, 1, NULL),
+(121, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Tayabas City, Quezon, CALABARZON\nSeverity: Minor structural damage\nStatus: ON GOING\nTracking ID: DM20251005-7D5BE1', 'info', NULL, 51, 0, '2025-10-05 09:10:32', NULL, NULL, NULL, NULL, 1, NULL),
+(122, 1, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Cainta, Rizal, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20251005-4421A3', 'info', NULL, 52, 0, '2025-10-05 09:20:36', NULL, NULL, NULL, NULL, 1, NULL),
+(123, 2, 'New Medium Disaster Report: Typhoon', 'A new disaster report has been submitted.\nType: Typhoon\nLocation: Cainta, Rizal, CALABARZON\nSeverity: Heavy devastation\nStatus: ON GOING\nTracking ID: DM20251005-4421A3', 'info', NULL, 52, 0, '2025-10-05 09:20:36', NULL, NULL, NULL, NULL, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -835,6 +874,7 @@ CREATE TABLE `users` (
   `first_name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
   `role` enum('admin','reporter') NOT NULL DEFAULT 'reporter',
+  `status` enum('I''m fine','Need help') NOT NULL DEFAULT 'I''m fine',
   `lgu_assigned` varchar(100) DEFAULT NULL,
   `lgu_id` int(11) DEFAULT NULL,
   `phone` varchar(20) DEFAULT NULL,
@@ -849,10 +889,10 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `first_name`, `last_name`, `role`, `lgu_assigned`, `lgu_id`, `phone`, `is_active`, `email_verified`, `created_at`, `updated_at`, `last_login`) VALUES
-(1, 'admin', 'admin@imsafe.gov.ph', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System', 'Administrator', 'admin', 'Quezon City LGU', 8, NULL, 1, 1, '2025-09-27 01:52:17', '2025-10-05 05:21:29', '2025-10-05 05:21:29'),
-(2, 'Admin_01', 'administrator@email.com', '$2y$10$lGAlfpvVUFi1ZGXvmsnQ6OwALrcjpfLFKtAKEI8IeuZ1JzWzfskR6', 'Admin', 'istrator', 'admin', 'Manila City LGU', 9, '', 1, 0, '2025-09-27 02:09:54', '2025-10-04 23:56:00', '2025-10-04 23:56:00'),
-(3, 'heheboi', 'jhiroramir@gmail.com', '$2y$10$iQy6EJx5ZDBNQ8XkZwGRb.NyDYZvTloxoPltP3HAZnCyrXtMZi1CO', 'Jhiro', 'Tool', 'reporter', '', NULL, '09151046166', 1, 0, '2025-10-04 23:44:01', '2025-10-05 05:51:41', '2025-10-05 05:51:41');
+INSERT INTO `users` (`user_id`, `username`, `email`, `password_hash`, `first_name`, `last_name`, `role`, `status`, `lgu_assigned`, `lgu_id`, `phone`, `is_active`, `email_verified`, `created_at`, `updated_at`, `last_login`) VALUES
+(1, 'admin', 'admin@imsafe.gov.ph', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'System', 'Administrator', 'admin', 'I\'m fine', 'Quezon City LGU', 8, NULL, 1, 1, '2025-09-27 01:52:17', '2025-10-05 12:02:16', '2025-10-05 12:02:16'),
+(2, 'Admin_01', 'administrator@email.com', '$2y$10$lGAlfpvVUFi1ZGXvmsnQ6OwALrcjpfLFKtAKEI8IeuZ1JzWzfskR6', 'Admin', 'istrator', 'admin', 'I\'m fine', 'Manila City LGU', 9, '', 1, 0, '2025-09-27 02:09:54', '2025-10-04 23:56:00', '2025-10-04 23:56:00'),
+(3, 'heheboi', 'jhiroramir@gmail.com', '$2y$10$iQy6EJx5ZDBNQ8XkZwGRb.NyDYZvTloxoPltP3HAZnCyrXtMZi1CO', 'Jhiro', 'Tool', 'reporter', 'Need help', '', NULL, '09151046166', 1, 0, '2025-10-04 23:44:01', '2025-10-05 12:56:34', '2025-10-05 12:56:34');
 
 -- --------------------------------------------------------
 
@@ -1023,7 +1063,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=89;
 
 --
 -- AUTO_INCREMENT for table `announcements`
@@ -1035,7 +1075,7 @@ ALTER TABLE `announcements`
 -- AUTO_INCREMENT for table `disasters`
 --
 ALTER TABLE `disasters`
-  MODIFY `disaster_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `disaster_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `disaster_resources`
@@ -1059,7 +1099,7 @@ ALTER TABLE `disaster_types`
 -- AUTO_INCREMENT for table `disaster_updates`
 --
 ALTER TABLE `disaster_updates`
-  MODIFY `update_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `update_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 
 --
 -- AUTO_INCREMENT for table `lgus`
@@ -1071,7 +1111,7 @@ ALTER TABLE `lgus`
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=110;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=124;
 
 --
 -- AUTO_INCREMENT for table `notification_recipients`
