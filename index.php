@@ -294,33 +294,7 @@ $dashboard_image_path = 'assets/images/dashboard2.png';
     <!-- Navigation -->
     <?php require_once __DIR__ . '/includes/public_nav.php'; ?>
 
-    <!-- Alert Messages -->
-    <?php if ($success_message): ?>
-        <div class="container">
-            <div class="alert alert-success">
-                <i class="fas fa-check-circle"></i>
-                <?php echo htmlspecialchars($success_message); ?>
-            </div>
-        </div>
-    <?php endif; ?>
     
-    <?php if ($error_message): ?>
-        <div class="container">
-            <div class="alert alert-error">
-                <i class="fas fa-exclamation-triangle"></i>
-                <?php echo htmlspecialchars($error_message); ?>
-            </div>
-        </div>
-    <?php endif; ?>
-
-    <?php if ($status_flash_message): ?>
-        <div class="container">
-            <div class="alert <?php echo $status_flash_type === 'success' ? 'alert-success' : 'alert-error'; ?>">
-                <i class="fas <?php echo $status_flash_type === 'success' ? 'fa-check-circle' : 'fa-exclamation-triangle'; ?>"></i>
-                <?php echo htmlspecialchars($status_flash_message); ?>
-            </div>
-        </div>
-    <?php endif; ?>
 
 
 
@@ -375,10 +349,6 @@ $dashboard_image_path = 'assets/images/dashboard2.png';
                         <div class="stat-item">
                             <div class="stat-number">50+</div>
                             <div class="stat-label">LGUs Connected</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-number">98%</div>
-                            <div class="stat-label">Response Rate</div>
                         </div>
                     </div>
                 </div>
