@@ -63,7 +63,7 @@ if ($nav_user_role === 'reporter') {
 <nav class="navbar">
     <div class="nav-container">
         <div class="nav-logo">
-            <i class="fas fa-shield-alt"></i>
+            <img src="assets/images/icon2.png" alt="iMSafe Logo" class="nav-logo-img">
             <span>iMSafe Disaster Monitoring System</span>
         </div>
         <div class="nav-menu" id="nav-menu">

@@ -104,6 +104,7 @@ $dashboard_image_path = 'assets/images/dashboard2.png';
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="assets/images/icon2.png">
     <style>
         .alert {
             padding: 15px;

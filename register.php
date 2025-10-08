@@ -22,7 +22,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     $username = sanitizeInput($_POST['username'] ?? '');
     $email = sanitizeInput($_POST['email'] ?? '');
     $phone = sanitizeInput($_POST['phone'] ?? '');
-    $lgu_id = sanitizeInput($_POST['lgu_id'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     
@@ -48,23 +47,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             if ($check_stmt->rowCount() > 0) {
                 $error_message = 'Username or email already exists. Please choose different credentials.';
             } else {
-                // Get LGU name for assignment
-                $lgu_name = '';
-                if (!empty($lgu_id)) {
-                    $lgu_stmt = $pdo->prepare("SELECT lgu_name FROM lgus WHERE lgu_id = ? AND is_active = 1");
-                    $lgu_stmt->execute([$lgu_id]);
-                    $lgu_result = $lgu_stmt->fetch();
-                    if ($lgu_result) {
-                        $lgu_name = $lgu_result['lgu_name'];
-                    }
-                }
-                
                 // Hash password and create user
                 $password_hash = password_hash($password, PASSWORD_DEFAULT);
                 
                 $insert_stmt = $pdo->prepare("
-                    INSERT INTO users (username, email, password_hash, first_name, last_name, role, lgu_assigned, lgu_id, phone, is_active, email_verified) 
-                    VALUES (?, ?, ?, ?, ?, 'reporter', ?, ?, ?, 1, 0)
+                    INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone, is_active, email_verified) 
+                    VALUES (?, ?, ?, ?, ?, 'reporter', ?, 1, 0)
                 ");
                 
                 $insert_stmt->execute([
@@ -73,8 +61,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                     $password_hash,
                     $first_name,
                     $last_name,
-                    $lgu_name,
-                    !empty($lgu_id) ? $lgu_id : null,
                     !empty($phone) ? $phone : null
                 ]);
                 
@@ -86,22 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 $success_message = 'Registration successful! You can now log in with your credentials and report emergencies in your area.';
                 
                 // Clear form data
-                $first_name = $last_name = $username = $email = $phone = $lgu_id = '';
+                $first_name = $last_name = $username = $email = $phone = '';
             }
         } catch (Exception $e) {
             error_log("Registration error: " . $e->getMessage());
             $error_message = 'An error occurred during registration. Please try again.';
         }
     }
-}
-
-// Get LGUs for dropdown
-try {
-    $lgus_stmt = $pdo->query("SELECT lgu_id, lgu_name FROM lgus WHERE is_active = TRUE ORDER BY lgu_name");
-    $lgus = $lgus_stmt->fetchAll();
-} catch (Exception $e) {
-    error_log("Error fetching LGUs: " . $e->getMessage());
-    $lgus = [];
 }
 ?>
 
@@ -111,6 +88,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reporter Registration - iMSafe System</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/icon2.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -151,7 +129,7 @@ try {
             overflow: hidden;
             width: 100%;
             max-width: 1000px;
-            min-height: 650px;
+            min-height: 600px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             position: relative;
@@ -164,7 +142,7 @@ try {
             justify-content: center;
             background: white;
             overflow-y: auto;
-            max-height: 650px;
+            max-height: 600px;
         }
         
         .register-right {
@@ -199,17 +177,10 @@ try {
             text-align: center;
         }
         
-        .brand-logo {
-            width: 120px;
-            height: 120px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 30px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+        .brand-logo img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
         }
         
         .brand-logo i {
@@ -438,10 +409,17 @@ try {
         
         /* Responsive Design */
         @media (max-width: 768px) {
+            body {
+                padding: 15px;
+                align-items: flex-start;
+                padding-top: 30px;
+            }
+
             .register-container {
                 grid-template-columns: 1fr;
-                max-width: 450px;
-                margin: 20px;
+                max-width: 500px;
+                min-height: auto;
+                border-radius: 20px;
             }
             
             .register-right {
@@ -449,7 +427,8 @@ try {
             }
             
             .register-left {
-                padding: 30px 25px;
+                padding: 35px 30px;
+                max-height: none;
             }
             
             .form-row {
@@ -462,24 +441,88 @@ try {
             }
             
             .register-header h1 {
-                font-size: 1.6rem;
+                font-size: 1.65rem;
+            }
+
+            .register-header p {
+                font-size: 0.9rem;
+            }
+
+            .form-group {
+                margin-bottom: 18px;
             }
         }
         
         @media (max-width: 480px) {
+            body {
+                padding: 10px;
+                padding-top: 20px;
+            }
+
+            .register-container {
+                border-radius: 16px;
+            }
+
             .register-left {
                 padding: 25px 20px;
+            }
+
+            .register-header {
+                margin-bottom: 25px;
+            }
+
+            .register-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .register-header p {
+                font-size: 0.85rem;
             }
             
             .input-group input,
             .input-group select {
-                padding: 12px 12px 12px 38px;
+                padding: 11px 11px 11px 36px;
                 font-size: 14px;
+            }
+
+            .input-group i {
+                left: 12px;
+                font-size: 13px;
+            }
+
+            .password-toggle {
+                right: 12px;
+                font-size: 13px;
+            }
+
+            .form-group label {
+                font-size: 12.5px;
+                margin-bottom: 5px;
+            }
+
+            .form-group {
+                margin-bottom: 16px;
             }
             
             .btn {
-                padding: 12px 18px;
+                padding: 12px 16px;
                 font-size: 14px;
+                margin: 20px 0 18px 0;
+            }
+
+            .alert {
+                padding: 12px 14px;
+                font-size: 13px;
+                margin-bottom: 18px;
+            }
+
+            .register-footer {
+                padding-top: 18px;
+            }
+
+            .register-footer p,
+            .register-footer a {
+                font-size: 13px;
             }
         }
     </style>
@@ -552,31 +595,13 @@ try {
                     </div>
                 </div>
                 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <div class="input-group">
-                            <i class="fas fa-phone"></i>
-                            <input type="tel" id="phone" name="phone" 
-                                   value="<?php echo htmlspecialchars($phone ?? ''); ?>"
-                                   placeholder="e.g. +63-912-345-6789">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="lgu_id">Preferred LGU</label>
-                        <div class="input-group">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <select id="lgu_id" name="lgu_id">
-                                <option value="">Select LGU (Optional)</option>
-                                <?php foreach ($lgus as $lgu): ?>
-                                    <option value="<?php echo $lgu['lgu_id']; ?>" 
-                                            <?php echo (isset($lgu_id) && $lgu_id == $lgu['lgu_id']) ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($lgu['lgu_name']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
+                <div class="form-group full-width">
+                    <label for="phone">Phone Number</label>
+                    <div class="input-group">
+                        <i class="fas fa-phone"></i>
+                        <input type="tel" id="phone" name="phone" 
+                               value="<?php echo htmlspecialchars($phone ?? ''); ?>"
+                               placeholder="e.g. +63-912-345-6789">
                     </div>
                 </div>
                 
@@ -622,7 +647,7 @@ try {
         <div class="register-right">
             <div class="brand-section">
                 <div class="brand-logo">
-                    <i class="fas fa-shield-alt"></i>
+                    <img src="assets/images/icon2.png" alt="iMSafe Logo">
                 </div>
                 <h2 class="brand-title">iMSafe</h2>
                 <p class="brand-subtitle">Disaster Monitoring System<br>Reporter Registration</p>

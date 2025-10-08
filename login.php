@@ -96,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>iMSafe System</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/icon2.png">
     <link rel="stylesheet" href="admin/assets/css/admin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -198,6 +199,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         .brand-logo i {
             font-size: 3.5rem;
             color: white;
+        }
+        
+        .brand-logo img {
+            width: 200px;
+            height: 200px;
+            object-fit: contain;
         }
         
         .brand-title {
@@ -490,7 +497,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         <div class="login-right">
             <div class="brand-section">
                 <div class="brand-logo">
-                    <i class="fas fa-shield-alt"></i>
+                    <img src="assets/images/icon2.png" alt="iMSafe Logo" class="nav-logo-img">
                 </div>
                 <h2 class="brand-title">iMSafe</h2>
                 <p class="brand-subtitle">Disaster Monitoring System<br>Administration Portal</p>

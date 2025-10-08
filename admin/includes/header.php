@@ -20,6 +20,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $page_title ?? 'Admin Dashboard'; ?> - iMSafe System</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/icon2.png">
     <link rel="stylesheet" href="assets/css/admin.css">
     <?php if ($current_page === 'dashboard.php'): ?>
     <link rel="stylesheet" href="assets/css/dashboard-modern.css">
@@ -39,7 +40,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <nav class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
-                    <i class="fas fa-shield-alt"></i>
+                    <img src="../assets/images/icon2.png" alt="">
                     <span>iMSafe Admin</span>
                 </div>
                 <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" onclick="toggleSidebar()">
@@ -120,12 +121,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
                         <a href="settings.php">
                             <i class="fas fa-cog"></i>
                             <span>System Settings</span>
-                        </a>
-                    </li>
-                    <li class="<?php echo $current_page === 'logs.php' ? 'active' : ''; ?>">
-                        <a href="logs.php">
-                            <i class="fas fa-history"></i>
-                            <span>Activity Logs</span>
                         </a>
                     </li>
                     <?php endif; ?>

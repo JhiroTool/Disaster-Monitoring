@@ -481,6 +481,13 @@ body.sidebar-collapsed .sidebar-hover-zone {
     color: var(--primary-color);
 }
 
+.sidebar-header .logo img {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+    margin-right: 10px;
+}
+
 .sidebar-toggle {
     display: inline-flex;
     align-items: center;
