@@ -311,37 +311,80 @@ include 'includes/header.php';
     <div class="modal-content modal-lg">
         <div class="modal-header">
             <h3>Add New Disaster Type</h3>
-            <button class="modal-close" onclick="closeCreateModal()">&times;</button>
+            <button class="modal-close" type="button" onclick="closeCreateModal()" aria-label="Close create disaster type modal">&times;</button>
         </div>
-        <form method="POST" class="modal-form">
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="type_name">Type Name *</label>
-                    <input type="text" name="type_name" id="type_name" required>
+        <form method="POST" class="modal-form" id="create-type-form">
+            <div class="modal-body">
+                <div class="modal-intro">
+                    <div class="modal-intro-icon">
+                        <i class="fas fa-mountain"></i>
+                    </div>
+                    <div class="modal-intro-content">
+                        <h4>Define a new disaster type</h4>
+                        <p>Give the hazard a clear name, categorize it, and add guidance responders can follow.</p>
+                    </div>
                 </div>
+
+                <div class="modal-grid">
+                    <div class="form-group">
+                        <label for="type_name">Type Name *</label>
+                        <input type="text" name="type_name" id="type_name" placeholder="e.g., Typhoon, Flash Flood" required>
+                        <small class="form-help">Use concise, recognizable terms citizens and LGUs already use.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select name="category" id="category" required>
+                            <option value="natural">Natural</option>
+                            <option value="man-made">Man-made</option>
+                            <option value="technological">Technological</option>
+                            <option value="biological">Biological</option>
+                        </select>
+                        <small class="form-help">Categories help dashboards group related incidents.</small>
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label for="category">Category *</label>
-                    <select name="category" id="category" required>
-                        <option value="natural">Natural</option>
-                        <option value="man-made">Man-made</option>
-                        <option value="technological">Technological</option>
-                        <option value="biological">Biological</option>
-                    </select>
+                    <label for="description">Description</label>
+                    <textarea name="description" id="description" rows="4" placeholder="Add triggers, visual cues, and recommended response notes."></textarea>
+                    <small class="form-help">Summarize what responders should watch for and how to escalate.</small>
+                </div>
+
+                <div class="severity-control">
+                    <div class="severity-header">
+                        <div class="severity-labels">
+                            <label for="severity_weight_slider">Severity Weight *</label>
+                            <span class="severity-help">Higher weights push this type to the top of priority queues.</span>
+                        </div>
+                        <span class="severity-indicator" data-severity-label>
+                            <i class="fas fa-chart-line"></i>
+                            <span data-severity-text>Low impact</span>
+                        </span>
+                    </div>
+
+                    <div class="severity-meter">
+                        <div class="severity-meter-fill" data-severity-meter></div>
+                    </div>
+
+                    <div class="severity-inputs">
+                        <input type="range" id="severity_weight_slider" min="0.1" max="5.0" step="0.1" value="1.0" class="severity-slider" aria-label="Severity weight slider" data-default="1.0">
+                        <input type="number" name="severity_weight" id="severity_weight" min="0.1" max="5.0" step="0.1" value="1.0" class="severity-number" data-default="1.0" required>
+                    </div>
+
+                    <small class="form-help">Scale from <strong>0.1 (minor)</strong> to <strong>5.0 (critical)</strong>. Severity influences automated alerts.</small>
+                </div>
+
+                <div class="modal-hints">
+                    <div class="hint-item">
+                        <i class="fas fa-lightbulb"></i>
+                        <span>Stick to one hazard per type so analytics stay accurate.</span>
+                    </div>
+                    <div class="hint-item">
+                        <i class="fas fa-sitemap"></i>
+                        <span>Align severity weights with your LGU’s response protocols.</span>
+                    </div>
                 </div>
             </div>
-            
-            <div class="form-group">
-                <label for="description">Description</label>
-                <textarea name="description" id="description" rows="3"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="severity_weight">Severity Weight *</label>
-                <input type="number" name="severity_weight" id="severity_weight" 
-                       min="0.1" max="5.0" step="0.1" value="1.0" required>
-                <small class="form-help">Weight factor for severity calculation (0.1 to 5.0)</small>
-            </div>
-            
+
             <div class="form-actions">
                 <button type="button" onclick="closeCreateModal()" class="btn btn-secondary">Cancel</button>
                 <button type="submit" name="create_type" class="btn btn-primary">
@@ -357,7 +400,7 @@ include 'includes/header.php';
     <div class="modal-content">
         <div class="modal-header">
             <h3>Delete Disaster Type</h3>
-            <button class="modal-close" onclick="closeDeleteModal()">&times;</button>
+            <button class="modal-close" type="button" onclick="closeDeleteModal()" aria-label="Close delete modal">&times;</button>
         </div>
         <form method="POST" class="modal-form">
             <input type="hidden" name="type_id" id="delete-type-id">
@@ -501,16 +544,457 @@ include 'includes/header.php';
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(6px);
+    z-index: 2000;
+    padding: clamp(1.5rem, 3vw, 3rem);
+    overflow-y: auto;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.open,
+.modal[style*="display: block"],
+.modal[style*="display:block"],
+.modal[style*="display: flex"],
+.modal[style*="display:flex"] {
+    display: flex !important;
+}
+
+.modal-content {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+    width: min(540px, 100%);
+}
+
+.modal.open .modal-content {
+    animation: modal-fade-in 0.32s ease forwards;
+}
+
+.modal-content.modal-lg {
+    width: min(860px, 100%);
+}
+
+@keyframes modal-fade-in {
+    from {
+        transform: translateY(24px) scale(0.98);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 32px;
+    border-radius: 20px 20px 0 0;
+    background: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+    color: #ffffff;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.45rem;
+    font-weight: 700;
+}
+
+.modal-close {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #ffffff;
+    font-size: 1.6rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: transform 0.25s ease, background 0.25s ease;
+}
+
+.modal-close:hover,
+.modal-close:focus {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg);
+}
+
+.modal-form {
+    padding: 0 32px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.modal-intro {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: #f1f5f9;
+    border-radius: 16px;
+    padding: 16px 20px;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.modal-intro-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #6366f1 0%, #2563eb 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.modal-intro-content h4 {
+    margin: 0 0 6px;
+    color: #0f172a;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.modal-intro-content p {
+    margin: 0;
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.modal-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.modal-grid .form-group {
+    margin-bottom: 0;
+}
+
+.modal-form label {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 0.95rem;
+}
+
+.modal-form input,
+.modal-form select,
+.modal-form textarea {
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    background: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modal-form input:focus,
+.modal-form select:focus,
+.modal-form textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
+}
+
+.modal-form textarea {
+    resize: vertical;
+    min-height: 120px;
+}
+
+.modal-form .form-help {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-top: 8px;
+    display: block;
+    line-height: 1.6;
+}
+
+.severity-control {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.severity-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.severity-labels {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.severity-labels label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.severity-help {
+    color: #64748b;
+    font-size: 0.88rem;
+}
+
+.severity-indicator {
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.12);
+    color: #1d4ed8;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.severity-meter {
+    position: relative;
+    width: 100%;
+    height: 12px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #22c55e 0%, #facc15 50%, #ef4444 100%);
+    overflow: hidden;
+}
+
+.severity-meter-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: rgba(255, 255, 255, 0.75);
+    width: var(--severity-progress, 20%);
+    box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.06);
+    transition: width 0.3s ease;
+}
+
+.severity-inputs {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 14px;
+    align-items: center;
+}
+
+.severity-slider {
+    width: 100%;
+    accent-color: #2563eb;
+}
+
+.severity-number {
+    max-width: 120px;
+}
+
+.modal-hints {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.hint-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    color: #475569;
+    font-size: 0.9rem;
+    flex: 1 1 220px;
+}
+
+.hint-item i {
+    color: #2563eb;
+    font-size: 1rem;
+}
+
+.modal-form .form-actions {
+    padding-top: 20px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.modal-form .form-actions .btn {
+    min-width: 150px;
+    font-weight: 600;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+#deleteModal .modal-header {
+    background: linear-gradient(135deg, #fb7185 0%, #ef4444 100%);
+}
+
+#deleteModal .modal-form {
+    padding: 0 28px 28px;
+    gap: 20px;
+}
+
+#deleteModal .modal-form p {
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+    .modal {
+        padding: 1.5rem;
+    }
+
+    .modal-header {
+        padding: 20px 24px;
+    }
+
+    .modal-form {
+        padding: 0 20px 24px;
+    }
+
+    .severity-inputs {
+        grid-template-columns: 1fr;
+    }
+
+    .severity-number {
+        max-width: 100%;
+    }
+
+    .modal-intro {
+        flex-direction: column;
+    }
+}
 </style>
 
 <script>
+const severityLevels = [
+    { threshold: 1.5, label: 'Low impact', chipBg: 'rgba(34, 197, 94, 0.18)', chipColor: '#166534', icon: 'fa-leaf' },
+    { threshold: 3.0, label: 'Moderate', chipBg: 'rgba(250, 204, 21, 0.22)', chipColor: '#92400e', icon: 'fa-adjust' },
+    { threshold: 4.2, label: 'High', chipBg: 'rgba(248, 113, 113, 0.22)', chipColor: '#b91c1c', icon: 'fa-fire' },
+    { threshold: Infinity, label: 'Critical', chipBg: 'rgba(220, 38, 38, 0.28)', chipColor: '#7f1d1d', icon: 'fa-radiation' }
+];
+
+window.syncSeverityDisplay = function(value) {
+    const normalized = Math.max(0.1, Math.min(5, parseFloat(value) || 0.1));
+    const percentage = ((normalized - 0.1) / (5 - 0.1)) * 100;
+    const indicator = document.querySelector('[data-severity-label]');
+    const indicatorText = indicator ? indicator.querySelector('[data-severity-text]') : null;
+    const indicatorIcon = indicator ? indicator.querySelector('i') : null;
+    const meter = document.querySelector('[data-severity-meter]');
+    const level = severityLevels.find(item => normalized <= item.threshold) || severityLevels[severityLevels.length - 1];
+
+    if (indicator) {
+        indicator.style.background = level.chipBg;
+        indicator.style.color = level.chipColor;
+    }
+    if (indicatorText) {
+        indicatorText.textContent = level.label;
+    }
+    if (indicatorIcon && level.icon) {
+        indicatorIcon.className = 'fas ' + level.icon;
+    }
+    if (meter) {
+        meter.style.setProperty('--severity-progress', percentage + '%');
+    }
+};
+
+function openModal(modal) {
+    if (!modal) return;
+    modal.style.display = 'flex';
+    modal.classList.add('open');
+    document.body.classList.add('modal-open');
+}
+
+function closeModal(modal) {
+    if (!modal) return;
+    modal.classList.remove('open');
+    modal.style.display = 'none';
+    if (!document.querySelector('.modal.open')) {
+        document.body.classList.remove('modal-open');
+    }
+}
+
+function safeFocus(element) {
+    if (!element || typeof element.focus !== 'function') {
+        return;
+    }
+    try {
+        element.focus({ preventScroll: true });
+    } catch (error) {
+        element.focus();
+    }
+}
+
+function resetCreateTypeForm() {
+    const form = document.getElementById('create-type-form');
+    if (!form) return;
+    form.reset();
+
+    const slider = document.getElementById('severity_weight_slider');
+    const numberInput = document.getElementById('severity_weight');
+    const fallback = parseFloat((numberInput && numberInput.dataset.default) || (slider && slider.dataset.default) || '1') || 1;
+
+    if (slider) {
+        slider.value = fallback;
+    }
+    if (numberInput) {
+        numberInput.value = fallback.toFixed(1);
+    }
+
+    if (typeof window.syncSeverityDisplay === 'function') {
+        window.syncSeverityDisplay(fallback);
+    }
+}
+
 function showCreateModal() {
-    document.getElementById('createTypeModal').style.display = 'block';
+    const modal = document.getElementById('createTypeModal');
+    if (!modal) return;
+
+    resetCreateTypeForm();
+    openModal(modal);
+
+    requestAnimationFrame(() => {
+        const typeNameField = document.getElementById('type_name');
+        safeFocus(typeNameField);
+    });
 }
 
 function closeCreateModal() {
-    document.getElementById('createTypeModal').style.display = 'none';
-    document.querySelector('#createTypeModal form').reset();
+    const modal = document.getElementById('createTypeModal');
+    if (!modal) return;
+
+    closeModal(modal);
+    resetCreateTypeForm();
 }
 
 function viewType(typeId) {
@@ -524,12 +1008,31 @@ function editType(typeId) {
 }
 
 function deleteType(typeId) {
-    document.getElementById('delete-type-id').value = typeId;
-    document.getElementById('deleteModal').style.display = 'block';
+    const modal = document.getElementById('deleteModal');
+    const hiddenInput = document.getElementById('delete-type-id');
+
+    if (hiddenInput) {
+        hiddenInput.value = typeId;
+    }
+
+    if (modal) {
+        openModal(modal);
+        requestAnimationFrame(() => {
+            const deleteButton = modal.querySelector('button[type="submit"]');
+            safeFocus(deleteButton);
+        });
+    }
 }
 
 function closeDeleteModal() {
-    document.getElementById('deleteModal').style.display = 'none';
+    const modal = document.getElementById('deleteModal');
+    if (!modal) return;
+
+    closeModal(modal);
+    const hiddenInput = document.getElementById('delete-type-id');
+    if (hiddenInput) {
+        hiddenInput.value = '';
+    }
 }
 
 function filterTypes() {
@@ -554,9 +1057,74 @@ function exportTypes() {
 }
 
 // Close modals when clicking outside
-document.addEventListener('click', function(e) {
-    if (e.target.classList.contains('modal')) {
-        e.target.style.display = 'none';
+document.addEventListener('click', function(event) {
+    if (!event.target.classList || !event.target.classList.contains('modal') || !event.target.classList.contains('open')) {
+        return;
+    }
+
+    if (event.target.id === 'createTypeModal') {
+        closeCreateModal();
+    } else if (event.target.id === 'deleteModal') {
+        closeDeleteModal();
+    } else {
+        closeModal(event.target);
+    }
+});
+
+// Close active modals with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key !== 'Escape') {
+        return;
+    }
+
+    const openModals = document.querySelectorAll('.modal.open');
+    openModals.forEach(modal => {
+        if (modal.id === 'createTypeModal') {
+            closeCreateModal();
+        } else if (modal.id === 'deleteModal') {
+            closeDeleteModal();
+        } else {
+            closeModal(modal);
+        }
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.getElementById('severity_weight_slider');
+    const numberInput = document.getElementById('severity_weight');
+
+    if (slider && numberInput) {
+        const initial = parseFloat(numberInput.value) || parseFloat(slider.value) || 1;
+        slider.value = initial;
+        numberInput.value = initial.toFixed(1);
+        window.syncSeverityDisplay(initial);
+
+        slider.addEventListener('input', function() {
+            const value = parseFloat(slider.value) || 1;
+            numberInput.value = value.toFixed(1);
+            window.syncSeverityDisplay(value);
+        });
+
+        numberInput.addEventListener('input', function() {
+            const value = parseFloat(numberInput.value);
+            if (Number.isNaN(value)) {
+                return;
+            }
+            const bounded = Math.max(0.1, Math.min(5, value));
+            slider.value = bounded;
+            window.syncSeverityDisplay(bounded);
+        });
+
+        numberInput.addEventListener('change', function() {
+            let value = parseFloat(numberInput.value);
+            if (Number.isNaN(value)) {
+                value = parseFloat(numberInput.dataset.default || slider.dataset.default || '1') || 1;
+            }
+            const bounded = Math.max(0.1, Math.min(5, value));
+            numberInput.value = bounded.toFixed(1);
+            slider.value = bounded;
+            window.syncSeverityDisplay(bounded);
+        });
     }
 });
 </script>

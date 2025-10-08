@@ -20,6 +20,8 @@ if ($is_logged_in && $nav_user_name === '') {
 
 $nav_user_name = $nav_user_name ?: 'User';
 
+$nav_return_to = $_SERVER['REQUEST_URI'] ?? '/index.php';
+
 $db_path = __DIR__ . '/../config/database.php';
 if (!isset($pdo) && file_exists($db_path)) {
     require_once $db_path;
@@ -78,6 +80,7 @@ if ($nav_user_role === 'reporter') {
                         <i class="fas <?php echo $nav_status_icon; ?>" aria-hidden="true"></i>
                         <form method="POST" action="index.php" class="nav-status-form">
                             <input type="hidden" name="nav_update_status" value="1">
+                            <input type="hidden" name="return_to" value="<?php echo htmlspecialchars($nav_return_to, ENT_QUOTES); ?>">
                             <div class="nav-status-control" data-current-status="<?php echo htmlspecialchars($nav_reporter_status_value, ENT_QUOTES); ?>">
                                 <button type="button"
                                         class="nav-status-trigger nav-status-trigger-<?php echo $nav_status_suffix; ?>"

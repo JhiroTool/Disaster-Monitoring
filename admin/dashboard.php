@@ -311,7 +311,7 @@ include 'includes/header.php';
     <!-- Recent Disasters -->
     <div class="dashboard-card">
         <div class="card-header">
-            <h3><i class="fas fa-list"></i> Recent Disaster Reports</h3>
+            <h3><i class="fas fa-list"></i> Recent Reports</h3>
             <a href="disasters.php" class="btn btn-sm btn-secondary">View All</a>
         </div>
         <div class="card-content">

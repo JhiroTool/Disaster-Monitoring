@@ -42,8 +42,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     <i class="fas fa-shield-alt"></i>
                     <span>iMSafe Admin</span>
                 </div>
-                <button class="sidebar-toggle" onclick="toggleSidebar()">
-                    <i class="fas fa-bars"></i>
+                <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" onclick="toggleSidebar()">
+                    <i class="fas fa-bars" data-sidebar-toggle-icon></i>
                 </button>
             </div>
             
@@ -144,14 +144,16 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </div>
             </div>
         </nav>
+
+    <div class="sidebar-hover-zone" aria-hidden="true"></div>
         
         <!-- Main Content -->
         <main class="main-content">
             <!-- Header -->
             <header class="main-header">
                 <div class="header-left">
-                    <button class="sidebar-toggle mobile-only" onclick="toggleSidebar()">
-                        <i class="fas fa-bars"></i>
+                    <button class="sidebar-toggle" type="button" aria-label="Toggle sidebar" onclick="toggleSidebar()">
+                        <i class="fas fa-bars" data-sidebar-toggle-icon></i>
                     </button>
                     <h1><?php echo $page_title ?? 'Dashboard'; ?></h1>
                 </div>

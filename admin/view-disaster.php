@@ -35,6 +35,39 @@ try {
     exit;
 }
 
+$immediateNeedsRaw = $disaster['immediate_needs'] ?? $disaster['immediate_need'] ?? null;
+$immediateNeedsList = [];
+$immediateNeedsText = '';
+
+if (!empty($immediateNeedsRaw)) {
+    if (is_string($immediateNeedsRaw)) {
+        $decodedNeeds = json_decode($immediateNeedsRaw, true);
+        if (json_last_error() === JSON_ERROR_NONE && is_array($decodedNeeds)) {
+            foreach ($decodedNeeds as $need) {
+                $need = trim((string) $need);
+                if ($need !== '') {
+                    $immediateNeedsList[] = $need;
+                }
+            }
+        } else {
+            $immediateNeedsText = trim($immediateNeedsRaw);
+        }
+    } elseif (is_array($immediateNeedsRaw)) {
+        foreach ($immediateNeedsRaw as $need) {
+            $need = trim((string) $need);
+            if ($need !== '') {
+                $immediateNeedsList[] = $need;
+            }
+        }
+    } else {
+        $immediateNeedsText = trim((string) $immediateNeedsRaw);
+    }
+}
+
+if (empty($immediateNeedsList) && $immediateNeedsText === '' && is_string($immediateNeedsRaw)) {
+    $immediateNeedsText = trim($immediateNeedsRaw);
+}
+
 include 'includes/header.php';
 ?>
 <div class="page-header">
@@ -90,8 +123,21 @@ include 'includes/header.php';
     <?php if ($disaster['people_affected']): ?>
     <div class="detail-section"><label><i class="fas fa-users"></i> People Affected</label><div class="value"><?php echo htmlspecialchars($disaster['people_affected']); ?></div></div>
     <?php endif; ?>
-    <?php if ($disaster['immediate_need']): ?>
-    <div class="detail-section"><label><i class="fas fa-ambulance"></i> Immediate Needs</label><div class="value"><?php echo htmlspecialchars($disaster['immediate_need']); ?></div></div>
+    <?php if (!empty($immediateNeedsList) || $immediateNeedsText !== ''): ?>
+    <div class="detail-section">
+        <label><i class="fas fa-ambulance"></i> Immediate Needs</label>
+        <div class="value">
+            <?php if (!empty($immediateNeedsList)): ?>
+                <ul style="margin: 0; padding-left: 18px; list-style: disc;">
+                    <?php foreach ($immediateNeedsList as $need): ?>
+                        <li><?php echo htmlspecialchars(ucwords(str_replace('_', ' ', $need))); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php else: ?>
+                <?php echo nl2br(htmlspecialchars($immediateNeedsText)); ?>
+            <?php endif; ?>
+        </div>
+    </div>
     <?php endif; ?>
     </div>
 </div>

@@ -44,7 +44,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nav_update_status']))
         }
     }
 
-    header('Location: index.php');
+    $redirect_to = 'index.php';
+    if (!empty($_POST['return_to']) && is_string($_POST['return_to'])) {
+        $candidate = trim($_POST['return_to']);
+        if ($candidate !== '') {
+            $is_external = preg_match('/^([a-z][a-z0-9+.-]*:)?\/\//i', $candidate) === 1;
+            $has_traversal = strpos($candidate, '..') !== false;
+            $has_null_byte = strpos($candidate, "\0") !== false;
+            if (!$is_external && !$has_traversal && !$has_null_byte) {
+                if ($candidate[0] !== '/') {
+                    $candidate = '/' . ltrim($candidate, '/');
+                }
+                $redirect_to = $candidate;
+            }
+        }
+    }
+
+    header('Location: ' . $redirect_to);
     exit;
 }
 
@@ -286,6 +302,86 @@ $dashboard_image_path = 'assets/images/dashboard2.png';
             
             .emergency-cta p {
                 font-size: 1.2rem !important;
+            }
+
+            body {
+                font-size: 16px !important;
+                line-height: 1.6 !important;
+            }
+
+            .hero-title {
+                font-size: 1.95rem !important;
+                line-height: 1.18 !important;
+                margin-bottom: 1rem !important;
+            }
+
+            .hero-description {
+                font-size: 0.97rem !important;
+                line-height: 1.5 !important;
+            }
+
+            .btn-emergency-large {
+                font-size: 1.06rem !important;
+                padding: 15px 18px !important;
+                min-height: auto !important;
+                width: 100% !important;
+            }
+
+            .btn-emergency-large strong {
+                font-size: 1.2rem !important;
+            }
+
+            .btn-emergency-large small {
+                font-size: 0.9rem !important;
+            }
+
+            .nav-link {
+                font-size: 1rem !important;
+            }
+
+            .btn-login, .btn-logout {
+                padding: 8px 15px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                font-size: 15px !important;
+            }
+
+            .hero-title {
+                font-size: 1.65rem !important;
+                margin-bottom: 0.85rem !important;
+                line-height: 1.2 !important;
+            }
+
+            .hero-description {
+                font-size: 0.9rem !important;
+                line-height: 1.45 !important;
+            }
+
+            .btn-emergency-large {
+                font-size: 0.92rem !important;
+                padding: 12px 14px !important;
+            }
+
+            .btn-emergency-large strong {
+                font-size: 1.08rem !important;
+                white-space: normal !important;
+            }
+
+            .btn-emergency-large small {
+                font-size: 0.78rem !important;
+                white-space: normal !important;
+                word-wrap: break-word !important;
+            }
+
+            .emergency-cta h2 {
+                font-size: 1.5rem !important;
+            }
+
+            .emergency-cta p {
+                font-size: 0.98rem !important;
             }
         }
     </style>
