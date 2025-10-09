@@ -837,6 +837,66 @@ function getPriorityBadgeClass($priority) {
             cursor: pointer;
             z-index: 10000;
         }
+        
+        /* Real-time update animations */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+        }
+        
+        @keyframes blink {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+        
+        .realtime-indicator i {
+            animation: blink 1.5s infinite;
+            color: #dcfce7;
+        }
+        
+        /* New update highlight */
+        @keyframes highlightNew {
+            0% {
+                background-color: #dbeafe;
+            }
+            100% {
+                background-color: transparent;
+            }
+        }
+        
+        .update-item.new-update {
+            animation: highlightNew 3s ease-out;
+        }
     </style>
 </head>
 <body>
@@ -1078,6 +1138,207 @@ function getPriorityBadgeClass($priority) {
     <!-- Scripts -->
     <script src="assets/js/script.js"></script>
     <script>
+        // Real-time update system
+        let updateInterval = null;
+        let lastUpdateTimestamp = null;
+        let currentTrackingId = null;
+        let existingUpdateIds = new Set();
+        let isFirstLoad = true;
+        
+        // Function to fetch and update disaster information
+        function fetchDisasterUpdates(trackingId) {
+            fetch(`ajax/get_disaster_updates.php?tracking_id=${encodeURIComponent(trackingId)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the status badge if changed
+                        updateStatusBadge(data.data.disaster);
+                        
+                        // Check for new updates
+                        const newUpdates = data.data.updates.filter(update => 
+                            !existingUpdateIds.has(update.update_id)
+                        );
+                        
+                        // Update the updates list if there are new updates
+                        if (newUpdates.length > 0 && !isFirstLoad) {
+                            showNewUpdateNotification(newUpdates.length);
+                        }
+                        
+                        // Update existing IDs
+                        data.data.updates.forEach(update => {
+                            existingUpdateIds.add(update.update_id);
+                        });
+                        
+                        // Update the list with new highlight for new updates
+                        updateUpdatesList(data.data.updates, newUpdates.map(u => u.update_id));
+                        lastUpdateTimestamp = data.data.latest_update_time;
+                        isFirstLoad = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching updates:', error);
+                });
+        }
+        
+        // Update status badge
+        function updateStatusBadge(disaster) {
+            const statusBadges = document.querySelectorAll('.status-badge');
+            const statusMap = {
+                'ON GOING': { class: 'status-on-going', text: 'On Going' },
+                'IN PROGRESS': { class: 'status-in-progress', text: 'In Progress' },
+                'COMPLETED': { class: 'status-completed', text: 'Completed' }
+            };
+            
+            statusBadges.forEach(badge => {
+                if (statusMap[disaster.status]) {
+                    badge.className = 'status-badge ' + statusMap[disaster.status].class;
+                    badge.innerHTML = '<i class="fas fa-circle"></i> ' + statusMap[disaster.status].text;
+                }
+            });
+        }
+        
+        // Update the updates list with new data
+        function updateUpdatesList(updates, newUpdateIds = []) {
+            const updatesList = document.querySelector('.updates-list');
+            if (!updatesList) return;
+            
+            if (updates.length === 0) {
+                updatesList.innerHTML = `
+                    <div class="no-updates">
+                        <i class="fas fa-clock" style="font-size: 2em; color: #d1d5db; margin-bottom: 15px;"></i>
+                        <p>No public updates available yet. You will be notified when there are updates from the LGU.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Reverse to show oldest first (chronological order)
+            const sortedUpdates = [...updates].reverse();
+            
+            let html = '';
+            sortedUpdates.forEach((update, index) => {
+                const isLast = index === sortedUpdates.length - 1;
+                const isNew = newUpdateIds.includes(update.update_id);
+                const newClass = isNew ? ' new-update' : '';
+                const newBadge = isNew ? '<span style="background:#10b981;color:white;font-size:11px;padding:3px 8px;border-radius:8px;margin-left:8px;animation:pulse 2s infinite;">NEW</span>' : '';
+                const adminBadge = update.user_role === 'admin' ? 
+                    '<span style="background:#e0e7ff;color:#3730a3;font-size:12px;padding:2px 8px;border-radius:8px;margin-left:8px;">Admin</span>' : '';
+                
+                html += `
+                    <div class="update-item${newClass}" data-update-id="${update.update_id}">
+                        <div class="update-content">
+                            <div class="update-title">
+                                ${escapeHtml(update.title)}
+                                ${adminBadge}
+                                ${newBadge}
+                            </div>
+                            <div class="update-description">
+                                ${escapeHtml(update.description).replace(/\n/g, '<br>')}
+                            </div>
+                            <div class="update-meta">
+                                <span>
+                                    ${update.user_name ? 'By: ' + escapeHtml(update.user_name) : 'System Update'}
+                                </span>
+                                <span>
+                                    ${update.formatted_date}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            updatesList.innerHTML = html;
+            
+            // Scroll to new updates if any
+            if (newUpdateIds.length > 0) {
+                setTimeout(() => {
+                    const firstNewUpdate = document.querySelector('.update-item.new-update');
+                    if (firstNewUpdate) {
+                        firstNewUpdate.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 500);
+            }
+        }
+        
+        // Show notification for new updates
+        function showNewUpdateNotification(count = 1) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'new-update-notification';
+            const message = count === 1 ? 'New update received!' : `${count} new updates received!`;
+            notification.innerHTML = `
+                <i class="fas fa-bell"></i>
+                <span>${message}</span>
+            `;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                color: white;
+                padding: 15px 25px;
+                border-radius: 12px;
+                box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 600;
+                animation: slideInRight 0.4s ease-out;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Play notification sound (optional - browser may block)
+            try {
+                const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGWi77OacSwwMUKfl77RgGgU7k9jyx3oqBSh+zPHXi0AIEH') 
+                audio.play();
+            } catch (e) {
+                // Silent fail if audio doesn't play
+            }
+            
+            // Remove after 4 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.4s ease-out';
+                setTimeout(() => notification.remove(), 400);
+            }, 4000);
+        }
+        
+        // HTML escape function
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Start real-time updates for a tracking ID
+        function startRealtimeUpdates(trackingId) {
+            currentTrackingId = trackingId;
+            
+            // Initial fetch
+            fetchDisasterUpdates(trackingId);
+            
+            // Set up polling every 10 seconds
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
+            
+            updateInterval = setInterval(() => {
+                fetchDisasterUpdates(trackingId);
+            }, 10000); // 10 seconds
+        }
+        
+        // Stop real-time updates
+        function stopRealtimeUpdates() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+            currentTrackingId = null;
+            lastUpdateTimestamp = null;
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             // Auto-format tracking ID input
             const trackingInput = document.querySelector('input[name="tracking_id"]');
@@ -1105,6 +1366,48 @@ function getPriorityBadgeClass($priority) {
                     }
                 });
             }
+            
+            // If disaster data is displayed, start real-time updates
+            <?php if ($disaster_data): ?>
+            const activeTrackingId = '<?php echo addslashes($disaster_data['tracking_id']); ?>';
+            if (activeTrackingId) {
+                // Initialize existing update IDs from current page load
+                <?php if (!empty($updates)): ?>
+                    <?php foreach ($updates as $update): ?>
+                        existingUpdateIds.add(<?php echo (int)$update['update_id']; ?>);
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                
+                startRealtimeUpdates(activeTrackingId);
+                
+                // Add real-time indicator
+                const updatesHeader = document.querySelector('.updates-header h3');
+                if (updatesHeader) {
+                    const realtimeIndicator = document.createElement('span');
+                    realtimeIndicator.className = 'realtime-indicator';
+                    realtimeIndicator.innerHTML = '<i class="fas fa-circle"></i> Live';
+                    realtimeIndicator.style.cssText = `
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 6px;
+                        font-size: 12px;
+                        padding: 4px 12px;
+                        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                        color: white;
+                        border-radius: 20px;
+                        margin-left: 12px;
+                        font-weight: 600;
+                        animation: pulse 2s infinite;
+                    `;
+                    updatesHeader.appendChild(realtimeIndicator);
+                }
+            }
+            <?php endif; ?>
+            
+            // Stop updates when user leaves the page
+            window.addEventListener('beforeunload', function() {
+                stopRealtimeUpdates();
+            });
             
             const accordionItems = document.querySelectorAll('.accordion-item');
             const autoTrackingId = <?php echo json_encode($auto_tracking_id); ?>;

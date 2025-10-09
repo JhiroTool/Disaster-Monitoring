@@ -33,6 +33,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <?php if ($current_page === 'dashboard.php'): ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <?php endif; ?>
+    
+    <!-- Admin AJAX Library for Real-time Updates -->
+    <script src="assets/js/admin-ajax.js"></script>
 </head>
 <body>
     <div class="admin-container">

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-time Tracking Demo - Disaster Monitoring System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .demo-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .demo-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .demo-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .demo-content {
+            padding: 40px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .feature-card {
+            background: #f8faff;
+            padding: 30px;
+            border-radius: 16px;
+            border: 2px solid #e5e7eb;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.2);
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            color: #1f2937;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .feature-card p {
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        
+        .demo-section {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .demo-section h2 {
+            color: #1e40af;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-demo {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .status-on-going { background: #fef3c7; color: #92400e; }
+        .status-in-progress { background: #e0e7ff; color: #3730a3; }
+        .status-completed { background: #d1fae5; color: #065f46; }
+        
+        .live-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border-radius: 20px;
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .live-indicator i {
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        .notification-demo {
+            position: relative;
+            min-height: 150px;
+            background: #f8faff;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-demo {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-demo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-demo:active {
+            transform: translateY(0);
+        }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .code-block .keyword { color: #f472b6; }
+        .code-block .string { color: #86efac; }
+        .code-block .comment { color: #94a3b8; }
+        .code-block .function { color: #60a5fa; }
+        
+        .cta-section {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .btn-cta {
+            background: white;
+            color: #1e40af;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .btn-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+        
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            animation: slideInRight 0.4s ease-out;
+        }
+        
+        .notification-toast.hide {
+            animation: slideOutRight 0.4s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1><i class="fas fa-bolt"></i> Real-time Tracking System</h1>
+            <p>Experience instant updates without page refresh</p>
+        </div>
+        
+        <div class="demo-content">
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-sync-alt"></i>
+                    </div>
+                    <h3>Auto-Updates</h3>
+                    <p>System checks for new updates every 10 seconds automatically. No manual refresh needed!</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bell"></i>
+                    </div>
+                    <h3>Instant Notifications</h3>
+                    <p>Get beautiful toast notifications when new updates arrive with smooth animations.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-signal"></i>
+                    </div>
+                    <h3>Live Status</h3>
+                    <p>See real-time connection status with pulsing indicators. Always know you're connected.</p>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h2><i class="fas fa-eye"></i> Live Status Indicators</h2>
+                <div class="status-demo">
+                    <div class="status-badge status-on-going">
+                        <i class="fas fa-circle"></i> On Going
+                    </div>
+                    <div class="status-badge status-in-progress">
+                        <i class="fas fa-circle"></i> In Progress
+                    </div>
+                    <div class="status-badge status-completed">
+                        <i class="fas fa-check-circle"></i> Completed
+                    </div>
+                    <div class="live-indicator">
+                        <i class="fas fa-circle"></i> Live
+                    </div>
+                </div>
+                <p style="margin-top: 20px; color: #6b7280;">These status badges update automatically when changes occur in the system.</p>
+            </div>
+            
+            <div class="demo-section">
+                <h2><i class="fas fa-magic"></i> Interactive Demo</h2>
+                <div class="notification-demo">
+                    <button class="btn-demo" onclick="showDemoNotification()">
+                        <i class="fas fa-bell"></i>
+                        Trigger Notification Demo
+                    </button>
+                </div>
+                <p style="margin-top: 15px; color: #6b7280; text-align: center;">
+                    Click the button to see how notifications appear when new updates arrive!
+                </p>
+            </div>
+            
+            <div class="demo-section">
+                <h2><i class="fas fa-code"></i> How It Works</h2>
+                <p style="color: #6b7280; margin-bottom: 20px;">
+                    The real-time system uses AJAX polling to fetch updates every 10 seconds:
+                </p>
+                <div class="code-block">
+<span class="comment">// Fetch updates every 10 seconds</span>
+<span class="keyword">function</span> <span class="function">startRealtimeUpdates</span>(trackingId) {
+    <span class="function">fetchDisasterUpdates</span>(trackingId);
+    
+    updateInterval = <span class="function">setInterval</span>(() => {
+        <span class="function">fetchDisasterUpdates</span>(trackingId);
+    }, <span class="string">10000</span>); <span class="comment">// 10 seconds</span>
+}
+
+<span class="comment">// Check for new updates</span>
+<span class="keyword">const</span> newUpdates = updates.<span class="function">filter</span>(update => 
+    !existingUpdateIds.<span class="function">has</span>(update.update_id)
+);
+
+<span class="keyword">if</span> (newUpdates.length > <span class="string">0</span>) {
+    <span class="function">showNewUpdateNotification</span>(newUpdates.length);
+    <span class="function">updateUpdatesList</span>(updates);
+}
+                </div>
+            </div>
+            
+            <div class="cta-section">
+                <h2><i class="fas fa-rocket"></i> Ready to Track Your Report?</h2>
+                <p style="font-size: 1.1rem; opacity: 0.95; margin-bottom: 10px;">
+                    Experience real-time updates on your emergency reports with our advanced tracking system.
+                </p>
+                <a href="track_report.php" class="btn-cta">
+                    <i class="fas fa-search"></i>
+                    Go to Track Report Page
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let notificationCount = 0;
+        
+        function showDemoNotification() {
+            notificationCount++;
+            const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            
+            const messages = [
+                'New update received!',
+                '2 new updates received!',
+                'Status changed to In Progress!',
+                'Response team has been deployed!',
+                'Emergency resolved successfully!'
+            ];
+            
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            
+            notification.innerHTML = `
+                <i class="fas fa-bell"></i>
+                <span>${randomMessage}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('hide');
+                setTimeout(() => notification.remove(), 400);
+            }, 3000);
+        }
+        
+        // Auto-demo on page load
+        setTimeout(() => {
+            showDemoNotification();
+        }, 2000);
+    </script>
+</body>
+</html>

@@ -196,7 +196,7 @@ include 'includes/header.php';
         <h1>Dashboard Overview</h1>
         <p>Welcome back! Here's what's happening with disaster reports today.</p>
     </div>
-    <button class="btn-refresh" onclick="location.reload();">
+    <button class="btn-refresh" id="refresh-dashboard" onclick="refreshDashboardData()">
         <i class="fas fa-sync-alt"></i> Refresh Data
     </button>
 </div>
@@ -212,7 +212,7 @@ include 'includes/header.php';
                 </div>
             </div>
             <div class="stat-body">
-                <h2 class="stat-number"><?php echo number_format($total_disasters); ?></h2>
+                <h2 class="stat-number" id="total-disasters"><?php echo number_format($total_disasters); ?></h2>
                 <div class="stat-trend <?php echo $total_trend >= 0 ? 'trend-up' : 'trend-down'; ?>">
                     <i class="fas fa-arrow-<?php echo $total_trend >= 0 ? 'up' : 'down'; ?>"></i>
                     <span><?php echo abs($total_trend); ?>% from last month</span>
@@ -228,7 +228,7 @@ include 'includes/header.php';
                 </div>
             </div>
             <div class="stat-body">
-                <h2 class="stat-number"><?php echo number_format($active_disasters); ?></h2>
+                <h2 class="stat-number" id="active-disasters"><?php echo number_format($active_disasters); ?></h2>
                 <div class="stat-trend <?php echo $active_trend >= 0 ? 'trend-up' : 'trend-down'; ?>">
                     <i class="fas fa-arrow-<?php echo $active_trend >= 0 ? 'up' : 'down'; ?>"></i>
                     <span><?php echo abs($active_trend); ?>% from last month</span>
@@ -244,7 +244,7 @@ include 'includes/header.php';
                 </div>
             </div>
             <div class="stat-body">
-                <h2 class="stat-number"><?php echo number_format($critical_disasters); ?></h2>
+                <h2 class="stat-number" id="critical-disasters"><?php echo number_format($critical_disasters); ?></h2>
                 <div class="stat-trend <?php echo $critical_trend >= 0 ? 'trend-up' : 'trend-down'; ?>">
                     <i class="fas fa-arrow-<?php echo $critical_trend >= 0 ? 'up' : 'down'; ?>"></i>
                     <span><?php echo abs($critical_trend); ?>% from last month</span>
@@ -260,7 +260,7 @@ include 'includes/header.php';
                 </div>
             </div>
             <div class="stat-body">
-                <h2 class="stat-number"><?php echo number_format($completion_rate, 1); ?>%</h2>
+                <h2 class="stat-number" id="pending-disasters"><?php echo number_format($completion_rate, 1); ?>%</h2>
                 <div class="stat-trend <?php echo $completion_trend >= 0 ? 'trend-up' : 'trend-down'; ?>">
                     <i class="fas fa-arrow-<?php echo $completion_trend >= 0 ? 'up' : 'down'; ?>"></i>
                     <span><?php echo abs($completion_trend); ?>% from last month</span>
@@ -322,7 +322,7 @@ include 'includes/header.php';
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
-                    <table class="table">
+                    <table class="table" id="recent-reports-table">
                         <thead>
                             <tr>
                                 <th>Tracking ID</th>
@@ -860,10 +860,44 @@ new Chart(responseTimeCtx, {
     }
 });
 
-// Auto-refresh data every 30 seconds
-setInterval(() => {
-    location.reload();
-}, 30000);
+// Refresh Dashboard Function - Event-driven, no auto-refresh!
+function refreshDashboardData() {
+    const btn = document.getElementById('refresh-dashboard');
+    const icon = btn.querySelector('i');
+    
+    // Add spinning animation
+    icon.classList.add('fa-spin');
+    btn.disabled = true;
+    
+    // Refresh dashboard stats
+    AdminAjax.getDashboardStats((data) => {
+        if (data.success) {
+            // Update stat cards
+            document.getElementById('total-disasters').textContent = data.data.total;
+            document.getElementById('active-disasters').textContent = data.data.active;
+            document.getElementById('critical-disasters').textContent = data.data.critical;
+            document.getElementById('pending-disasters').textContent = data.data.pending;
+            
+            AdminAjax.showAlert('Dashboard updated!', 'success');
+        } else {
+            AdminAjax.showAlert('Failed to refresh dashboard', 'error');
+        }
+        
+        // Remove spinning animation
+        icon.classList.remove('fa-spin');
+        btn.disabled = false;
+    });
+}
+
+// Optional: Refresh when page becomes visible (user switches back to tab)
+document.addEventListener('visibilitychange', function() {
+    if (!document.hidden) {
+        console.log('Page visible - consider refreshing data');
+        // Uncomment to auto-refresh when user returns to tab:
+        // refreshDashboardData();
+    }
+});
+
 </script>
 
 <?php include 'includes/footer.php'; ?>

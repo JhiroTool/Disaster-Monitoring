@@ -117,6 +117,9 @@ include 'includes/header.php';
         <p>Monitor and manage emergency reports from citizens</p>
     </div>
     <div class="page-actions">
+        <button onclick="refreshDisastersList()" class="btn btn-primary" id="refresh-disasters-btn">
+            <i class="fas fa-sync-alt"></i> Refresh
+        </button>
         <button onclick="exportTable('disasters-table', 'disaster-reports.csv')" class="btn btn-secondary">
             <i class="fas fa-download"></i> Export CSV
         </button>
@@ -705,6 +708,32 @@ $(document).ready(function() {
         }
     }, 500);
 });
+
+// Refresh disasters list using AJAX
+function refreshDisastersList() {
+    const btn = document.getElementById('refresh-disasters-btn');
+    const icon = btn.querySelector('i');
+    
+    // Add spinning animation
+    icon.classList.add('fa-spin');
+    btn.disabled = true;
+    
+    // Get current filter values
+    const params = new URLSearchParams(window.location.search);
+    
+    // Call AJAX function
+    AdminAjax.getDisastersList(params.toString(), (data) => {
+        if (data.success) {
+            // Reload the page to update DataTable (simpler than rebuilding)
+            AdminAjax.showAlert('Disasters list refreshed!', 'success');
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            AdminAjax.showAlert('Failed to refresh list', 'error');
+            icon.classList.remove('fa-spin');
+            btn.disabled = false;
+        }
+    });
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>
