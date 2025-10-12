@@ -195,8 +195,12 @@ include 'includes/header.php';
     <div class="header-content">
         <h1>Dashboard Overview</h1>
         <p>Welcome back! Here's what's happening with disaster reports today.</p>
+        <p id="realtime-status" style="color: #10b981; font-size: 0.875rem; margin-top: 0.5rem;">
+            <i class="fas fa-circle" style="font-size: 0.5rem; animation: pulse 2s infinite;"></i> 
+            Real-time updates active (optimized)
+        </p>
     </div>
-    <button class="btn-refresh" id="refresh-dashboard" onclick="refreshDashboardData()">
+    <button class="btn-refresh" id="refresh-dashboard" onclick="manualRefresh()" style="display: none;">
         <i class="fas fa-sync-alt"></i> Refresh Data
     </button>
 </div>
@@ -860,43 +864,120 @@ new Chart(responseTimeCtx, {
     }
 });
 
-// Refresh Dashboard Function - Event-driven, no auto-refresh!
-function refreshDashboardData() {
-    const btn = document.getElementById('refresh-dashboard');
-    const icon = btn.querySelector('i');
+// Dashboard-specific real-time handlers using global RealtimeSystem
+
+// Register dashboard update handler
+window.onRealtimeUpdate = function(data) {
+    console.log('📊 Dashboard received update:', data);
     
-    // Add spinning animation
-    icon.classList.add('fa-spin');
-    btn.disabled = true;
+    // Update recent reports table
+    if (data.stats.recent_reports) {
+        updateRecentReportsTable(data.stats.recent_reports);
+    }
     
-    // Refresh dashboard stats
-    AdminAjax.getDashboardStats((data) => {
-        if (data.success) {
-            // Update stat cards
-            document.getElementById('total-disasters').textContent = data.data.total;
-            document.getElementById('active-disasters').textContent = data.data.active;
-            document.getElementById('critical-disasters').textContent = data.data.critical;
-            document.getElementById('pending-disasters').textContent = data.data.pending;
-            
-            AdminAjax.showAlert('Dashboard updated!', 'success');
-        } else {
-            AdminAjax.showAlert('Failed to refresh dashboard', 'error');
-        }
-        
-        // Remove spinning animation
-        icon.classList.remove('fa-spin');
-        btn.disabled = false;
+    // Update last update time
+    updateLastUpdateTime(new Date(data.timestamp * 1000));
+};
+
+// Register new report handler
+window.onNewReport = function(count, stats) {
+    console.log('🚨 Dashboard: New report notification', count);
+    // Toast is already shown by global system
+};
+
+// Update last update time in dashboard header
+function updateLastUpdateTime(date) {
+    const timeString = date.toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
     });
+    
+    let indicator = document.getElementById('last-updated-indicator');
+    if (!indicator) {
+        const statusEl = document.getElementById('realtime-status');
+        if (statusEl) {
+            indicator = document.createElement('span');
+            indicator.id = 'last-updated-indicator';
+            indicator.style.cssText = 'color: #9ca3af; font-size: 0.75rem; margin-left: 0.5rem;';
+            statusEl.appendChild(indicator);
+        }
+    }
+    
+    if (indicator) {
+        indicator.textContent = `(${timeString})`;
+    }
 }
 
-// Optional: Refresh when page becomes visible (user switches back to tab)
-document.addEventListener('visibilitychange', function() {
-    if (!document.hidden) {
-        console.log('Page visible - consider refreshing data');
-        // Uncomment to auto-refresh when user returns to tab:
-        // refreshDashboardData();
+// Note: stat card updates and animations are handled by global RealtimeSystem
+
+
+
+// Update recent reports table
+function updateRecentReportsTable(reports) {
+    const tbody = document.querySelector('#recent-reports-table tbody');
+    if (!tbody || reports.length === 0) return;
+    
+    // Check if there are new reports
+    const existingIds = Array.from(tbody.querySelectorAll('tr')).map(tr => 
+        tr.querySelector('.tracking-id').textContent
+    );
+    
+    const hasNewReports = reports.some(report => 
+        !existingIds.includes(report.tracking_id)
+    );
+    
+    if (hasNewReports) {
+        // Rebuild table with new data
+        tbody.innerHTML = reports.map(report => `
+            <tr class="new-row">
+                <td>
+                    <span class="tracking-id">${escapeHtml(report.tracking_id)}</span>
+                </td>
+                <td>${escapeHtml(report.type_name)}</td>
+                <td>${escapeHtml(report.city || 'N/A')}</td>
+                <td>
+                    <span class="severity-badge severity-${report.severity_level.split('-')[0]}">
+                        ${escapeHtml(report.severity_display)}
+                    </span>
+                </td>
+                <td>
+                    <span class="status-badge status-${report.status.toLowerCase().replace(/\s+/g, '-')}">
+                        ${report.status.charAt(0) + report.status.slice(1).toLowerCase().replace(/_/g, ' ')}
+                    </span>
+                </td>
+                <td>
+                    <span class="time-ago">${report.hours_ago}h ago</span>
+                </td>
+                <td>
+                    <a href="disaster-details.php?id=${report.disaster_id}" class="btn btn-xs btn-primary">
+                        <i class="fas fa-eye"></i>
+                    </a>
+                </td>
+            </tr>
+        `).join('');
+        
+        // Highlight new rows briefly
+        setTimeout(() => {
+            tbody.querySelectorAll('.new-row').forEach(row => {
+                row.classList.remove('new-row');
+            });
+        }, 2000);
     }
-});
+}
+
+// Note: New report notifications are handled by global RealtimeSystem
+
+// HTML escape function
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Dashboard is now powered by global RealtimeSystem (loaded via header.php)
+// No need for page-specific initialization
+console.log('📊 Dashboard ready - using global RealtimeSystem');
 
 </script>
 

@@ -734,6 +734,143 @@ function refreshDisastersList() {
         }
     });
 }
+
+// ========================================
+// Real-Time Updates for Disasters Page
+// ========================================
+
+// Track last known total to detect new reports
+let lastDisasterCount = <?php echo $total_count ?? 0; ?>;
+
+// Register handler for real-time updates
+window.onRealtimeUpdate = function(data) {
+    console.log('🚨 Disasters page: Update received', data);
+    
+    // Check if new disasters were added
+    if (data.stats.total_disasters > lastDisasterCount) {
+        const newCount = data.stats.total_disasters - lastDisasterCount;
+        lastDisasterCount = data.stats.total_disasters;
+        
+        // Show banner notification
+        showNewDisasterBanner(newCount);
+    }
+};
+
+// Register handler for new reports
+window.onNewReport = function(count, stats) {
+    console.log('🚨 Disasters page: New report detected', count);
+    
+    // Show prominent notification banner
+    showNewDisasterBanner(count);
+};
+
+// Show banner notification with reload button
+function showNewDisasterBanner(count) {
+    // Remove existing banner if present
+    const existingBanner = document.getElementById('new-disaster-banner');
+    if (existingBanner) {
+        existingBanner.remove();
+    }
+    
+    // Create new banner
+    const banner = document.createElement('div');
+    banner.id = 'new-disaster-banner';
+    banner.style.cssText = `
+        position: fixed;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 15px 30px;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        font-weight: 600;
+        animation: slideDown 0.4s ease-out;
+        cursor: pointer;
+    `;
+    
+    banner.innerHTML = `
+        <i class="fas fa-exclamation-triangle" style="font-size: 1.2rem;"></i>
+        <span>${count} new disaster report${count > 1 ? 's' : ''} ${count > 1 ? 'have' : 'has'} been submitted</span>
+        <button onclick="location.reload()" style="
+            background: white;
+            color: #059669;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <i class="fas fa-sync-alt"></i> Reload Page
+        </button>
+        <button onclick="document.getElementById('new-disaster-banner').remove()" style="
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+        ">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    // Click to reload
+    banner.onclick = (e) => {
+        if (e.target.tagName !== 'BUTTON') {
+            location.reload();
+        }
+    };
+    
+    document.body.appendChild(banner);
+    
+    // Auto-remove after 30 seconds
+    setTimeout(() => {
+        if (banner.parentElement) {
+            banner.style.animation = 'slideUp 0.4s ease-out';
+            setTimeout(() => banner.remove(), 400);
+        }
+    }, 30000);
+}
+
+// Add slideDown/slideUp animations
+if (!document.querySelector('#disaster-page-animations')) {
+    const style = document.createElement('style');
+    style.id = 'disaster-page-animations';
+    style.textContent = `
+        @keyframes slideDown {
+            from {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+            to {
+                transform: translate(-50%, -100%);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+console.log('🚨 Disasters page: Real-time system active');
 </script>
 
 <?php include 'includes/footer.php'; ?>

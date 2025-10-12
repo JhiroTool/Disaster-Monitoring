@@ -36,6 +36,13 @@ $current_page = basename($_SERVER['PHP_SELF']);
     
     <!-- Admin AJAX Library for Real-time Updates -->
     <script src="assets/js/admin-ajax.js"></script>
+    
+    <!-- Universal Real-Time System (SSE) - Works on ALL admin pages -->
+        <script>
+        // Real-time updates (OPTIMIZED for performance)
+        window.REALTIME_ENABLED = true; // Now optimized and fast!
+    </script>
+    <script src="assets/js/realtime-system.js"></script>
 </head>
 <body>
     <div class="admin-container">

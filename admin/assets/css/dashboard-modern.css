@@ -558,3 +558,67 @@ canvas {
     margin-right: 10px;
 }
 }
+
+/* Real-time Update Animations */
+@keyframes flash {
+    0%, 100% {
+        background-color: transparent;
+    }
+    50% {
+        background-color: rgba(102, 126, 234, 0.15);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+@keyframes highlightRow {
+    0% {
+        background-color: rgba(16, 185, 129, 0.2);
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+
+.new-row {
+    animation: highlightRow 2s ease-out;
+}
+
+#last-updated-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+#last-updated-indicator i {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
