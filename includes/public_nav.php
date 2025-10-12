@@ -127,13 +127,13 @@ if ($nav_user_role === 'reporter') {
                                 <i class="fas fa-exclamation-triangle"></i>
                                 Report New Emergency
                             </a>
-                            <a href="track_report.php" class="nav-dropdown-item" role="menuitem">
+                            <a href="my_reports.php" class="nav-dropdown-item" role="menuitem">
                                 <i class="fas fa-list-alt"></i>
                                 View All My Reports
                             </a>
-                            <a href="track_report.php#track-report-form" class="nav-dropdown-item" role="menuitem">
+                            <a href="track_report.php" class="nav-dropdown-item" role="menuitem">
                                 <i class="fas fa-search"></i>
-                                Track Specific Report
+                                Track Report by ID
                             </a>
                             <div class="nav-dropdown-divider" role="separator"></div>
                             <a href="logout.php" class="nav-dropdown-item nav-dropdown-item-danger" role="menuitem">

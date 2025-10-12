@@ -5,33 +5,12 @@ require_once 'config/database.php';
 $tracking_result = null;
 $disaster_data = null;
 $updates = [];
-$user_reports = [];
 
 // Check if user is logged in
 $is_logged_in = isset($_SESSION['user_id']);
 $user_id = $is_logged_in ? $_SESSION['user_id'] : null;
 $user_role = $is_logged_in ? $_SESSION['role'] : '';
 $user_name = $is_logged_in ? ($_SESSION['first_name'] . ' ' . $_SESSION['last_name']) : '';
-
-// If logged in as reporter, fetch all their reports
-if ($is_logged_in && $user_role === 'reporter') {
-    try {
-        $user_reports_stmt = $pdo->prepare("
-            SELECT d.*, dt.type_name, l.lgu_name, 
-                   DATE_FORMAT(d.created_at, '%M %d, %Y at %h:%i %p') as formatted_date,
-                   DATE_FORMAT(d.created_at, '%Y-%m-%d') as date_only
-            FROM disasters d
-            LEFT JOIN disaster_types dt ON d.type_id = dt.type_id
-            LEFT JOIN lgus l ON d.assigned_lgu_id = l.lgu_id
-            WHERE d.reported_by_user_id = ?
-            ORDER BY d.created_at DESC
-        ");
-        $user_reports_stmt->execute([$user_id]);
-        $user_reports = $user_reports_stmt->fetchAll();
-    } catch (Exception $e) {
-        error_log("Error fetching user reports: " . $e->getMessage());
-    }
-}
 
 // Get tracking ID from URL parameter or form submission
 $auto_tracking_id = sanitizeInput($_GET['tracking_id'] ?? '');
@@ -137,266 +116,8 @@ function getPriorityBadgeClass($priority) {
     <style>
         .tracking-page {
             min-height: 100vh;
-            padding: 50px 0 0px;
+            padding: 50px 0 50px;
             background: linear-gradient(135deg, #f8faff 0%, #e6f3ff 100%);
-        }
-        
-        /* User Reports Section */
-        .user-reports-section {
-            background: white;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
-        
-        .user-reports-section h1 {
-            color: #1e40af;
-            margin-bottom: 10px;
-            font-size: 2.2rem;
-        }
-        
-        .section-subtitle {
-            color: #6b7280;
-            margin-bottom: 30px;
-            font-size: 1.1rem;
-        }
-        
-        .reports-accordion {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-            margin-bottom: 30px;
-        }
-        
-        .accordion-item {
-            border: 2px solid #e5e7eb;
-            border-radius: 14px;
-            background: #f8faff;
-            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-            overflow: hidden;
-        }
-        
-        .accordion-trigger {
-            width: 100%;
-            background: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
-            color: white;
-            padding: 18px 24px;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 16px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            text-align: left;
-        }
-        
-        .accordion-trigger:focus-visible {
-            outline: 3px solid rgba(59, 130, 246, 0.6);
-            outline-offset: 2px;
-        }
-        
-        .trigger-main {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 6px;
-        }
-        
-        .trigger-top-row {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .trigger-title {
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-        }
-        
-        .trigger-meta {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            color: rgba(255, 255, 255, 0.85);
-            font-weight: 500;
-        }
-        
-        .trigger-meta span {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .accordion-chevron {
-            transition: transform 0.3s ease;
-            font-size: 1.3rem;
-        }
-        
-        .accordion-trigger[aria-expanded="true"] .accordion-chevron {
-            transform: rotate(180deg);
-        }
-        
-        .accordion-content {
-            background: white;
-            padding: 24px;
-            border-top: 1px solid #e5e7eb;
-        }
-        
-        .accordion-content[hidden] {
-            display: none;
-        }
-        
-        .accordion-details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 18px;
-            margin-bottom: 20px;
-        }
-        
-        .accordion-detail {
-            background: #f8faff;
-            border-radius: 10px;
-            padding: 16px;
-            border-left: 4px solid #3b82f6;
-        }
-        
-        .accordion-detail h4 {
-            margin: 0 0 6px;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #1f2937;
-        }
-        
-        .accordion-detail p {
-            margin: 0;
-            color: #1e293b;
-            font-weight: 600;
-        }
-        
-        .accordion-description {
-            margin-bottom: 20px;
-        }
-        
-        .accordion-description h4 {
-            margin: 0 0 8px;
-            font-size: 1rem;
-            color: #1f2937;
-        }
-        
-        .accordion-description p {
-            margin: 0;
-            color: #475569;
-            line-height: 1.6;
-        }
-        
-        .accordion-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 12px 16px;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 16px;
-        }
-        
-        .accordion-footer-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        
-        .tracking-inline {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 600;
-            color: #1e293b;
-        }
-        
-        .accordion-footer a.btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 18px;
-            border-radius: 8px;
-            background: #1e40af;
-            color: #fff;
-            font-weight: 600;
-            text-decoration: none;
-            transition: background 0.2s ease;
-        }
-        
-        .accordion-footer a.btn:hover {
-            background: #1d4ed8;
-        }
-        
-        @media (max-width: 640px) {
-            .accordion-trigger {
-                padding: 16px 18px;
-                align-items: flex-start;
-            }
-        
-            .accordion-details-grid {
-                grid-template-columns: 1fr;
-            }
-        
-            .accordion-content {
-                padding: 20px;
-            }
-        }
-        
-        .no-reports {
-            text-align: center;
-            padding: 60px 20px;
-        }
-        
-        .no-reports-content i {
-            font-size: 4rem;
-            color: #9ca3af;
-            margin-bottom: 20px;
-        }
-        
-        .no-reports-content h3 {
-            color: #4b5563;
-            margin-bottom: 15px;
-        }
-        
-        .reports-summary {
-            background: #eff6ff;
-            padding: 20px;
-            border-radius: 12px;
-            border-left: 4px solid #3b82f6;
-            margin-top: 20px;
-        }
-        
-        .divider {
-            text-align: center;
-            margin: 40px 0;
-            position: relative;
-        }
-        
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: #d1d5db;
-        }
-        
-        .divider span {
-            background: #f8faff;
-            color: #6b7280;
-            padding: 0 20px;
-            font-weight: 500;
         }
         
         .tracking-form {
@@ -911,121 +632,20 @@ function getPriorityBadgeClass($priority) {
                 Back to Home
             </a>
             
-            <!-- User Reports Dashboard (shown only for logged-in reporters) -->
+            <!-- Quick Link for Reporters -->
             <?php if ($is_logged_in && $user_role === 'reporter'): ?>
-                <div class="user-reports-section">
-                    <h1><i class="fas fa-list-alt"></i> My Emergency Reports</h1>
-                    <p class="section-subtitle">Welcome back, <strong><?php echo htmlspecialchars($user_name); ?></strong>! Here are all your submitted emergency reports and their current status.</p>
-                    
-                    <?php if (empty($user_reports)): ?>
-                        <div class="no-reports">
-                            <div class="no-reports-content">
-                                <i class="fas fa-clipboard-list"></i>
-                                <h3>No Reports Yet</h3>
-                                <p>You haven't submitted any emergency reports yet.</p>
-                                <a href="report_emergency.php" class="btn btn-primary">
-                                    <i class="fas fa-plus"></i>
-                                    Submit Your First Report
-                                </a>
-                            </div>
-                        </div>
-                    <?php else: ?>
-                        <div class="reports-accordion" role="list">
-                            <?php foreach ($user_reports as $report): ?>
-                                <?php
-                                    $reportLocation = trim($report['address'] ?? '') ?: trim($report['city'] ?? '') ?: 'Location not specified';
-                                    $reportType = $report['type_name'] ?? 'Emergency Report';
-                                    $assignedLgu = !empty($report['lgu_name']) ? $report['lgu_name'] : 'Pending assignment';
-                                    $priorityValue = $report['priority'] ?? 'medium';
-                                    $panelId = 'report-panel-' . $report['disaster_id'];
-                                    $buttonId = 'report-trigger-' . $report['disaster_id'];
-                                ?>
-                                <div class="accordion-item" role="listitem" data-tracking-id="<?php echo htmlspecialchars($report['tracking_id']); ?>">
-                                    <button class="accordion-trigger" type="button"
-                                            id="<?php echo htmlspecialchars($buttonId); ?>"
-                                            aria-expanded="false"
-                                            aria-controls="<?php echo htmlspecialchars($panelId); ?>">
-                                        <div class="trigger-main">
-                                            <div class="trigger-top-row">
-                                                <span class="trigger-title">ID: <?php echo htmlspecialchars($report['tracking_id']); ?></span>
-                                                <div class="status-badge <?php echo getStatusBadgeClass($report['status'] ?? 'ON GOING'); ?>">
-                                                    <?php echo getStatusDisplayText($report['status'] ?? 'ON GOING'); ?>
-                                                </div>
-                                            </div>
-                                            <div class="trigger-meta">
-                                                <span><i class="fas fa-layer-group"></i><?php echo htmlspecialchars($reportType); ?></span>
-                                                <span><i class="fas fa-calendar-alt"></i><?php echo htmlspecialchars($report['formatted_date']); ?></span>
-                                                <span><i class="fas fa-map-marker-alt"></i><?php echo htmlspecialchars($reportLocation); ?></span>
-                                            </div>
-                                        </div>
-                                        <i class="fas fa-chevron-down accordion-chevron" aria-hidden="true"></i>
-                                    </button>
-                                    <div class="accordion-content" id="<?php echo htmlspecialchars($panelId); ?>"
-                                         role="region" aria-labelledby="<?php echo htmlspecialchars($buttonId); ?>" hidden>
-                                        <div class="accordion-details-grid">
-                                            <div class="accordion-detail">
-                                                <h4>Report Title</h4>
-                                                <p><?php echo htmlspecialchars($report['disaster_name'] ?? $reportType); ?></p>
-                                            </div>
-                                            <div class="accordion-detail">
-                                                <h4>Location</h4>
-                                                <p><?php echo htmlspecialchars($reportLocation); ?></p>
-                                            </div>
-                                            <div class="accordion-detail">
-                                                <h4>Reported On</h4>
-                                                <p><?php echo htmlspecialchars($report['formatted_date']); ?></p>
-                                            </div>
-                                            <div class="accordion-detail">
-                                                <h4>Assigned LGU</h4>
-                                                <p><?php echo htmlspecialchars($assignedLgu); ?></p>
-                                            </div>
-                                        </div>
-                                        <?php if (!empty($report['description'])): ?>
-                                            <div class="accordion-description">
-                                                <h4>What happened</h4>
-                                                <p><?php echo nl2br(htmlspecialchars($report['description'])); ?></p>
-                                            </div>
-                                        <?php endif; ?>
-                                        <div class="accordion-footer">
-                                            <div class="accordion-footer-left">
-                                                <div class="tracking-inline">
-                                                    <i class="fas fa-hashtag"></i>
-                                                    <span>Tracking ID: <strong><?php echo htmlspecialchars($report['tracking_id']); ?></strong></span>
-                                                </div>
-                                                <div class="priority-badge <?php echo getPriorityBadgeClass($priorityValue); ?>">
-                                                    <?php echo htmlspecialchars(ucfirst($priorityValue)); ?> Priority
-                                                </div>
-                                            </div>
-                                            <a href="track_report.php?tracking_id=<?php echo htmlspecialchars($report['tracking_id']); ?>" class="btn">
-                                                <i class="fas fa-eye"></i>
-                                                View Full Timeline
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        
-                        <div class="reports-summary">
-                            <h3>📊 Summary</h3>
-                            <p>You have submitted <strong><?php echo count($user_reports); ?></strong> emergency report(s) in total.</p>
-                        </div>
-                    <?php endif; ?>
-                </div>
-                
-                <div class="divider">
-                    <span>Or track a specific report by ID</span>
+                <div style="background: #eff6ff; padding: 15px 20px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #3b82f6;">
+                    <p style="margin: 0; color: #1e40af; font-size: 15px;">
+                        <i class="fas fa-info-circle"></i>
+                        Want to see all your reports in one place? 
+                        <a href="my_reports.php" style="color: #1d4ed8; font-weight: 600; text-decoration: underline;">View My Emergency Reports</a>
+                    </p>
                 </div>
             <?php endif; ?>
             
             <div class="tracking-form" id="track-report-form">
-                <?php if ($is_logged_in && $user_role === 'reporter'): ?>
-                    <h1><i class="fas fa-search"></i> Track a Specific Report</h1>
-                    <p>Enter a tracking ID to view detailed information about a specific emergency report.</p>
-                <?php else: ?>
-                    <h1><i class="fas fa-search"></i> Track Your Emergency Report</h1>
-                    <p>Enter your tracking ID to check the status and updates of your emergency report.</p>
-                <?php endif; ?>
+                <h1><i class="fas fa-search"></i> Track Your Emergency Report</h1>
+                <p>Enter your tracking ID to check the status and updates of your emergency report.</p>
                 
                 <?php if (!empty($auto_tracking_id) && $tracking_result === null): ?>
                     <div class="auto-fill-notice">
@@ -1409,69 +1029,11 @@ function getPriorityBadgeClass($priority) {
                 stopRealtimeUpdates();
             });
             
-            const accordionItems = document.querySelectorAll('.accordion-item');
-            const autoTrackingId = <?php echo json_encode($auto_tracking_id); ?>;
-            if (accordionItems.length) {
-                const accordionArray = Array.from(accordionItems);
-                const normalizedTrackingId = autoTrackingId ? autoTrackingId.toUpperCase() : '';
-
-                accordionArray.forEach((item) => {
-                    const trigger = item.querySelector('.accordion-trigger');
-                    const content = item.querySelector('.accordion-content');
-                    if (!trigger || !content) {
-                        return;
-                    }
-
-                    trigger.addEventListener('click', function() {
-                        const isExpanded = trigger.getAttribute('aria-expanded') === 'true';
-
-                        accordionArray.forEach((otherItem) => {
-                            if (otherItem === item) {
-                                return;
-                            }
-                            const otherTrigger = otherItem.querySelector('.accordion-trigger');
-                            const otherContent = otherItem.querySelector('.accordion-content');
-                            if (otherTrigger && otherContent) {
-                                otherTrigger.setAttribute('aria-expanded', 'false');
-                                otherContent.setAttribute('hidden', '');
-                            }
-                        });
-
-                        if (isExpanded) {
-                            trigger.setAttribute('aria-expanded', 'false');
-                            content.setAttribute('hidden', '');
-                        } else {
-                            trigger.setAttribute('aria-expanded', 'true');
-                            content.removeAttribute('hidden');
-                        }
-                    });
-                });
-
-                let defaultItem = null;
-                if (normalizedTrackingId) {
-                    defaultItem = accordionArray.find((item) => {
-                        const datasetId = (item.dataset.trackingId || '').toUpperCase();
-                        return datasetId === normalizedTrackingId;
-                    });
-                }
-
-                if (!defaultItem) {
-                    defaultItem = accordionArray[0];
-                }
-
-                if (defaultItem) {
-                    const defaultTrigger = defaultItem.querySelector('.accordion-trigger');
-                    const defaultContent = defaultItem.querySelector('.accordion-content');
-                    if (defaultTrigger && defaultContent) {
-                        defaultTrigger.setAttribute('aria-expanded', 'true');
-                        defaultContent.removeAttribute('hidden');
-                    }
-                }
             }
             
-            // Show recent tracking IDs (optional feature for future)
+            // Show recent tracking IDs (optional feature for future)            // Show recent tracking IDs (optional feature for future)
             // This could be implemented as a dropdown suggestion feature
-        });
+        );
         
         // Image modal functionality
         function openImageModal(imageSrc) {

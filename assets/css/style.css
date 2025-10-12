@@ -1366,8 +1366,8 @@ p {
         width: 100%;
         text-align: center;
         transition: 0.3s;
-        padding: 2rem;
-        gap: 1rem;
+        padding: 1.5rem;
+        gap: 0.85rem;
         border-top: 1px solid rgba(226, 232, 240, 0.5);
     }
 
@@ -1402,6 +1402,65 @@ p {
 
     .nav-dropdown:not(.open) .nav-dropdown-menu {
         display: none;
+    }
+
+    /* Mobile: keep the reporter status dropdown out of the nav flow unless explicitly opened.
+       This prevents the active status option from appearing as a full-width colored block
+       inside the mobile nav when the dropdown is closed. */
+    .nav-menu .nav-status-dropdown {
+        display: none;
+        position: static;
+        transform: none;
+        opacity: 1;
+        pointer-events: auto;
+        box-shadow: none;
+        border: none;
+        background: transparent;
+        padding: 0;
+        min-width: 100%;
+    }
+
+    .nav-menu .nav-status-dropdown.open {
+        display: block;
+        background: #ffffff;
+        border-radius: 0.75rem;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.15);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        padding: 0.5rem;
+        margin-top: 0.75rem;
+        width: 100%;
+    }
+
+    .nav-menu .nav-status-dropdown.open .nav-status-option {
+        padding: 0.85rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .nav-menu .nav-status-dropdown.open .nav-status-option:last-child {
+        margin-bottom: 0;
+    }
+
+    .nav-menu .nav-status-dropdown.open .nav-status-option:hover,
+    .nav-menu .nav-status-dropdown.open .nav-status-option:focus {
+        background: rgba(59, 130, 246, 0.1);
+        transform: none;
+    }
+
+    .nav-menu .nav-status-dropdown.open .nav-status-option-help:hover,
+    .nav-menu .nav-status-dropdown.open .nav-status-option-help:focus {
+        background: rgba(248, 113, 113, 0.1);
+    }
+
+    .nav-menu .nav-status-dropdown.open .nav-status-option.active {
+        background: rgba(59, 130, 246, 0.12);
+        font-weight: 700;
+    }
+
+    .nav-menu .nav-status-dropdown.open .nav-status-option.active-help {
+        background: rgba(248, 113, 113, 0.15);
+        font-weight: 700;
     }
     
     .nav-menu.active {
@@ -1609,14 +1668,68 @@ p {
 
     .nav-reporter-status {
         width: 100%;
-        justify-content: center;
-        padding: 0.42rem 0.8rem;
-        flex-wrap: wrap;
-        row-gap: 0.5rem;
+        justify-content: flex-start;
+        padding: 0.75rem 1rem;
+        border-radius: 0.75rem;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1.5px solid rgba(226, 232, 240, 0.8);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        gap: 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+    .nav-reporter-status:hover,
+    .nav-reporter-status:focus-within {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-color: rgba(59, 130, 246, 0.4);
+    }
+
+    .nav-reporter-status-help {
+        background: rgba(254, 242, 242, 0.95);
+        border-color: rgba(248, 113, 113, 0.4);
+    }
+
+    .nav-reporter-status-help:hover,
+    .nav-reporter-status-help:focus-within {
+        border-color: rgba(239, 68, 68, 0.5);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+    }
+
+    .nav-reporter-status-fine {
+        background: rgba(239, 246, 255, 0.95);
+        border-color: rgba(147, 197, 253, 0.4);
+    }
+
+    .nav-reporter-status > i {
+        font-size: 1.15rem;
+        flex-shrink: 0;
+    }
+
+    .nav-status-form {
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-status-control {
+        width: 100%;
     }
 
     .nav-status-trigger {
         font-size: 1rem;
+        width: 100%;
+        justify-content: space-between;
+        padding: 0;
+    }
+
+    .nav-status-trigger-label {
+        flex: 1;
+        text-align: left;
+    }
+
+    .nav-status-trigger > i.fa-chevron-down {
+        font-size: 0.85rem;
+        margin-left: 0.5rem;
     }
     
     .hero-container {

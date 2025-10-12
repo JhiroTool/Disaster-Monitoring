@@ -331,18 +331,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         
         .password-toggle {
             position: absolute;
-            right: 16px;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
             background: none;
             border: none;
             color: #9ca3af;
             cursor: pointer;
-            padding: 8px;
-            border-radius: 6px;
-            transition: color 0.3s ease;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 8px;
+            transition: color 0.18s ease, box-shadow 0.12s ease;
             z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .password-toggle:hover {
+            color: #4c63d2;
+        }
+
+        .password-toggle:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76,99,210,0.14);
             color: #4c63d2;
         }
         
@@ -399,10 +412,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         
         /* Responsive Design */
         @media (max-width: 768px) {
+            body {
+                overflow: auto; /* allow page scrolling on small screens */
+                -webkit-overflow-scrolling: touch; /* smooth momentum scrolling on iOS */
+            }
             .login-container {
                 grid-template-columns: 1fr;
                 max-width: 400px;
                 margin: 20px;
+                max-height: none; /* ensure container doesn't block page scroll */
             }
             
             .login-right {
@@ -419,6 +437,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
         }
         
         @media (max-width: 480px) {
+            body {
+                overflow: auto; /* ensure scrolling works on very small screens */
+                -webkit-overflow-scrolling: touch;
+            }
             .login-left {
                 padding: 30px 20px;
             }
@@ -474,9 +496,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                     <div class="input-group">
                         <i class="fas fa-lock"></i>
                         <input type="password" id="password" name="password" 
-                               placeholder="Enter password" required>
-                        <button type="button" class="password-toggle" onclick="togglePassword()">
-                            <i class="fas fa-eye" id="password-icon"></i>
+                               placeholder="Enter password" required aria-describedby="show-password">
+                        <button type="button" id="show-password" class="password-toggle" aria-label="Show password" aria-pressed="false" onclick="togglePassword('password','password-icon','show-password')">
+                            <i class="fas fa-eye" id="password-icon" aria-hidden="true"></i>
                         </button>
                     </div>
                 </div>
@@ -488,7 +510,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             </form>
             
             <div class="login-footer">
-                <p>Don't have an account? <a href="register.php">Register as Reporter</a></p>
+                <p>Don't have an account? <a href="register.php">Register Here</a></p>
                 <p><a href="index.php">Back to Main Site</a></p>
             </div>
         </div>
@@ -514,17 +536,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     </div>
     
     <script>
-        function togglePassword() {
-            const passwordField = document.getElementById('password');
-            const passwordIcon = document.getElementById('password-icon');
-            
-            if (passwordField.type === 'password') {
+        function togglePassword(fieldId = 'password', iconId = 'password-icon', toggleId = 'show-password') {
+            const passwordField = document.getElementById(fieldId);
+            const passwordIcon = document.getElementById(iconId);
+            const toggleBtn = document.getElementById(toggleId);
+
+            if (!passwordField || !passwordIcon) return;
+
+            const isHidden = passwordField.type === 'password';
+            if (isHidden) {
                 passwordField.type = 'text';
                 passwordIcon.className = 'fas fa-eye-slash';
+                if (toggleBtn) {
+                    toggleBtn.setAttribute('aria-label', 'Hide password');
+                    toggleBtn.setAttribute('aria-pressed', 'true');
+                }
             } else {
                 passwordField.type = 'password';
                 passwordIcon.className = 'fas fa-eye';
+                if (toggleBtn) {
+                    toggleBtn.setAttribute('aria-label', 'Show password');
+                    toggleBtn.setAttribute('aria-pressed', 'false');
+                }
             }
+            // Maintain focus on the input when toggling so mobile keyboards don't dismiss unexpectedly
+            try { passwordField.focus(); } catch (e) { /* ignore */ }
         }
     </script>
 </body>

@@ -333,19 +333,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         
         .password-toggle {
             position: absolute;
-            right: 14px;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
             background: none;
             border: none;
             color: #9ca3af;
             cursor: pointer;
-            padding: 6px;
-            border-radius: 6px;
-            transition: color 0.3s ease;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            border-radius: 8px;
+            transition: color 0.18s ease, box-shadow 0.12s ease;
             z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 14px;
         }
         
         .password-toggle:hover {
+            color: #4c63d2;
+        }
+
+        .password-toggle:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76,99,210,0.14);
             color: #4c63d2;
         }
         
@@ -413,13 +426,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 padding: 15px;
                 align-items: flex-start;
                 padding-top: 30px;
+                overflow: auto; /* allow page scrolling on small screens */
+                -webkit-overflow-scrolling: touch; /* smooth momentum scrolling on iOS */
             }
 
             .register-container {
                 grid-template-columns: 1fr;
-                max-width: 500px;
+                max-width: 420px;
                 min-height: auto;
-                border-radius: 20px;
+                border-radius: 16px;
+                box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+                max-height: none; /* ensure container doesn't block page scroll */
             }
             
             .register-right {
@@ -427,13 +444,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             }
             
             .register-left {
-                padding: 35px 30px;
+                padding: 20px 18px;
                 max-height: none;
+                overflow: visible;
             }
             
+
             .form-row {
                 grid-template-columns: 1fr;
-                gap: 0;
+                gap: 10px;
             }
             
             .form-group.full-width {
@@ -441,7 +460,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             }
             
             .register-header h1 {
-                font-size: 1.65rem;
+                font-size: 1.6rem;
             }
 
             .register-header p {
@@ -449,22 +468,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             }
 
             .form-group {
-                margin-bottom: 18px;
+                margin-bottom: 14px;
             }
+            .input-group i { left: 10px; }
+            .input-group input, .input-group select { padding: 12px 12px 12px 38px; }
         }
         
         @media (max-width: 480px) {
             body {
                 padding: 10px;
                 padding-top: 20px;
+                overflow: auto; /* ensure scrolling works on very small screens */
+                -webkit-overflow-scrolling: touch;
             }
 
             .register-container {
-                border-radius: 16px;
+                border-radius: 12px;
+                max-height: none;
             }
 
             .register-left {
-                padding: 25px 20px;
+                padding: 16px 14px;
             }
 
             .register-header {
@@ -472,7 +496,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             }
 
             .register-header h1 {
-                font-size: 1.5rem;
+                font-size: 1.35rem;
             }
 
             .register-header p {
@@ -481,17 +505,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             
             .input-group input,
             .input-group select {
-                padding: 11px 11px 11px 36px;
+                padding: 10px 10px 10px 34px;
                 font-size: 14px;
             }
 
             .input-group i {
-                left: 12px;
+                left: 10px;
                 font-size: 13px;
             }
 
             .password-toggle {
-                right: 12px;
+                right: 10px;
                 font-size: 13px;
             }
 
@@ -501,13 +525,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             }
 
             .form-group {
-                margin-bottom: 16px;
+                margin-bottom: 12px;
             }
             
             .btn {
-                padding: 12px 16px;
+                padding: 11px 14px;
                 font-size: 14px;
-                margin: 20px 0 18px 0;
+                margin: 18px 0 14px 0;
             }
 
             .alert {
@@ -611,9 +635,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                         <div class="input-group">
                             <i class="fas fa-lock"></i>
                             <input type="password" id="password" name="password" 
-                                   placeholder="Enter password (min 6 chars)" required>
-                            <button type="button" class="password-toggle" onclick="togglePassword('password', 'password-icon')">
-                                <i class="fas fa-eye" id="password-icon"></i>
+                                   placeholder="Enter password (min 6 chars)" required aria-describedby="toggle-password">
+                            <button type="button" id="toggle-password" class="password-toggle" aria-label="Show password" aria-pressed="false" onclick="togglePassword('password','password-icon','toggle-password')">
+                                <i class="fas fa-eye" id="password-icon" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
@@ -623,9 +647,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                         <div class="input-group">
                             <i class="fas fa-lock"></i>
                             <input type="password" id="confirm_password" name="confirm_password" 
-                                   placeholder="Confirm password" required>
-                            <button type="button" class="password-toggle" onclick="togglePassword('confirm_password', 'confirm-password-icon')">
-                                <i class="fas fa-eye" id="confirm-password-icon"></i>
+                                   placeholder="Confirm password" required aria-describedby="toggle-confirm-password">
+                            <button type="button" id="toggle-confirm-password" class="password-toggle" aria-label="Show confirm password" aria-pressed="false" onclick="togglePassword('confirm_password','confirm-password-icon','toggle-confirm-password')">
+                                <i class="fas fa-eye" id="confirm-password-icon" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
@@ -664,17 +688,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     </div>
     
     <script>
-        function togglePassword(fieldId, iconId) {
+        function togglePassword(fieldId, iconId, toggleId) {
             const passwordField = document.getElementById(fieldId);
             const passwordIcon = document.getElementById(iconId);
-            
-            if (passwordField.type === 'password') {
+            const toggleBtn = document.getElementById(toggleId);
+
+            if (!passwordField || !passwordIcon) return;
+
+            const isHidden = passwordField.type === 'password';
+            if (isHidden) {
                 passwordField.type = 'text';
                 passwordIcon.className = 'fas fa-eye-slash';
+                if (toggleBtn) {
+                    toggleBtn.setAttribute('aria-label', 'Hide password');
+                    toggleBtn.setAttribute('aria-pressed', 'true');
+                }
             } else {
                 passwordField.type = 'password';
                 passwordIcon.className = 'fas fa-eye';
+                if (toggleBtn) {
+                    toggleBtn.setAttribute('aria-label', 'Show password');
+                    toggleBtn.setAttribute('aria-pressed', 'false');
+                }
             }
+            // Keep focus on the input to avoid dismissing mobile keyboards
+            try { passwordField.focus(); } catch (e) { /* ignore */ }
         }
         
         // Password confirmation validation
