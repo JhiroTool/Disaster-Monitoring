@@ -637,6 +637,72 @@ document.addEventListener('click', function(e) {
         e.target.style.display = 'none';
     }
 });
+
+// ====================================
+// REAL-TIME INTEGRATION
+// ====================================
+if (window.realtimeSystem) {
+    // Listen for resource inventory updates
+    window.realtimeSystem.registerCallback('onUpdate', (data) => {
+        if (data.resource_update || data.stats?.resource_changes) {
+            showResourceInventoryUpdate();
+        }
+    });
+    
+    console.log('✅ Real-time updates enabled for resources page');
+}
+
+function showResourceInventoryUpdate() {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 12px 18px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: bounceIn 0.4s ease-out;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    `;
+    
+    notification.innerHTML = `
+        <i class="fas fa-warehouse" style="font-size: 18px;"></i>
+        <span style="font-size: 14px; font-weight: 500;">Resource inventory updated</span>
+        <button onclick="location.reload()" style="
+            background: white;
+            color: #10b981;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 8px;
+        ">Refresh</button>
+    `;
+    
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 7000);
+}
+
+// Add bounce animation
+if (!document.querySelector('#resources-animations')) {
+    const style = document.createElement('style');
+    style.id = 'resources-animations';
+    style.textContent = `
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    `;
+    document.head.appendChild(style);
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

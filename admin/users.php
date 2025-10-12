@@ -505,6 +505,51 @@ function filterUsers() {
         row.style.display = searchableText.includes(filter) ? '' : 'none';
     }
 }
+
+// ====================================
+// REAL-TIME INTEGRATION
+// ====================================
+if (window.realtimeSystem) {
+    // Listen for updates that might affect user counts
+    window.realtimeSystem.registerCallback('onUpdate', (data) => {
+        if (data.stats && data.stats.total_users !== undefined) {
+            showUserUpdateNotification();
+        }
+    });
+    
+    console.log('✅ Real-time updates enabled for users page');
+}
+
+function showUserUpdateNotification() {
+    // Simple notification that user data may have changed
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: #8b5cf6;
+        color: white;
+        padding: 12px 16px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        z-index: 9999;
+        font-size: 14px;
+        animation: fadeIn 0.3s ease-out;
+    `;
+    notification.innerHTML = `
+        <i class="fas fa-user-plus"></i> User data updated
+        <button onclick="this.parentElement.remove()" style="
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            margin-left: 12px;
+            font-size: 16px;
+        ">×</button>
+    `;
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 5000);
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

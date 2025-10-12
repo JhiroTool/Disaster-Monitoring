@@ -3345,7 +3345,154 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    
+    // Initialize real-time integration
+    initializeRealtimeNotifications();
 });
+
+// ====================================
+// REAL-TIME INTEGRATION FOR NOTIFICATIONS
+// ====================================
+function initializeRealtimeNotifications() {
+    if (!window.realtimeSystem) {
+        console.warn('⚠️ RealtimeSystem not available on notifications page');
+        return;
+    }
+    
+    let lastNotificationUpdate = Date.now();
+    
+    // Listen for notification updates
+    window.realtimeSystem.registerCallback('onUpdate', (data) => {
+        if (data.notification_count !== undefined) {
+            const currentTime = Date.now();
+            
+            // Throttle updates to avoid excessive refreshes (max once every 5 seconds)
+            if (currentTime - lastNotificationUpdate > 5000) {
+                lastNotificationUpdate = currentTime;
+                showNotificationUpdateBanner(data.notification_count);
+            }
+        }
+    });
+    
+    console.log('✅ Real-time updates enabled for notifications page');
+}
+
+function showNotificationUpdateBanner(newCount) {
+    // Check if banner already exists
+    if (document.getElementById('notification-realtime-banner')) {
+        return;
+    }
+    
+    const banner = document.createElement('div');
+    banner.id = 'notification-realtime-banner';
+    banner.style.cssText = `
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        padding: 14px 20px;
+        border-radius: 12px;
+        box-shadow: 0 6px 25px rgba(99, 102, 241, 0.4);
+        z-index: 10000;
+        min-width: 400px;
+        animation: notificationSlideDown 0.4s ease-out;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        font-family: 'Inter', sans-serif;
+    `;
+    
+    banner.innerHTML = `
+        <div style="
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        ">
+            <i class="fas fa-bell"></i>
+        </div>
+        <div style="flex: 1;">
+            <strong style="display: block; font-size: 15px; margin-bottom: 4px;">
+                New Notifications Available
+            </strong>
+            <span style="font-size: 13px; opacity: 0.95;">
+                There are new notifications to view
+            </span>
+        </div>
+        <button onclick="location.reload()" style="
+            background: white;
+            color: #6366f1;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        " onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'" 
+           onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+            <i class="fas fa-sync-alt"></i> Refresh List
+        </button>
+        <button onclick="this.parentElement.remove()" style="
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255,255,255,0.5);
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        " onmouseover="this.style.borderColor='white'" onmouseout="this.style.borderColor='rgba(255,255,255,0.5)'">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    document.body.appendChild(banner);
+    
+    // Auto-remove after 15 seconds
+    setTimeout(() => {
+        if (banner.parentElement) {
+            banner.style.animation = 'notificationSlideUp 0.4s ease-out';
+            setTimeout(() => banner.remove(), 400);
+        }
+    }, 15000);
+}
+
+// Add notification-specific animations
+if (!document.querySelector('#notification-page-animations')) {
+    const style = document.createElement('style');
+    style.id = 'notification-page-animations';
+    style.textContent = `
+        @keyframes notificationSlideDown {
+            from {
+                transform: translate(-50%, -150%);
+                opacity: 0;
+            }
+            to {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes notificationSlideUp {
+            from {
+                transform: translate(-50%, 0);
+                opacity: 1;
+            }
+            to {
+                transform: translate(-50%, -150%);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

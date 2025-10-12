@@ -433,6 +433,58 @@ document.addEventListener('click', function(e) {
 
 // Set minimum datetime for expiration
 document.getElementById('expires_at').min = new Date().toISOString().slice(0, 16);
+
+// ====================================
+// REAL-TIME INTEGRATION
+// ====================================
+if (window.realtimeSystem) {
+    // Listen for new announcements or updates
+    window.realtimeSystem.registerCallback('onUpdate', (data) => {
+        if (data.announcement_update) {
+            showAnnouncementUpdate();
+        }
+    });
+    
+    console.log('✅ Real-time updates enabled for announcements page');
+}
+
+function showAnnouncementUpdate() {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: #6366f1;
+        color: white;
+        padding: 12px 18px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideIn 0.3s ease-out;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    `;
+    
+    notification.innerHTML = `
+        <i class="fas fa-bullhorn"></i>
+        <span style="font-size: 14px;">Announcements updated</span>
+        <button onclick="location.reload()" style="
+            background: white;
+            color: #6366f1;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 8px;
+        ">Refresh</button>
+    `;
+    
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 6000);
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

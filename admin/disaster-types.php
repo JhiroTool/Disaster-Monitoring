@@ -1127,6 +1127,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// ====================================
+// REAL-TIME INTEGRATION (Minimal - Low Priority)
+// ====================================
+if (window.realtimeSystem) {
+    console.log('✅ Real-time system available for disaster-types page');
+    // Disaster types page has minimal need for real-time updates
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

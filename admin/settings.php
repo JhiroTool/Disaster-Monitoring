@@ -587,6 +587,14 @@ document.addEventListener('click', function(e) {
         e.target.style.display = 'none';
     }
 });
+
+// ====================================
+// REAL-TIME INTEGRATION (Minimal - Low Priority)
+// ====================================
+if (window.realtimeSystem) {
+    console.log('✅ Real-time system available for settings page');
+    // Settings page has minimal need for real-time updates
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

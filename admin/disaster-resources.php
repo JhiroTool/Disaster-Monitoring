@@ -617,6 +617,64 @@ document.addEventListener('click', function(e) {
         e.target.style.display = 'none';
     }
 });
+
+// ====================================
+// REAL-TIME INTEGRATION
+// ====================================
+if (window.realtimeSystem) {
+    // Listen for resource allocation updates
+    window.realtimeSystem.registerCallback('onUpdate', (data) => {
+        if (data.resource_update) {
+            showResourceUpdateNotification(data.resource_update);
+        }
+    });
+    
+    console.log('✅ Real-time updates enabled for disaster-resources page');
+}
+
+function showResourceUpdateNotification(updateInfo) {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        padding: 14px 18px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 10000;
+        min-width: 300px;
+        animation: slideInRight 0.3s ease-out;
+        font-family: 'Inter', sans-serif;
+    `;
+    
+    notification.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 12px;">
+            <i class="fas fa-box" style="font-size: 20px;"></i>
+            <div style="flex: 1;">
+                <strong style="display: block; margin-bottom: 4px;">Resource Updated</strong>
+                <span style="font-size: 13px; opacity: 0.95;">Resource allocation has changed.</span>
+            </div>
+            <button onclick="location.reload()" style="
+                background: white;
+                color: #f59e0b;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-weight: 600;
+                cursor: pointer;
+                font-size: 12px;
+            ">Refresh</button>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    setTimeout(() => {
+        notification.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 8000);
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

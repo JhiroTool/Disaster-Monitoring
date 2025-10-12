@@ -141,5 +141,119 @@ include 'includes/header.php';
     <?php endif; ?>
     </div>
 </div>
+
+<script>
+// ====================================
+// REAL-TIME INTEGRATION
+// ====================================
+const currentDisasterId = <?php echo $disaster_id; ?>;
+
+if (window.realtimeSystem) {
+    // Listen for updates to this disaster
+    window.realtimeSystem.registerCallback('onUpdate', (data) => {
+        if (data.disaster_id == currentDisasterId) {
+            showUpdateNotification();
+        }
+    });
+    
+    // Listen for status changes
+    window.realtimeSystem.registerCallback('onStatusChange', (data) => {
+        if (data.disaster_id == currentDisasterId) {
+            showStatusChangeNotification(data.new_status);
+        }
+    });
+    
+    console.log('✅ Real-time updates enabled for view-disaster #' + currentDisasterId);
+} else {
+    console.warn('⚠️ RealtimeSystem not available on view-disaster page');
+}
+
+function showUpdateNotification() {
+    const banner = document.createElement('div');
+    banner.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #3b82f6;
+        color: white;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideUp 0.4s ease-out;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: 'Inter', sans-serif;
+    `;
+    
+    banner.innerHTML = `
+        <i class="fas fa-info-circle" style="font-size: 20px;"></i>
+        <div>
+            <strong style="display: block;">Information Updated</strong>
+            <span style="font-size: 14px;">This disaster has been modified.</span>
+        </div>
+        <button onclick="location.reload()" style="
+            background: white;
+            color: #3b82f6;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 12px;
+        ">
+            Reload
+        </button>
+    `;
+    
+    document.body.appendChild(banner);
+    setTimeout(() => banner.remove(), 10000);
+}
+
+function showStatusChangeNotification(newStatus) {
+    const banner = document.createElement('div');
+    banner.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #10b981;
+        color: white;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        z-index: 10000;
+        animation: slideUp 0.4s ease-out;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: 'Inter', sans-serif;
+    `;
+    
+    banner.innerHTML = `
+        <i class="fas fa-check-circle" style="font-size: 20px;"></i>
+        <div>
+            <strong style="display: block;">Status Changed</strong>
+            <span style="font-size: 14px;">New status: ${newStatus}</span>
+        </div>
+        <button onclick="location.reload()" style="
+            background: white;
+            color: #10b981;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-left: 12px;
+        ">
+            Reload
+        </button>
+    `;
+    
+    document.body.appendChild(banner);
+    setTimeout(() => banner.remove(), 10000);
+}
+</script>
+
 <?php include 'includes/footer.php'; ?>
 <link rel="stylesheet" href="assets/css/admin.css?v=2">

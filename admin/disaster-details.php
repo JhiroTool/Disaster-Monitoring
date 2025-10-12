@@ -664,6 +664,138 @@ document.getElementById('lgu_id').addEventListener('change', function() {
         userSelect.innerHTML = '<option value="">Select staff member...</option>';
     }
 });
+
+// ====================================
+// REAL-TIME INTEGRATION
+// ====================================
+const currentDisasterId = <?php echo $disaster_id; ?>;
+
+if (window.realtimeSystem) {
+    // Listen for status changes to this specific disaster
+    window.realtimeSystem.registerCallback('onStatusChange', (data) => {
+        if (data.disaster_id == currentDisasterId) {
+            showRealtimeUpdateBanner('Status Update', `Disaster status changed to: ${data.new_status}`, 'info');
+            
+            // Update the status badge if it exists
+            updateStatusDisplay(data.new_status);
+        }
+    });
+    
+    // Listen for general updates (assignments, new comments, etc.)
+    window.realtimeSystem.registerCallback('onUpdate', (data) => {
+        if (data.disaster_id == currentDisasterId) {
+            showRealtimeUpdateBanner('Update', 'This disaster has been updated. Reload to see changes.', 'info');
+        }
+    });
+    
+    console.log('✅ Real-time updates enabled for disaster #' + currentDisasterId);
+} else {
+    console.warn('⚠️ RealtimeSystem not available on disaster-details page');
+}
+
+function updateStatusDisplay(newStatus) {
+    const statusBadge = document.querySelector('.status-badge, [class*="status"]');
+    if (statusBadge) {
+        statusBadge.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1).toLowerCase().replace(/_/g, ' ');
+        statusBadge.className = 'status-badge status-' + newStatus.toLowerCase().replace(/\s+/g, '-');
+        
+        // Add pulse animation
+        statusBadge.style.animation = 'pulse 0.5s ease-in-out';
+        setTimeout(() => {
+            statusBadge.style.animation = '';
+        }, 500);
+    }
+}
+
+function showRealtimeUpdateBanner(title, message, type = 'info') {
+    // Remove existing banner if any
+    const existing = document.getElementById('realtime-update-banner');
+    if (existing) existing.remove();
+    
+    const banner = document.createElement('div');
+    banner.id = 'realtime-update-banner';
+    banner.style.cssText = `
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: ${type === 'info' ? '#3b82f6' : '#f59e0b'};
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        z-index: 10000;
+        min-width: 400px;
+        max-width: 600px;
+        animation: slideDown 0.4s ease-out;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-family: 'Inter', sans-serif;
+    `;
+    
+    banner.innerHTML = `
+        <i class="fas fa-${type === 'info' ? 'sync-alt' : 'exclamation-circle'}" style="font-size: 20px;"></i>
+        <div style="flex: 1;">
+            <strong style="display: block; margin-bottom: 4px;">${title}</strong>
+            <span style="font-size: 14px; opacity: 0.95;">${message}</span>
+        </div>
+        <button onclick="location.reload()" style="
+            background: white;
+            color: ${type === 'info' ? '#3b82f6' : '#f59e0b'};
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            <i class="fas fa-sync-alt"></i> Reload
+        </button>
+        <button onclick="this.parentElement.remove()" style="
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        ">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    document.body.appendChild(banner);
+    
+    // Auto-remove after 20 seconds
+    setTimeout(() => {
+        if (banner.parentElement) {
+            banner.style.animation = 'slideUp 0.4s ease-out';
+            setTimeout(() => banner.remove(), 400);
+        }
+    }, 20000);
+}
+
+// Add animations
+if (!document.querySelector('#disaster-details-animations')) {
+    const style = document.createElement('style');
+    style.id = 'disaster-details-animations';
+    style.textContent = `
+        @keyframes slideDown {
+            from { transform: translate(-50%, -100%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translate(-50%, 0); opacity: 1; }
+            to { transform: translate(-50%, -100%); opacity: 0; }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    `;
+    document.head.appendChild(style);
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

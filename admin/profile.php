@@ -514,6 +514,14 @@ document.querySelector('.password-form').addEventListener('submit', function(e) 
         alert('New passwords do not match');
     }
 });
+
+// ====================================
+// REAL-TIME INTEGRATION (Minimal - Low Priority)
+// ====================================
+if (window.realtimeSystem) {
+    console.log('✅ Real-time system available for profile page');
+    // Profile page has minimal need for real-time updates
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>

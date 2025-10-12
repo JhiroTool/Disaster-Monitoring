@@ -544,6 +544,129 @@ new Chart(trendsCtx, {
     }
 });
 <?php endif; ?>
+
+// ====================================
+// REAL-TIME INTEGRATION
+// ====================================
+if (window.realtimeSystem) {
+    // Listen for new reports
+    window.realtimeSystem.registerCallback('onNewReport', (data) => {
+        showNewReportNotification(data);
+    });
+    
+    // Listen for general updates
+    window.realtimeSystem.registerCallback('onUpdate', (data) => {
+        if (data.stats && data.stats.total_disasters !== undefined) {
+            updateReportIndicator(data.stats);
+        }
+    });
+    
+    console.log('✅ Real-time updates enabled for reports page');
+} else {
+    console.warn('⚠️ RealtimeSystem not available on reports page');
+}
+
+function showNewReportNotification(data) {
+    const banner = document.createElement('div');
+    banner.className = 'realtime-notification-banner';
+    banner.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 16px 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        z-index: 10000;
+        min-width: 320px;
+        animation: slideInRight 0.4s ease-out;
+        font-family: 'Inter', sans-serif;
+    `;
+    
+    banner.innerHTML = `
+        <div style="display: flex; align-items: start; gap: 12px;">
+            <i class="fas fa-file-alt" style="font-size: 24px; margin-top: 2px;"></i>
+            <div style="flex: 1;">
+                <strong style="display: block; margin-bottom: 4px; font-size: 16px;">
+                    📊 New Disaster Report
+                </strong>
+                <div style="font-size: 14px; opacity: 0.95; margin-bottom: 8px;">
+                    ${data.disaster_name || 'New disaster'} reported in ${data.city || 'Unknown location'}
+                </div>
+                <button onclick="location.reload()" style="
+                    background: white;
+                    color: #667eea;
+                    border: none;
+                    padding: 6px 12px;
+                    border-radius: 6px;
+                    font-weight: 600;
+                    cursor: pointer;
+                    font-size: 13px;
+                    margin-right: 8px;
+                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <i class="fas fa-sync-alt"></i> Refresh Reports
+                </button>
+                <button onclick="this.closest('.realtime-notification-banner').remove()" style="
+                    background: transparent;
+                    color: white;
+                    border: 1px solid white;
+                    padding: 6px 12px;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    font-size: 13px;
+                ">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(banner);
+    
+    // Auto-remove after 15 seconds
+    setTimeout(() => {
+        if (banner.parentElement) {
+            banner.style.animation = 'slideOutRight 0.4s ease-out';
+            setTimeout(() => banner.remove(), 400);
+        }
+    }, 15000);
+}
+
+function updateReportIndicator(stats) {
+    // Add a subtle indicator that new data is available
+    const pageHeader = document.querySelector('.page-header h1, .content-header h1');
+    if (pageHeader && !document.querySelector('.report-update-indicator')) {
+        const indicator = document.createElement('span');
+        indicator.className = 'report-update-indicator';
+        indicator.innerHTML = '<i class="fas fa-circle" style="color: #10b981; font-size: 8px; margin-left: 8px; animation: blink 1s infinite;"></i>';
+        indicator.title = 'New reports available';
+        pageHeader.appendChild(indicator);
+        
+        setTimeout(() => indicator.remove(), 5000);
+    }
+}
+
+// Add animations
+if (!document.querySelector('#reports-page-animations')) {
+    const style = document.createElement('style');
+    style.id = 'reports-page-animations';
+    style.textContent = `
+        @keyframes slideInRight {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOutRight {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(400px); opacity: 0; }
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    `;
+    document.head.appendChild(style);
+}
 </script>
 
 <?php include 'includes/footer.php'; ?>
