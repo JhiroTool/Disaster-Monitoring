@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+// Load Composer autoloader for PHPMailer
+if (file_exists('vendor/autoload.php')) {
+    require_once 'vendor/autoload.php';
+}
+
 // Include database connection
 require_once 'config/database.php';
 
@@ -103,6 +109,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
         // Validate phone number
         if (!empty($required_fields['phone']) && !validatePhone($required_fields['phone'])) {
             $validation_errors[] = "Invalid phone number format";
+        }
+        
+        // Validate email if provided
+        $reporter_email = sanitizeInput($_POST['reporter_email'] ?? '');
+        if (!empty($reporter_email) && !filter_var($reporter_email, FILTER_VALIDATE_EMAIL)) {
+            $validation_errors[] = "Invalid email address format";
         }
         
         if (empty($validation_errors)) {
@@ -403,11 +415,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                 // ignore
             }
 
-            // Add landmark, people_affected, current_situation, immediate_needs to insert if columns exist
+            // Add landmark, people_affected, current_situation, immediate_needs, reporter_email to insert if columns exist
             $has_landmark = false;
             $has_people_affected = false;
             $has_current_situation = false;
             $has_immediate_needs = false;
+            $has_reporter_email = false;
             try {
                 $cols = $pdo->query("SHOW COLUMNS FROM disasters LIKE 'landmark'")->fetchAll();
                 if (!empty($cols)) $has_landmark = true;
@@ -424,6 +437,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                 $cols = $pdo->query("SHOW COLUMNS FROM disasters LIKE 'immediate_needs'")->fetchAll();
                 if (!empty($cols)) $has_immediate_needs = true;
             } catch (Exception $e) {}
+            try {
+                $cols = $pdo->query("SHOW COLUMNS FROM disasters LIKE 'reporter_email'")->fetchAll();
+                if (!empty($cols)) $has_reporter_email = true;
+            } catch (Exception $e) {}
 
             // Build dynamic insert
             $fields = [
@@ -436,6 +453,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                 $has_people_affected ? 'people_affected' : null,
                 $has_current_situation ? 'current_situation' : null,
                 $has_immediate_needs ? 'immediate_needs' : null,
+                $has_reporter_email ? 'reporter_email' : null,
                 'reported_by_user_id', // Add this field to link disasters to users
                 'status', 'created_at'
             ];
@@ -471,6 +489,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
             if ($has_people_affected) $params[':people_affected'] = $people_affected;
             if ($has_current_situation) $params[':current_situation'] = $current_situation;
             if ($has_immediate_needs) $params[':immediate_needs'] = $immediate_needs_json;
+            if ($has_reporter_email) $params[':reporter_email'] = $reporter_email;
             $stmt->execute($params);
             $disaster_id = $pdo->lastInsertId();
             
@@ -500,6 +519,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
             } catch (Exception $notif_error) {
                 // Log error but don't stop the submission process
                 error_log("Error creating notifications: " . $notif_error->getMessage());
+            }
+            
+            // Send tracking email to reporter if email is provided
+            if (!empty($reporter_email)) {
+                try {
+                    // Get disaster type name for email
+                    $disaster_type_stmt = $pdo->prepare("SELECT type_name FROM disaster_types WHERE type_id = ?");
+                    $disaster_type_stmt->execute([$type_id]);
+                    $type_name = $disaster_type_stmt->fetchColumn();
+                    
+                    // Prepare disaster data for email
+                    $disaster_data = [
+                        'tracking_id' => $tracking_id,
+                        'disaster_name' => $disaster_name,
+                        'type_name' => $type_name ?: 'Emergency Report',
+                        'city' => $city,
+                        'province' => $province,
+                        'severity_display' => $severity_display,
+                        'description' => $description,
+                        'created_at' => date('Y-m-d H:i:s')
+                    ];
+                    
+                    $email_sent = false;
+                    
+                    // Try PHPMailer first, fallback to simple mail() function
+                    if (class_exists('PHPMailer\PHPMailer\PHPMailer')) {
+                        require_once 'includes/email_helper.php';
+                        $email_sent = sendTrackingEmail($reporter_email, $reporter_name, $tracking_id, $disaster_data);
+                        error_log("Used PHPMailer for email to: {$reporter_email}");
+                    } else {
+                        require_once 'includes/simple_email_helper.php';
+                        $email_sent = sendTrackingEmailSimple($reporter_email, $reporter_name, $tracking_id, $disaster_data);
+                        error_log("Used simple mail() function for email to: {$reporter_email}");
+                    }
+                    
+                    if ($email_sent) {
+                        error_log("Tracking email sent successfully to: {$reporter_email} for disaster #{$disaster_id}");
+                    } else {
+                        error_log("Failed to send tracking email to: {$reporter_email} for disaster #{$disaster_id}");
+                    }
+                } catch (Exception $email_error) {
+                    // Log error but don't stop the submission process
+                    error_log("Error sending tracking email to {$reporter_email}: " . $email_error->getMessage());
+                }
             }
             
             // Redirect to success page
@@ -734,13 +797,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                             </div>
                         </div>
 
-                        <!-- Reporter Name -->
-                        <div class="form-group">
-                            <label for="reporterName">Your Name (Optional)</label>
-                            <input type="text" id="reporterName" name="reporter_name" 
-                                   value="<?php echo htmlspecialchars($_POST['reporter_name'] ?? ''); ?>"
-                                   placeholder="Full name (optional for anonymous reporting)">
-                            <small class="form-help">Leave blank for anonymous reporting</small>
+                        <!-- Reporter Name & Email -->
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="reporterName">Your Name (Optional)</label>
+                                <input type="text" id="reporterName" name="reporter_name" 
+                                       value="<?php echo htmlspecialchars($_POST['reporter_name'] ?? ''); ?>"
+                                       placeholder="Full name (optional for anonymous reporting)">
+                                <small class="form-help">Leave blank for anonymous reporting</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="reporterEmail">Email Address (Optional)</label>
+                                <input type="email" id="reporterEmail" name="reporter_email" 
+                                       value="<?php echo htmlspecialchars($_POST['reporter_email'] ?? ''); ?>"
+                                       placeholder="your.email@example.com">
+                                <small class="form-help">We'll send you a tracking ID and updates via email</small>
+                            </div>
                         </div>
                     </div>
 
@@ -852,6 +924,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
             barangay: '<?php echo htmlspecialchars($_POST['barangay'] ?? ''); ?>',
             purok: '<?php echo htmlspecialchars($_POST['purok'] ?? ''); ?>',
             house_no: '<?php echo htmlspecialchars($_POST['house_no'] ?? ''); ?>',
+            reporter_email: '<?php echo htmlspecialchars($_POST['reporter_email'] ?? ''); ?>',
             severity_color: '<?php echo htmlspecialchars($_POST['severity_color'] ?? ''); ?>',
             particular: '<?php echo htmlspecialchars($_POST['particular'] ?? ''); ?>',
             particular_color: '<?php echo htmlspecialchars($_POST['particular_color'] ?? ''); ?>',
