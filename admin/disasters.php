@@ -117,9 +117,10 @@ include 'includes/header.php';
         <p>Monitor and manage emergency reports from citizens</p>
     </div>
     <div class="page-actions">
-        <button onclick="refreshDisastersList()" class="btn btn-primary" id="refresh-disasters-btn">
-            <i class="fas fa-sync-alt"></i> Refresh
-        </button>
+        <div class="realtime-indicator" id="realtime-status">
+            <i class="fas fa-circle"></i>
+            <span>Live Updates Active</span>
+        </div>
         <button onclick="exportTable('disasters-table', 'disaster-reports.csv')" class="btn btn-secondary">
             <i class="fas fa-download"></i> Export CSV
         </button>
@@ -622,6 +623,43 @@ include 'includes/header.php';
     justify-content: flex-end;
     margin-top: 20px;
 }
+
+/* Real-time indicator styles */
+.realtime-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.realtime-indicator i {
+    font-size: 8px;
+    animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+.realtime-indicator.updating {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.realtime-indicator.updating i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
 </style>
 
 <script>
@@ -709,70 +747,93 @@ $(document).ready(function() {
     }, 500);
 });
 
-// Refresh disasters list using AJAX
-function refreshDisastersList() {
-    const btn = document.getElementById('refresh-disasters-btn');
-    const icon = btn.querySelector('i');
-    
-    // Add spinning animation
-    icon.classList.add('fa-spin');
-    btn.disabled = true;
-    
-    // Get current filter values
-    const params = new URLSearchParams(window.location.search);
-    
-    // Call AJAX function
-    AdminAjax.getDisastersList(params.toString(), (data) => {
-        if (data.success) {
-            // Reload the page to update DataTable (simpler than rebuilding)
-            AdminAjax.showAlert('Disasters list refreshed!', 'success');
-            setTimeout(() => location.reload(), 1000);
-        } else {
-            AdminAjax.showAlert('Failed to refresh list', 'error');
-            icon.classList.remove('fa-spin');
-            btn.disabled = false;
-        }
-    });
-}
-
 // ========================================
-// Real-Time Updates for Disasters Page
+// ENHANCED REAL-TIME UPDATES FOR DISASTERS PAGE
 // ========================================
 
 // Track last known total to detect new reports
-let lastDisasterCount = <?php echo $total_count ?? 0; ?>;
+let lastDisasterCount = <?php echo count($disasters) ?? 0; ?>;
+let updateCheckInterval = null;
+let isUpdating = false;
 
-// Register handler for real-time updates
-window.onRealtimeUpdate = function(data) {
-    console.log('🚨 Disasters page: Update received', data);
+// Initialize real-time integration
+if (window.realtimeSystem) {
+    // Register for new report notifications
+    window.realtimeSystem.registerCallback('onNewReport', (data) => {
+        console.log('🚨 New disaster report received:', data);
+        handleNewDisasterNotification(data);
+    });
     
-    // Check if new disasters were added
-    if (data.stats.total_disasters > lastDisasterCount) {
-        const newCount = data.stats.total_disasters - lastDisasterCount;
-        lastDisasterCount = data.stats.total_disasters;
-        
-        // Show banner notification
-        showNewDisasterBanner(newCount);
+    // Register for general updates
+    window.realtimeSystem.registerCallback('onUpdate', (data) => {
+        if (data.stats && data.stats.total_disasters !== undefined) {
+            checkForNewDisasters(data.stats.total_disasters);
+        }
+    });
+    
+    // Visual indicator that real-time is active
+    setRealtimeIndicator('active');
+    console.log('✅ Real-time updates enabled for disasters page');
+} else {
+    setRealtimeIndicator('offline');
+    console.warn('⚠️ Real-time system not available');
+}
+
+// Update the real-time status indicator
+function setRealtimeIndicator(status) {
+    const indicator = document.getElementById('realtime-status');
+    if (!indicator) return;
+    
+    const icon = indicator.querySelector('i');
+    const text = indicator.querySelector('span');
+    
+    if (status === 'active') {
+        indicator.className = 'realtime-indicator';
+        icon.className = 'fas fa-circle';
+        text.textContent = 'Live Updates Active';
+    } else if (status === 'updating') {
+        indicator.className = 'realtime-indicator updating';
+        icon.className = 'fas fa-sync-alt fa-spin';
+        text.textContent = 'Checking for updates...';
+    } else if (status === 'offline') {
+        indicator.style.background = '#6b7280';
+        icon.className = 'fas fa-circle';
+        text.textContent = 'Updates Offline';
     }
-};
+}
 
-// Register handler for new reports
-window.onNewReport = function(count, stats) {
-    console.log('🚨 Disasters page: New report detected', count);
+// Check if new disasters have been added
+function checkForNewDisasters(currentTotal) {
+    if (currentTotal > lastDisasterCount) {
+        const newCount = currentTotal - lastDisasterCount;
+        lastDisasterCount = currentTotal;
+        handleNewDisasterNotification({ count: newCount });
+    }
+}
+
+// Handle new disaster notifications
+function handleNewDisasterNotification(data) {
+    const count = data.count || 1;
     
-    // Show prominent notification banner
-    showNewDisasterBanner(count);
-};
+    // Update indicator
+    setRealtimeIndicator('updating');
+    
+    // Show smart notification banner
+    showSmartDisasterBanner(count, data);
+    
+    // Reset indicator after a moment
+    setTimeout(() => setRealtimeIndicator('active'), 2000);
+}
 
-// Show banner notification with reload button
-function showNewDisasterBanner(count) {
+// Show smart disaster notification banner
+function showSmartDisasterBanner(count, data) {
     // Remove existing banner if present
     const existingBanner = document.getElementById('new-disaster-banner');
     if (existingBanner) {
         existingBanner.remove();
     }
     
-    // Create new banner
+    // Create new banner with auto-refresh option
     const banner = document.createElement('div');
     banner.id = 'new-disaster-banner';
     banner.style.cssText = `
@@ -780,64 +841,99 @@ function showNewDisasterBanner(count) {
         top: 70px;
         left: 50%;
         transform: translateX(-50%);
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         color: white;
-        padding: 15px 30px;
+        padding: 16px 28px;
         border-radius: 12px;
-        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
+        box-shadow: 0 8px 32px rgba(245, 158, 11, 0.4);
         z-index: 9999;
         display: flex;
         align-items: center;
-        gap: 15px;
+        gap: 16px;
         font-weight: 600;
         animation: slideDown 0.4s ease-out;
-        cursor: pointer;
+        max-width: 600px;
+        font-family: 'Inter', sans-serif;
     `;
     
+    const disasterInfo = data.disaster_name ? 
+        `<strong>${data.disaster_name}</strong> in ${data.city || 'Unknown location'}` :
+        `${count} new disaster report${count > 1 ? 's' : ''}`;
+    
     banner.innerHTML = `
-        <i class="fas fa-exclamation-triangle" style="font-size: 1.2rem;"></i>
-        <span>${count} new disaster report${count > 1 ? 's' : ''} ${count > 1 ? 'have' : 'has'} been submitted</span>
+        <div style="
+            width: 42px;
+            height: 42px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        ">
+            <i class="fas fa-exclamation-triangle" style="font-size: 20px;"></i>
+        </div>
+        <div style="flex: 1;">
+            <div style="font-size: 15px; margin-bottom: 4px;">
+                🚨 New Emergency Report
+            </div>
+            <div style="font-size: 13px; opacity: 0.95; font-weight: 500;">
+                ${disasterInfo}
+            </div>
+        </div>
         <button onclick="location.reload()" style="
             background: white;
-            color: #059669;
+            color: #d97706;
             border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
+            padding: 10px 18px;
+            border-radius: 8px;
             font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s;
-        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-            <i class="fas fa-sync-alt"></i> Reload Page
+            font-size: 13px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'" 
+           onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.1)'">
+            <i class="fas fa-sync-alt"></i> View Now
         </button>
         <button onclick="document.getElementById('new-disaster-banner').remove()" style="
             background: transparent;
             color: white;
-            border: 2px solid white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
             padding: 8px 12px;
-            border-radius: 6px;
-            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
-        ">
+            font-size: 14px;
+            transition: all 0.2s;
+        " onmouseover="this.style.borderColor='white'; this.style.background='rgba(255,255,255,0.1)'" 
+           onmouseout="this.style.borderColor='rgba(255,255,255,0.5)'; this.style.background='transparent'">
             <i class="fas fa-times"></i>
         </button>
     `;
     
-    // Click to reload
-    banner.onclick = (e) => {
-        if (e.target.tagName !== 'BUTTON') {
-            location.reload();
-        }
-    };
-    
     document.body.appendChild(banner);
     
-    // Auto-remove after 30 seconds
+    // Play subtle notification sound (optional - can be enabled)
+    // playNotificationSound();
+    
+    // Auto-dismiss after 20 seconds
     setTimeout(() => {
         if (banner.parentElement) {
             banner.style.animation = 'slideUp 0.4s ease-out';
             setTimeout(() => banner.remove(), 400);
         }
-    }, 30000);
+    }, 20000);
+}
+
+// Optional: Play a subtle notification sound
+function playNotificationSound() {
+    try {
+        const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGWi68OScTgwMUKfh8bllHAU2jdXwz3krBSl+zPLaizsKGGC36+mmVRIJPJnc8sFuIQUqf9Dy14o2Bxdnuuzjm08LDU6n4PG4Zh0FN4/V8c9zKgQofcvx2Yk7CRZctunqp1USCkCY3fLAbiQEKn/P8teKNggXZ7rr45tPCw1Pp+DyuWYdBTiP1vHPcyoEKH3L8dmJOwkWXLbp6qdVEgtAmN3ywG4kBCp/z/LXijYIF2e66+ObTwsNT6fg8rpmHQU4j9bxz3IpBCh9y/HZiToJFly16OqnVRIKQJjd8sFuJAQqf8/y14o2CRZnuuvimk0LDU6n4PG3Zh0FN4/W8c9zKgQpfcvx2Yo7CRZctujqp1QSCkCY3fLAbSQFKn/O8teKNgcZaLrr4plNCgxPpuHxt2UcBTeP1fDPcioEKH7M8dmKOwgWXLXp6adVEgpAmN3ywG4kBSl/z/LXiTcIGGa76uKaTQsNTqfg8bhnHQU4jtXwznMqBCl9y/HaiTsJFly16OqnVRIKP5fe8cBuIQUpfs/y2Io2BxZotuvimk0LDU+n4PG3Zh0FN4/W8c9yKQQofcvx2Yo7CRZctejqp1USCj+Y3PLAbiQEKX/P8teKNggXZ7vr4ZpNCg1Op+DxuGYdBTeP1vHPcioEKH3L8dmJOwkWXLXo6qdVEgo/mN3ywG4kBCp/z/LXijYIF2e76+KaTQsNTqfg8bhmHQU3j9Xxz3MqBCh9y/HZiToJFly16OqnVRIKQJjd8r9uJAUpf8/y14o2BxZnvuzjm08LDU+n4PG4Zh0FOJDW8c90KgQofcvx2Ik7CRZctejqp1USCj+Y3fLAbiQEKn/P8teKNggXZ7rr4ppNCw1Op+DyuWYdBTiP1vHPcyoEKH3L8dmJOwkWXLXo6qdVEgpAmN3yv24kBSl/z/LXiTYHGWi67OObTwsNT6bh8rhlHQU3j9bxz3IqBCh+y/HZijoKFlyx6OqmVRILQJjd8sBuJAUpfs/y2Io2Bxdnuuvjm08LDU+m4fK5Zh0FN4/W8c9zKgQnfsvx2Yk7ChZctefrplUSCkCY3fLAbiQEKn/P8teJNwgWZ7rr4ptNCw1Pp+DxuGYdBTeP1vHPcioEKH7L8dmJOwkWXLXo6qdVEgpAmN3ywG4kBSl/z/LXijYIF2e66+KaTQsNTqfg8bhnHQU4jtXwznMqBCl9y/HaiTsJFlyx6OqnVRIKQJjd8sBtJAUpfs/y2Io2BxZouuvjm08LDU+n4PG4Zh0FN4/V8c9yKQQofcvx2Yo7CRVctejqp1USCj+Y3fLAbiQFKX/P8teKNggWZ7rr4ppNCw1Op+DyuGYdBTiP1fHPcioEKH3L8dmJOwkWXLXo6qdVEgpAmN3yv24kBSl/z/LXijYHFme+7OObTwsNT6fg8rhlHQU4jtXw');
+        audio.volume = 0.3;
+        audio.play().catch(() => {}); // Fail silently if autoplay blocked
+    } catch (e) {
+        // Ignore audio errors
+    }
 }
 
 // Add slideDown/slideUp animations
