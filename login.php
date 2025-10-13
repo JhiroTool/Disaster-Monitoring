@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     } else {
         try {
             // Check user credentials
-            $stmt = $pdo->prepare("SELECT user_id, username, email, password_hash, first_name, last_name, role, is_active FROM users WHERE username = ? OR email = ?");
+            $stmt = $pdo->prepare("SELECT user_id, username_reporters, email, password_hash, first_name, last_name, role, is_active FROM users WHERE username_reporters = ? OR email = ?");
             $stmt->execute([$username, $username]);
             $user = $stmt->fetch();
             
@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                 if ($user['is_active']) {
                     // Set session variables
                     $_SESSION['user_id'] = $user['user_id'];
-                    $_SESSION['username'] = $user['username'];
+                    $_SESSION['username'] = $user['username_reporters'];
                     $_SESSION['email'] = $user['email'];
                     $_SESSION['first_name'] = $user['first_name'];
                     $_SESSION['last_name'] = $user['last_name'];

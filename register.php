@@ -19,18 +19,18 @@ $success_message = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     $first_name = sanitizeInput($_POST['first_name'] ?? '');
     $last_name = sanitizeInput($_POST['last_name'] ?? '');
-    $username = sanitizeInput($_POST['username'] ?? '');
+    $username_reporters = sanitizeInput($_POST['username_reporters'] ?? '');
     $email = sanitizeInput($_POST['email'] ?? '');
     $phone = sanitizeInput($_POST['phone'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     
     // Validation
-    if (empty($first_name) || empty($last_name) || empty($username) || empty($email) || empty($password) || empty($confirm_password)) {
+    if (empty($first_name) || empty($last_name) || empty($username_reporters) || empty($email) || empty($password) || empty($confirm_password)) {
         $error_message = 'Please fill in all required fields.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = 'Please enter a valid email address.';
-    } elseif (strlen($username) < 3) {
+    } elseif (strlen($username_reporters) < 3) {
         $error_message = 'Username must be at least 3 characters long.';
     } elseif (strlen($password) < 6) {
         $error_message = 'Password must be at least 6 characters long.';
@@ -41,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     } else {
         try {
             // Check if username already exists
-            $check_stmt = $pdo->prepare("SELECT user_id FROM users WHERE username = ? OR email = ?");
-            $check_stmt->execute([$username, $email]);
+            $check_stmt = $pdo->prepare("SELECT user_id FROM users WHERE username_reporters = ? OR email = ?");
+            $check_stmt->execute([$username_reporters, $email]);
             
             if ($check_stmt->rowCount() > 0) {
                 $error_message = 'Username or email already exists. Please choose different credentials.';
@@ -51,12 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 $password_hash = password_hash($password, PASSWORD_DEFAULT);
                 
                 $insert_stmt = $pdo->prepare("
-                    INSERT INTO users (username, email, password_hash, first_name, last_name, role, phone, is_active, email_verified) 
+                    INSERT INTO users (username_reporters, email, password_hash, first_name, last_name, role, phone, is_active, email_verified) 
                     VALUES (?, ?, ?, ?, ?, 'reporter', ?, 1, 0)
                 ");
                 
                 $insert_stmt->execute([
-                    $username,
+                    $username_reporters,
                     $email,
                     $password_hash,
                     $first_name,
@@ -72,11 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 $success_message = 'Registration successful! You can now log in with your credentials and report emergencies in your area.';
                 
                 // Clear form data
-                $first_name = $last_name = $username = $email = $phone = '';
+                $first_name = $last_name = $username_reporters = $email = $phone = '';
             }
         } catch (Exception $e) {
             error_log("Registration error: " . $e->getMessage());
-            $error_message = 'An error occurred during registration. Please try again.';
+            error_log("Registration error trace: " . $e->getTraceAsString());
+            // Show detailed error in development (comment out in production)
+            $error_message = 'An error occurred during registration: ' . $e->getMessage();
         }
     }
 }
@@ -599,11 +601,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="username">Username <span class="required">*</span></label>
+                        <label for="username_reporters">Username <span class="required">*</span></label>
                         <div class="input-group">
                             <i class="fas fa-at"></i>
-                            <input type="text" id="username" name="username" 
-                                   value="<?php echo htmlspecialchars($username ?? ''); ?>"
+                            <input type="text" id="username_reporters" name="username_reporters" 
+                                   value="<?php echo htmlspecialchars($username_reporters ?? ''); ?>"
                                    placeholder="Choose username" required>
                         </div>
                     </div>

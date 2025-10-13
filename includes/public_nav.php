@@ -62,10 +62,10 @@ if ($nav_user_role === 'reporter') {
 ?>
 <nav class="navbar">
     <div class="nav-container">
-        <div class="nav-logo">
+        <a href="index.php" class="nav-logo" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.5rem;">
             <img src="assets/images/icon2.png" alt="iMSafe Logo" class="nav-logo-img">
             <span>iMSafe Disaster Monitoring System</span>
-        </div>
+        </a>
         <div class="nav-menu" id="nav-menu">
             <?php if ($is_logged_in): ?>
                 <?php if ($nav_user_role === 'reporter'): ?>

@@ -176,12 +176,12 @@ p {
 }
 
 .nav-logo-img {
-    width: 24px !important;
-    height: 24px !important;
+    width: 40px !important;
+    height: 40px !important;
     object-fit: contain;
     display: block;
-    max-width: 24px !important;
-    max-height: 24px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
 }
 
 .nav-menu {
