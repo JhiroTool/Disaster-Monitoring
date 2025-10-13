@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 // Get tracking ID from URL parameter
 $tracking_id = $_GET['tracking_id'] ?? '';
 
@@ -6,6 +8,12 @@ if (empty($tracking_id)) {
     header('Location: report_emergency.php');
     exit;
 }
+
+// Check if user is logged in
+$is_logged_in = isset($_SESSION['user_id']);
+$user_id = $is_logged_in ? $_SESSION['user_id'] : null;
+$user_role = $is_logged_in ? $_SESSION['role'] : '';
+$user_name = $is_logged_in ? ($_SESSION['first_name'] . ' ' . $_SESSION['last_name']) : '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -147,6 +155,62 @@ if (empty($tracking_id)) {
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
+        /* User Navigation Styles */
+        .user-nav {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .user-nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .user-nav a {
+            color: rgba(255,255,255,0.9);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .user-nav a:hover {
+            color: white;
+        }
+        
+        .user-nav .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .user-nav .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .user-nav .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .user-nav .nav-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .user-nav .user-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+        
         @media (max-width: 768px) {
             .tracking-info h3 {
                 font-size: 2em;
@@ -173,7 +237,83 @@ if (empty($tracking_id)) {
 </head>
 <body>
     <!-- Navigation -->
-    <?php require_once __DIR__ . '/includes/public_nav.php'; ?>
+    <?php 
+    // Use different navigation based on login status
+    if ($is_logged_in) {
+        if ($user_role === 'admin') {
+            // For admins, show admin navigation
+            ?>
+            <nav class="user-nav">
+                <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 30px;">
+                        <a href="admin/dashboard.php" style="color: white; text-decoration: none; font-weight: 700; font-size: 1.4rem; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-shield-alt"></i>
+                            iMSafe Admin
+                        </a>
+                        <div style="display: flex; gap: 20px;">
+                            <a href="admin/dashboard.php">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a href="admin/disasters.php">
+                                <i class="fas fa-exclamation-triangle"></i> Disasters
+                            </a>
+                            <a href="admin/reports.php">
+                                <i class="fas fa-list"></i> Reports
+                            </a>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="color: rgba(255,255,255,0.9); font-size: 14px;">
+                            <i class="fas fa-user-shield"></i> <?php echo htmlspecialchars($user_name); ?>
+                        </span>
+                        <a href="logout.php" style="background: rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.3);">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            <?php
+        } else {
+            // For logged-in reporters, show reporter navigation
+            ?>
+            <nav class="user-nav">
+                <div class="container" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 30px;">
+                        <a href="index.php" style="color: white; text-decoration: none; font-weight: 700; font-size: 1.4rem; display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-shield-alt"></i>
+                            iMSafe
+                        </a>
+                        <div style="display: flex; gap: 20px;">
+                            <a href="index.php">
+                                <i class="fas fa-home"></i> Home
+                            </a>
+                            <a href="report_emergency.php">
+                                <i class="fas fa-exclamation-triangle"></i> Report Emergency
+                            </a>
+                            <a href="my_reports.php">
+                                <i class="fas fa-list"></i> My Reports
+                            </a>
+                            <a href="track_report.php">
+                                <i class="fas fa-search"></i> Track Report
+                            </a>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span style="color: rgba(255,255,255,0.9); font-size: 14px;">
+                            <i class="fas fa-user-circle"></i> <?php echo htmlspecialchars($user_name); ?>
+                        </span>
+                        <a href="logout.php" style="background: rgba(255,255,255,0.2); color: white; padding: 8px 16px; border-radius: 8px; text-decoration: none; font-weight: 500; transition: all 0.3s; border: 1px solid rgba(255,255,255,0.3);">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            <?php
+        }
+    } else {
+        require_once __DIR__ . '/includes/public_nav.php';
+    }
+    ?>
 
     <!-- Success Page -->
     <section class="success-page">
