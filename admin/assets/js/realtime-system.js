@@ -16,6 +16,7 @@ class RealtimeSystem {
             onUpdate: [],
             onNewReport: [],
             onStatusChange: [],
+            onUserStatusChange: [],
             onConnect: [],
             onDisconnect: []
         };
@@ -78,6 +79,15 @@ class RealtimeSystem {
                 this.triggerCallbacks('onNewReport', {
                     count: data.changes.new_reports,
                     stats: data.stats
+                });
+            }
+            
+            // Check for user status changes
+            if (data.changes && data.changes.user_status_changed) {
+                console.log('👤 User status change detected');
+                this.triggerCallbacks('onUserStatusChange', {
+                    stats: data.stats,
+                    changes: data.changes
                 });
             }
         });
@@ -178,6 +188,17 @@ class RealtimeSystem {
         }
         if (stats.completion_rate !== undefined) {
             this.updateElement('pending-disasters', stats.completion_rate);
+        }
+        
+        // Update user stats if present
+        if (stats.total_users !== undefined) {
+            this.updateElement('total-users', stats.total_users);
+        }
+        if (stats.users_need_help !== undefined) {
+            this.updateElement('users-need-help', stats.users_need_help);
+        }
+        if (stats.users_safe !== undefined) {
+            this.updateElement('users-safe', stats.users_safe);
         }
     }
     
@@ -470,6 +491,14 @@ class RealtimeSystem {
         if (this.callbacks[event]) {
             this.callbacks[event].push(callback);
         }
+    }
+    
+    /**
+     * Register callback (alias for on() method)
+     * Provides consistent API for pages to register callbacks
+     */
+    registerCallback(event, callback) {
+        return this.on(event, callback);
     }
     
     /**

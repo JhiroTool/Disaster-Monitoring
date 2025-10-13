@@ -509,46 +509,224 @@ function filterUsers() {
 // ====================================
 // REAL-TIME INTEGRATION
 // ====================================
-if (window.realtimeSystem) {
-    // Listen for updates that might affect user counts
-    window.realtimeSystem.registerCallback('onUpdate', (data) => {
-        if (data.stats && data.stats.total_users !== undefined) {
-            showUserUpdateNotification();
+console.log('🔍 Checking for RealtimeSystem...', typeof window.RealtimeSystem);
+
+// Wait a bit for the system to initialize
+setTimeout(() => {
+    if (window.RealtimeSystem) {
+        console.log('✅ RealtimeSystem found! Registering callbacks...');
+        
+        // Listen for specific user status changes (preferred method)
+        window.RealtimeSystem.registerCallback('onUserStatusChange', (data) => {
+            console.log('👤 User status change detected via dedicated callback', data);
+            updateUserStatuses();
+        });
+        
+        // Also listen for general updates as fallback
+        window.RealtimeSystem.registerCallback('onUpdate', (data) => {
+            console.log('📊 General update received:', data);
+            if (data.changes && data.changes.user_status_changed) {
+                console.log('👤 User status changed detected via general update');
+                updateUserStatuses();
+            }
+        });
+        
+        // Listen for connection events
+        window.RealtimeSystem.registerCallback('onConnect', (data) => {
+            console.log('✅ SSE Connected:', data);
+        });
+        
+        window.RealtimeSystem.registerCallback('onStatusChange', (status) => {
+            console.log('🔄 Connection status changed:', status);
+        });
+        
+        console.log('✅ Real-time updates enabled for users page');
+        
+        // Check current connection status
+        const status = window.RealtimeSystem.getStatus();
+        console.log('📊 Current RealtimeSystem status:', status);
+    } else {
+        console.error('❌ Real-time system not available after timeout!');
+        console.log('Available on window:', Object.keys(window).filter(k => k.toLowerCase().includes('real')));
+    }
+}, 1000);
+
+// Fetch and update user statuses in real-time
+async function updateUserStatuses() {
+    try {
+        const response = await fetch('ajax/get-users-data.php');
+        const data = await response.json();
+        
+        if (data.success) {
+            console.log('🔄 Updating user statuses...', data);
+            
+            // Update statistics
+            updateStatCards(data.counts);
+            
+            // Update each user row
+            data.users.forEach(user => {
+                updateUserRow(user);
+            });
+            
+            // Show notification
+            showUserUpdateNotification('Reporter status updated!');
         }
-    });
-    
-    console.log('✅ Real-time updates enabled for users page');
+    } catch (error) {
+        console.error('Error updating user statuses:', error);
+    }
 }
 
-function showUserUpdateNotification() {
-    // Simple notification that user data may have changed
+function updateStatCards(counts) {
+    // Update stat card numbers with animation
+    const statCards = {
+        'users_need_help': counts.need_help,
+        'users_safe': counts.safe
+    };
+    
+    // Update "Need Help" count (2nd stat card)
+    const needHelpCard = document.querySelectorAll('.stat-card')[1];
+    if (needHelpCard) {
+        const numberEl = needHelpCard.querySelector('.stat-number');
+        if (numberEl && numberEl.textContent != counts.need_help) {
+            animateNumberChange(numberEl, counts.need_help);
+            flashElement(needHelpCard);
+        }
+    }
+    
+    // Update "I'm Fine" count (3rd stat card)
+    const safeCard = document.querySelectorAll('.stat-card')[2];
+    if (safeCard) {
+        const numberEl = safeCard.querySelector('.stat-number');
+        if (numberEl && numberEl.textContent != counts.safe) {
+            animateNumberChange(numberEl, counts.safe);
+            flashElement(safeCard);
+        }
+    }
+}
+
+function updateUserRow(user) {
+    const rows = document.querySelectorAll('#users-table tbody tr');
+    
+    rows.forEach(row => {
+        const userIdElement = row.querySelector('.user-id');
+        if (userIdElement && userIdElement.textContent === `ID: ${user.user_id}`) {
+            // Update status badge
+            const statusCell = row.children[4]; // Status column
+            const currentStatus = user.status || "I'm fine";
+            const statusClass = currentStatus === 'Need help' ? 'help' : 'fine';
+            const statusIcon = currentStatus === 'Need help' ? 'fa-life-ring' : 'fa-user-check';
+            
+            statusCell.innerHTML = `
+                <span class="reporter-status reporter-status-${statusClass}">
+                    <i class="fas ${statusIcon}"></i>
+                    ${currentStatus}
+                </span>
+            `;
+            
+            // Flash the row to indicate update
+            flashElement(row);
+        }
+    });
+}
+
+function animateNumberChange(element, newValue) {
+    const oldValue = parseInt(element.textContent) || 0;
+    const duration = 500;
+    const steps = 20;
+    const increment = (newValue - oldValue) / steps;
+    let currentStep = 0;
+    
+    const interval = setInterval(() => {
+        currentStep++;
+        const value = Math.round(oldValue + (increment * currentStep));
+        element.textContent = value;
+        
+        if (currentStep >= steps) {
+            clearInterval(interval);
+            element.textContent = newValue;
+        }
+    }, duration / steps);
+}
+
+function flashElement(element) {
+    element.style.transition = 'background-color 0.3s ease';
+    const originalBg = element.style.backgroundColor;
+    element.style.backgroundColor = '#fef3c7'; // Light yellow flash
+    
+    setTimeout(() => {
+        element.style.backgroundColor = originalBg;
+    }, 600);
+}
+
+function showUserUpdateNotification(message = 'User data updated') {
+    // Simple notification that user status has changed
     const notification = document.createElement('div');
+    notification.className = 'realtime-notification';
     notification.style.cssText = `
         position: fixed;
         top: 80px;
         right: 20px;
-        background: #8b5cf6;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 12px 16px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        padding: 14px 18px;
+        border-radius: 10px;
+        box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
         z-index: 9999;
         font-size: 14px;
-        animation: fadeIn 0.3s ease-out;
+        font-weight: 500;
+        animation: slideInRight 0.3s ease-out;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     `;
     notification.innerHTML = `
-        <i class="fas fa-user-plus"></i> User data updated
+        <i class="fas fa-sync-alt" style="animation: spin 1s linear infinite;"></i>
+        <span>${message}</span>
         <button onclick="this.parentElement.remove()" style="
-            background: none;
+            background: rgba(255,255,255,0.2);
             border: none;
             color: white;
             cursor: pointer;
-            margin-left: 12px;
-            font-size: 16px;
-        ">×</button>
+            margin-left: 8px;
+            font-size: 18px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">×</button>
     `;
+    
+    // Add animation styles
+    if (!document.getElementById('notification-animations')) {
+        const style = document.createElement('style');
+        style.id = 'notification-animations';
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
     document.body.appendChild(notification);
-    setTimeout(() => notification.remove(), 5000);
+    setTimeout(() => {
+        notification.style.animation = 'slideInRight 0.3s ease-out reverse';
+        setTimeout(() => notification.remove(), 300);
+    }, 4000);
 }
 </script>
 

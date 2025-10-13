@@ -63,12 +63,26 @@ function getCurrentStats($pdo) {
         // Only fetch recent reports if needed (skip for lightweight checks)
         $recent_reports = [];
         
+        // Get user status counts
+        $userStatsStmt = $pdo->query("
+            SELECT 
+                COUNT(*) as total_users,
+                COUNT(CASE WHEN status = 'Need help' THEN 1 END) as users_need_help,
+                COUNT(CASE WHEN status = \"I'm fine\" THEN 1 END) as users_safe
+            FROM users 
+            WHERE role = 'reporter'
+        ");
+        $userStats = $userStatsStmt->fetch(PDO::FETCH_ASSOC);
+        
         return [
             'total_disasters' => $total,
             'active_disasters' => (int)$stats['active_disasters'],
             'critical_disasters' => (int)$stats['critical_disasters'],
             'completion_rate' => (float)$completion_rate,
             'recent_reports' => $recent_reports,
+            'total_users' => (int)($userStats['total_users'] ?? 0),
+            'users_need_help' => (int)($userStats['users_need_help'] ?? 0),
+            'users_safe' => (int)($userStats['users_safe'] ?? 0),
             'timestamp' => time()
         ];
     } catch (Exception $e) {
@@ -81,6 +95,8 @@ function getCurrentStats($pdo) {
 $lastTotal = 0;
 $lastActive = 0;
 $lastCritical = 0;
+$lastUsersNeedHelp = 0;
+$lastUsersSafe = 0;
 $lastCheck = 0;
 $checkInterval = 2; // FAST: Check every 2 seconds for quick admin response!
 
@@ -135,6 +151,18 @@ while (true) {
                     $hasChanges = true;
                     $changes['critical_changed'] = true;
                 }
+                
+                // Check for user status changes
+                if ($currentStats['users_need_help'] !== $lastUsersNeedHelp) {
+                    $hasChanges = true;
+                    $changes['user_status_changed'] = true;
+                    $changes['users_need_help_delta'] = $currentStats['users_need_help'] - $lastUsersNeedHelp;
+                }
+                
+                if ($currentStats['users_safe'] !== $lastUsersSafe) {
+                    $hasChanges = true;
+                    $changes['user_status_changed'] = true;
+                }
             }
             
             // OPTIMIZED: Only send update if something actually changed
@@ -149,6 +177,8 @@ while (true) {
                 $lastTotal = $currentStats['total_disasters'];
                 $lastActive = $currentStats['active_disasters'];
                 $lastCritical = $currentStats['critical_disasters'];
+                $lastUsersNeedHelp = $currentStats['users_need_help'];
+                $lastUsersSafe = $currentStats['users_safe'];
             }
         }
         
