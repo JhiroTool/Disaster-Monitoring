@@ -556,7 +556,7 @@ function getPriorityBadgeClass($priority) {
             color: white;
             font-size: 30px;
             cursor: pointer;
-            z-index: 10000;
+            z-index: 5000;
         }
         
         /* Real-time update animations */
@@ -900,7 +900,7 @@ function getPriorityBadgeClass($priority) {
                 padding: 15px 25px;
                 border-radius: 12px;
                 box-shadow: 0 8px 32px rgba(16, 185, 129, 0.4);
-                z-index: 10000;
+                z-index: 5000;
                 display: flex;
                 align-items: center;
                 gap: 10px;
@@ -946,7 +946,7 @@ function getPriorityBadgeClass($priority) {
             
             updateInterval = setInterval(() => {
                 fetchDisasterUpdates(trackingId);
-            }, 10000); // 10 seconds
+            }, 5000); // 5 seconds
         }
         
         // Stop real-time updates

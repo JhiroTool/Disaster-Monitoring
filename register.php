@@ -25,9 +25,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
     
+    // Address fields
+    $house_no = sanitizeInput($_POST['house_no'] ?? '');
+    $purok = sanitizeInput($_POST['purok'] ?? '');
+    $barangay = sanitizeInput($_POST['barangay'] ?? '');
+    $city = sanitizeInput($_POST['city'] ?? '');
+    $province = sanitizeInput($_POST['province'] ?? '');
+    $region = sanitizeInput($_POST['region'] ?? '');
+    $postal_code = sanitizeInput($_POST['postal_code'] ?? '');
+    $landmark = sanitizeInput($_POST['landmark'] ?? '');
+    
     // Validation
     if (empty($first_name) || empty($last_name) || empty($username_reporters) || empty($email) || empty($password) || empty($confirm_password)) {
         $error_message = 'Please fill in all required fields.';
+    } elseif (empty($barangay) || empty($city) || empty($province) || empty($region)) {
+        $error_message = 'Please fill in all required address fields (Barangay, City, Province, Region).';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = 'Please enter a valid email address.';
     } elseif (strlen($username_reporters) < 3) {
@@ -47,6 +59,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             if ($check_stmt->rowCount() > 0) {
                 $error_message = 'Username or email already exists. Please choose different credentials.';
             } else {
+                // Begin transaction
+                $pdo->beginTransaction();
+                
                 // Hash password and create user
                 $password_hash = password_hash($password, PASSWORD_DEFAULT);
                 
@@ -64,17 +79,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                     !empty($phone) ? $phone : null
                 ]);
                 
-                // Log the registration activity
+                // Get the new user ID
                 $user_id = $pdo->lastInsertId();
+                
+                // Insert user address
+                $address_stmt = $pdo->prepare("
+                    INSERT INTO user_addresses (user_id, house_no, purok, barangay, city, province, region, postal_code, landmark, is_primary) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+                ");
+                
+                $address_stmt->execute([
+                    $user_id,
+                    !empty($house_no) ? $house_no : null,
+                    !empty($purok) ? $purok : null,
+                    $barangay,
+                    $city,
+                    $province,
+                    $region,
+                    !empty($postal_code) ? $postal_code : null,
+                    !empty($landmark) ? $landmark : null
+                ]);
+                
+                // Log the registration activity
                 $log_stmt = $pdo->prepare("INSERT INTO activity_logs (user_id, action, ip_address, user_agent) VALUES (?, 'register', ?, ?)");
                 $log_stmt->execute([$user_id, $_SERVER['REMOTE_ADDR'] ?? '', $_SERVER['HTTP_USER_AGENT'] ?? '']);
+                
+                // Commit transaction
+                $pdo->commit();
                 
                 $success_message = 'Registration successful! You can now log in with your credentials and report emergencies in your area.';
                 
                 // Clear form data
                 $first_name = $last_name = $username_reporters = $email = $phone = '';
+                $house_no = $purok = $barangay = $city = $province = $region = $postal_code = $landmark = '';
             }
         } catch (Exception $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             error_log("Registration error: " . $e->getMessage());
             error_log("Registration error trace: " . $e->getTraceAsString());
             // Show detailed error in development (comment out in production)
@@ -622,12 +664,101 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 </div>
                 
                 <div class="form-group full-width">
-                    <label for="phone">Phone Number</label>
+                    <label for="phone">Phone Number <span class="required">*</span></label>
                     <div class="input-group">
                         <i class="fas fa-phone"></i>
                         <input type="tel" id="phone" name="phone" 
                                value="<?php echo htmlspecialchars($phone ?? ''); ?>"
-                               placeholder="e.g. +63-912-345-6789">
+                               placeholder="e.g. +63-912-345-6789" required>
+                    </div>
+                </div>
+                
+                <!-- Address Section -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="house_no">House No. / Street</label>
+                        <div class="input-group">
+                            <i class="fas fa-home"></i>
+                            <input type="text" id="house_no" name="house_no" 
+                                   value="<?php echo htmlspecialchars($house_no ?? ''); ?>"
+                                   placeholder="House number or street">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="purok">Purok / Sitio</label>
+                        <div class="input-group">
+                            <i class="fas fa-map-pin"></i>
+                            <input type="text" id="purok" name="purok" 
+                                   value="<?php echo htmlspecialchars($purok ?? ''); ?>"
+                                   placeholder="Purok or Sitio">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="barangay">Barangay <span class="required">*</span></label>
+                        <div class="input-group">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <input type="text" id="barangay" name="barangay" 
+                                   value="<?php echo htmlspecialchars($barangay ?? ''); ?>"
+                                   placeholder="Enter barangay" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="city">City / Municipality <span class="required">*</span></label>
+                        <div class="input-group">
+                            <i class="fas fa-city"></i>
+                            <input type="text" id="city" name="city" 
+                                   value="<?php echo htmlspecialchars($city ?? ''); ?>"
+                                   placeholder="Enter city" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="province">Province <span class="required">*</span></label>
+                        <div class="input-group">
+                            <i class="fas fa-map"></i>
+                            <input type="text" id="province" name="province" 
+                                   value="<?php echo htmlspecialchars($province ?? ''); ?>"
+                                   placeholder="Enter province" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="region">Region <span class="required">*</span></label>
+                        <div class="input-group">
+                            <i class="fas fa-globe"></i>
+                            <input type="text" id="region" name="region" 
+                                   value="<?php echo htmlspecialchars($region ?? ''); ?>"
+                                   placeholder="e.g. Region VII" required>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="postal_code">Postal Code</label>
+                        <div class="input-group">
+                            <i class="fas fa-mail-bulk"></i>
+                            <input type="text" id="postal_code" name="postal_code" 
+                                   value="<?php echo htmlspecialchars($postal_code ?? ''); ?>"
+                                   placeholder="ZIP code">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="landmark">Landmark (Optional)</label>
+                        <div class="input-group">
+                            <i class="fas fa-landmark"></i>
+                            <input type="text" id="landmark" name="landmark" 
+                                   value="<?php echo htmlspecialchars($landmark ?? ''); ?>"
+                                   placeholder="Nearby landmark">
+                        </div>
                     </div>
                 </div>
                 

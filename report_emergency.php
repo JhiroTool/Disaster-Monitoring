@@ -15,6 +15,18 @@ $user_id = $is_logged_in ? $_SESSION['user_id'] : null;
 $user_role = $is_logged_in ? $_SESSION['role'] : '';
 $user_name = $is_logged_in ? ($_SESSION['first_name'] . ' ' . $_SESSION['last_name']) : '';
 
+// Get user's saved address if logged in
+$user_address = null;
+if ($is_logged_in) {
+    try {
+        $addr_stmt = $pdo->prepare("SELECT * FROM user_addresses WHERE user_id = ? AND is_primary = 1 LIMIT 1");
+        $addr_stmt->execute([$user_id]);
+        $user_address = $addr_stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (Exception $e) {
+        error_log("Error fetching user address: " . $e->getMessage());
+    }
+}
+
 // Optional overrides file (create config/overrides.php to force static values)
 if (file_exists(__DIR__ . '/config/overrides.php')) {
     include __DIR__ . '/config/overrides.php';
@@ -714,6 +726,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                     <div class="form-section section-location">
                         <h3 class="section-title">📍 Location Information</h3>
                         
+                        <?php if ($is_logged_in && $user_address): ?>
+                        <!-- Address Choice Buttons -->
+                        <div class="address-choice-container" style="margin-bottom: 20px;">
+                            <p style="margin-bottom: 10px; font-weight: 500; color: #374151;">
+                                <i class="fas fa-info-circle" style="color: #4c63d2;"></i> 
+                                Would you like to use your saved address or report from a different location?
+                            </p>
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                <button type="button" id="useSavedAddress" class="address-choice-btn saved-address-btn" style="flex: 1; min-width: 200px; padding: 12px 20px; background: #4c63d2; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s;">
+                                    <i class="fas fa-home"></i> Use My Saved Address
+                                </button>
+                                <button type="button" id="useNewAddress" class="address-choice-btn new-address-btn" style="flex: 1; min-width: 200px; padding: 12px 20px; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s;">
+                                    <i class="fas fa-map-marker-alt"></i> Report Different Location
+                                </button>
+                            </div>
+                            <div id="savedAddressPreview" style="display: none; margin-top: 15px; padding: 15px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; color: #16a34a;">
+                                <p style="font-weight: 600; margin-bottom: 8px;"><i class="fas fa-check-circle"></i> Using Your Saved Address:</p>
+                                <p style="margin: 0; line-height: 1.6;">
+                                    <?php 
+                                    $addr_parts = array_filter([
+                                        $user_address['house_no'] ?? '',
+                                        $user_address['purok'] ?? '',
+                                        $user_address['barangay'] ?? '',
+                                        $user_address['city'] ?? '',
+                                        $user_address['province'] ?? '',
+                                        $user_address['region'] ?? ''
+                                    ]);
+                                    echo htmlspecialchars(implode(', ', $addr_parts));
+                                    ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                        
                         <!-- Region & Province -->
                         <div class="form-grid-2">
                             <div class="form-group">
@@ -930,6 +976,215 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
             particular_color: '<?php echo htmlspecialchars($_POST['particular_color'] ?? ''); ?>',
             particular_detail: '<?php echo htmlspecialchars($_POST['particular_detail'] ?? ''); ?>'
         };
+        
+        <?php if ($is_logged_in && $user_address): ?>
+        // User's saved address data
+        window.userSavedAddress = {
+            house_no: '<?php echo htmlspecialchars($user_address['house_no'] ?? ''); ?>',
+            purok: '<?php echo htmlspecialchars($user_address['purok'] ?? ''); ?>',
+            barangay: '<?php echo htmlspecialchars($user_address['barangay'] ?? ''); ?>',
+            city: '<?php echo htmlspecialchars($user_address['city'] ?? ''); ?>',
+            province: '<?php echo htmlspecialchars($user_address['province'] ?? ''); ?>',
+            region: '<?php echo htmlspecialchars($user_address['region'] ?? ''); ?>',
+            postal_code: '<?php echo htmlspecialchars($user_address['postal_code'] ?? ''); ?>',
+            landmark: '<?php echo htmlspecialchars($user_address['landmark'] ?? ''); ?>'
+        };
+        
+        // Address choice functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const useSavedBtn = document.getElementById('useSavedAddress');
+            const useNewBtn = document.getElementById('useNewAddress');
+            const savedPreview = document.getElementById('savedAddressPreview');
+            const addressFields = document.querySelectorAll('#region, #province, #city, #barangay, #purok, #house_no, #landmark');
+            
+            let usingSavedAddress = false;
+            
+            // Function to fill address fields
+            function fillSavedAddress() {
+                // Helper function to find option by case-insensitive match
+                function findAndSelectOption(selectElement, targetValue) {
+                    if (!selectElement || !targetValue) return false;
+                    
+                    const targetLower = targetValue.toString().toLowerCase().trim();
+                    const options = selectElement.options;
+                    
+                    for (let i = 0; i < options.length; i++) {
+                        const optionValue = options[i].value.toLowerCase().trim();
+                        if (optionValue === targetLower) {
+                            selectElement.selectedIndex = i;
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                
+                // Set region (uppercase to match CALABARZON format)
+                const regionSelect = document.getElementById('region');
+                const regionValue = window.userSavedAddress.region.toUpperCase();
+                if (regionSelect) {
+                    regionSelect.value = regionValue;
+                }
+                
+                // Set province with case-insensitive matching
+                const provinceSelect = document.getElementById('province');
+                if (provinceSelect) {
+                    findAndSelectOption(provinceSelect, window.userSavedAddress.province);
+                    // Trigger change event to load cities
+                    provinceSelect.dispatchEvent(new Event('change'));
+                }
+                
+                // Wait for cities to load, then set city
+                setTimeout(() => {
+                    const citySelect = document.getElementById('city');
+                    if (citySelect) {
+                        findAndSelectOption(citySelect, window.userSavedAddress.city);
+                        // Trigger change event to load barangays
+                        citySelect.dispatchEvent(new Event('change'));
+                    }
+                    
+                    // Wait for barangays to load
+                    setTimeout(() => {
+                        const barangaySelect = document.getElementById('barangay');
+                        if (barangaySelect) {
+                            findAndSelectOption(barangaySelect, window.userSavedAddress.barangay);
+                        }
+                        
+                        document.getElementById('purok').value = window.userSavedAddress.purok;
+                        document.getElementById('house_no').value = window.userSavedAddress.house_no;
+                        if (document.getElementById('landmark')) {
+                            document.getElementById('landmark').value = window.userSavedAddress.landmark;
+                        }
+                        
+                        // Remove required attribute temporarily (they will be re-enabled when switching to new address)
+                        const selectFields = document.querySelectorAll('#region, #province, #city, #barangay');
+                        selectFields.forEach(field => {
+                            if (field.tagName === 'SELECT') {
+                                field.removeAttribute('required');
+                            }
+                        });
+                    }, 500);
+                }, 500);
+                
+                // Style address fields to look disabled but keep them enabled for form submission
+                addressFields.forEach(field => {
+                    field.style.background = '#f3f4f6';
+                    field.style.cursor = 'not-allowed';
+                    field.style.opacity = '0.7';
+                    field.style.pointerEvents = 'none'; // Prevent clicks but keep values
+                    // Make them readonly but NOT disabled (so values are submitted)
+                    if (field.tagName !== 'SELECT') {
+                        field.readOnly = true;
+                    } else {
+                        // For select elements, we can't use readonly, so we'll use a different approach
+                        field.style.userSelect = 'none';
+                        field.setAttribute('data-locked', 'true');
+                        // Prevent any changes
+                        field.addEventListener('mousedown', preventChange);
+                        field.addEventListener('keydown', preventChange);
+                    }
+                });
+                
+                savedPreview.style.display = 'block';
+                usingSavedAddress = true;
+            }
+            
+            // Function to prevent changes to locked fields
+            function preventChange(e) {
+                if (e.target.hasAttribute('data-locked')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+            }
+            
+            // Function to clear and enable address fields
+            function enableNewAddress() {
+                addressFields.forEach(field => {
+                    field.style.background = '';
+                    field.style.cursor = '';
+                    field.style.opacity = '';
+                    field.style.pointerEvents = '';
+                    field.style.userSelect = '';
+                    field.readOnly = false;
+                    
+                    if (field.tagName === 'SELECT') {
+                        field.removeAttribute('data-locked');
+                        field.removeEventListener('mousedown', preventChange);
+                        field.removeEventListener('keydown', preventChange);
+                    }
+                    // Clear the field value
+                    field.value = '';
+                });
+                
+                // Reset dropdowns to default
+                const citySelect = document.getElementById('city');
+                const barangaySelect = document.getElementById('barangay');
+                const regionSelect = document.getElementById('region');
+                const provinceSelect = document.getElementById('province');
+                
+                if (regionSelect) {
+                    regionSelect.value = '';
+                }
+                if (provinceSelect) {
+                    provinceSelect.value = '';
+                }
+                if (citySelect) {
+                    citySelect.innerHTML = '<option value="">Select City/Municipality</option>';
+                }
+                if (barangaySelect) {
+                    barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+                }
+                
+                savedPreview.style.display = 'none';
+                usingSavedAddress = false;
+            }
+            
+            // Use Saved Address button
+            useSavedBtn.addEventListener('click', function() {
+                fillSavedAddress();
+                
+                // Update button styles
+                useSavedBtn.style.background = '#4c63d2';
+                useSavedBtn.style.color = 'white';
+                useNewBtn.style.background = '#e5e7eb';
+                useNewBtn.style.color = '#374151';
+            });
+            
+            // Use New Address button
+            useNewBtn.addEventListener('click', function() {
+                enableNewAddress();
+                
+                // Update button styles
+                useNewBtn.style.background = '#4c63d2';
+                useNewBtn.style.color = 'white';
+                useSavedBtn.style.background = '#e5e7eb';
+                useSavedBtn.style.color = '#374151';
+            });
+            
+            // Hover effects
+            document.querySelectorAll('.address-choice-btn').forEach(btn => {
+                btn.addEventListener('mouseenter', function() {
+                    const bgColor = window.getComputedStyle(this).backgroundColor;
+                    if (bgColor !== 'rgb(76, 99, 210)') {
+                        this.style.background = '#d1d5db';
+                    } else {
+                        this.style.transform = 'translateY(-2px)';
+                        this.style.boxShadow = '0 4px 12px rgba(76, 99, 210, 0.3)';
+                    }
+                });
+                
+                btn.addEventListener('mouseleave', function() {
+                    const bgColor = window.getComputedStyle(this).backgroundColor;
+                    if (bgColor !== 'rgb(76, 99, 210)') {
+                        this.style.background = '#e5e7eb';
+                    } else {
+                        this.style.transform = '';
+                        this.style.boxShadow = '';
+                    }
+                });
+            });
+        });
+        <?php endif; ?>
     </script>
     <script src="assets/js/particulars.js?v=<?php echo time(); ?>"></script>
     <script src="assets/js/report.js?v=<?php echo time(); ?>"></script>
