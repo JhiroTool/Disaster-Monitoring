@@ -259,29 +259,160 @@ include 'includes/header.php';
     </div>
 </div>
 
-<!-- Resources Table -->
-<div class="dashboard-card">
-    <div class="card-header">
-        <h3>Resource Inventory</h3>
-        <div class="filters">
+<!-- View Toggle and Filters -->
+<div class="view-controls-card">
+    <div class="view-toggle">
+        <button class="view-btn active" data-view="cards" onclick="switchView('cards')">
+            <i class="fas fa-th-large"></i>
+            <span>Cards</span>
+        </button>
+        <button class="view-btn" data-view="table" onclick="switchView('table')">
+            <i class="fas fa-table"></i>
+            <span>Table</span>
+        </button>
+    </div>
+    
+    <div class="filters-section">
+        <div class="filter-item">
+            <i class="fas fa-layer-group"></i>
             <select id="typeFilter" onchange="filterResources()">
                 <option value="">All Types</option>
-                <option value="vehicle">Vehicles</option>
-                <option value="equipment">Equipment</option>
-                <option value="medical">Medical Supplies</option>
-                <option value="food">Food & Water</option>
-                <option value="shelter">Shelter Materials</option>
-                <option value="communication">Communication</option>
-                <option value="other">Other</option>
-            </select>
-            <select id="statusFilter" onchange="filterResources()">
-                <option value="">All Status</option>
-                <option value="available">Available</option>
-                <option value="deployed">Deployed</option>
-                <option value="maintenance">Maintenance</option>
-                <option value="unavailable">Unavailable</option>
+                <option value="vehicle">🚗 Vehicles</option>
+                <option value="equipment">🔧 Equipment</option>
+                <option value="medical">💊 Medical Supplies</option>
+                <option value="food">🍱 Food & Water</option>
+                <option value="shelter">🏠 Shelter Materials</option>
+                <option value="communication">📡 Communication</option>
+                <option value="other">📦 Other</option>
             </select>
         </div>
+        <div class="filter-item">
+            <i class="fas fa-circle"></i>
+            <select id="statusFilter" onchange="filterResources()">
+                <option value="">All Status</option>
+                <option value="available">✅ Available</option>
+                <option value="deployed">🚀 Deployed</option>
+                <option value="maintenance">🔧 Maintenance</option>
+                <option value="unavailable">❌ Unavailable</option>
+            </select>
+        </div>
+        <div class="filter-item">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Search resources..." onkeyup="searchResources()">
+        </div>
+    </div>
+</div>
+
+<!-- Cards View -->
+<div id="cardsView" class="resources-grid">
+    <?php foreach ($resources as $resource): ?>
+        <div class="resource-card" data-type="<?php echo $resource['resource_type']; ?>" 
+             data-status="<?php echo $resource['availability_status']; ?>">
+            <div class="resource-card-header type-<?php echo $resource['resource_type']; ?>">
+                <div class="resource-icon">
+                    <?php
+                    $icons = [
+                        'vehicle' => 'fa-truck',
+                        'equipment' => 'fa-tools',
+                        'medical' => 'fa-medkit',
+                        'food' => 'fa-utensils',
+                        'shelter' => 'fa-home',
+                        'communication' => 'fa-broadcast-tower',
+                        'other' => 'fa-box'
+                    ];
+                    $icon = $icons[$resource['resource_type']] ?? 'fa-box';
+                    ?>
+                    <i class="fas <?php echo $icon; ?>"></i>
+                </div>
+                <span class="status-indicator status-<?php echo $resource['availability_status']; ?>">
+                    <?php echo ucfirst($resource['availability_status']); ?>
+                </span>
+            </div>
+            
+            <div class="resource-card-body">
+                <h3 class="resource-title"><?php echo htmlspecialchars($resource['resource_name']); ?></h3>
+                
+                <?php if ($resource['description']): ?>
+                    <p class="resource-desc">
+                        <?php echo htmlspecialchars(substr($resource['description'], 0, 100)) . (strlen($resource['description']) > 100 ? '...' : ''); ?>
+                    </p>
+                <?php endif; ?>
+                
+                <div class="resource-details">
+                    <div class="detail-item">
+                        <i class="fas fa-cube"></i>
+                        <div class="detail-content">
+                            <span class="detail-label">Quantity</span>
+                            <span class="detail-value">
+                                <strong><?php echo $resource['quantity_available'] - $resource['currently_deployed']; ?></strong>
+                                / <?php echo $resource['quantity_available']; ?> <?php echo htmlspecialchars($resource['unit']); ?>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="detail-content">
+                            <span class="detail-label">Location</span>
+                            <span class="detail-value"><?php echo htmlspecialchars($resource['location']); ?></span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <i class="fas fa-building"></i>
+                        <div class="detail-content">
+                            <span class="detail-label">Owner</span>
+                            <span class="detail-value"><?php echo htmlspecialchars($resource['lgu_name']); ?></span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <i class="fas fa-user"></i>
+                        <div class="detail-content">
+                            <span class="detail-label">Contact</span>
+                            <span class="detail-value"><?php echo htmlspecialchars($resource['contact_person']); ?></span>
+                            <span class="detail-sub"><?php echo htmlspecialchars($resource['contact_phone']); ?></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <?php if ($resource['currently_deployed'] > 0): ?>
+                    <div class="deployment-badge">
+                        <i class="fas fa-shipping-fast"></i>
+                        <?php echo $resource['currently_deployed']; ?> currently deployed
+                    </div>
+                <?php endif; ?>
+                
+                <div class="deployment-stats">
+                    <i class="fas fa-history"></i>
+                    Deployed <?php echo $resource['deployment_count']; ?> time<?php echo $resource['deployment_count'] != 1 ? 's' : ''; ?>
+                </div>
+            </div>
+            
+            <div class="resource-card-footer">
+                <button onclick="viewResourceModal(<?php echo htmlspecialchars(json_encode($resource), ENT_QUOTES, 'UTF-8'); ?>)" 
+                        class="btn-card btn-view">
+                    <i class="fas fa-eye"></i> View
+                </button>
+                <?php if (hasRole(['admin']) || $resource['owner_lgu_id'] == $user_lgu_id): ?>
+                    <button onclick="editResourceModal(<?php echo htmlspecialchars(json_encode($resource), ENT_QUOTES, 'UTF-8'); ?>)" 
+                            class="btn-card btn-edit">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button onclick="deleteResource(<?php echo $resource['resource_id']; ?>)" 
+                            class="btn-card btn-delete">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                <?php endif; ?>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+
+<!-- Table View (Hidden by default) -->
+<div id="tableView" class="dashboard-card" style="display: none;">
+    <div class="card-header">
+        <h3>Resource Inventory</h3>
     </div>
     <div class="card-content">
         <div class="table-container">
@@ -498,6 +629,372 @@ include 'includes/header.php';
 </div>
 
 <style>
+/* ====================================
+   MODERN RESOURCES PAGE STYLING
+   ==================================== */
+
+/* View Controls */
+.view-controls-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 20px;
+    margin-bottom: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.view-toggle {
+    display: flex;
+    background: #f3f4f6;
+    border-radius: 10px;
+    padding: 4px;
+    gap: 4px;
+}
+
+.view-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #6b7280;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.view-btn i {
+    font-size: 16px;
+}
+
+.view-btn.active {
+    background: white;
+    color: #3b82f6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.view-btn:hover:not(.active) {
+    color: #374151;
+}
+
+.filters-section {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.filter-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #f9fafb;
+    border-radius: 10px;
+    padding: 0 12px;
+    gap: 10px;
+    transition: all 0.3s ease;
+}
+
+.filter-item:focus-within {
+    background: white;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.filter-item i {
+    color: #9ca3af;
+    font-size: 14px;
+}
+
+.filter-item select,
+.filter-item input {
+    border: none;
+    background: transparent;
+    padding: 10px 8px;
+    font-size: 14px;
+    color: #374151;
+    font-weight: 500;
+    outline: none;
+    min-width: 160px;
+}
+
+.filter-item input {
+    min-width: 200px;
+}
+
+/* Resources Grid (Cards View) */
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+/* Resource Card */
+.resource-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.resource-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    transform: translateY(-4px);
+}
+
+.resource-card-header {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.resource-card-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+}
+
+.resource-card-header.type-vehicle {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.resource-card-header.type-equipment {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.resource-card-header.type-medical {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.resource-card-header.type-food {
+    background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+}
+
+.resource-card-header.type-shelter {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+}
+
+.resource-card-header.type-communication {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+}
+
+.resource-card-header.type-other {
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+}
+
+.resource-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.resource-icon i {
+    font-size: 24px;
+    color: white;
+}
+
+.status-indicator {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: rgba(255,255,255,0.3);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+.resource-card-body {
+    padding: 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.resource-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.resource-desc {
+    font-size: 13px;
+    color: #6b7280;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.resource-details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.detail-item i {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    font-size: 14px;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.detail-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.detail-label {
+    font-size: 11px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.detail-value {
+    font-size: 14px;
+    color: #374151;
+    font-weight: 500;
+}
+
+.detail-value strong {
+    color: #10b981;
+    font-size: 16px;
+}
+
+.detail-sub {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.deployment-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #fef3c7;
+    color: #92400e;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+}
+
+.deployment-badge i {
+    font-size: 14px;
+}
+
+.deployment-stats {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: #f3f4f6;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 500;
+    margin-top: auto;
+}
+
+.deployment-stats i {
+    color: #9ca3af;
+}
+
+.resource-card-footer {
+    display: flex;
+    gap: 8px;
+    padding: 16px;
+    background: #f9fafb;
+    border-top: 1px solid #f3f4f6;
+}
+
+.btn-card {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-view {
+    background: #eff6ff;
+    color: #1e40af;
+}
+
+.btn-view:hover {
+    background: #dbeafe;
+    transform: translateY(-1px);
+}
+
+.btn-edit {
+    background: #f0fdf4;
+    color: #166534;
+}
+
+.btn-edit:hover {
+    background: #dcfce7;
+    transform: translateY(-1px);
+}
+
+.btn-delete {
+    background: #fef2f2;
+    color: #991b1b;
+}
+
+.btn-delete:hover {
+    background: #fee2e2;
+    transform: translateY(-1px);
+}
+
+/* Table View Styles */
 .resource-info strong {
     color: var(--text-color);
     display: block;
@@ -565,6 +1062,58 @@ include 'includes/header.php';
 .status-deployed { background: #fff3e0; color: #f57c00; }
 .status-maintenance { background: #fff8e1; color: #f9a825; }
 .status-unavailable { background: #ffebee; color: #d32f2f; }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .resources-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .view-controls-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filters-section {
+        justify-content: stretch;
+        flex-direction: column;
+    }
+    
+    .filter-item {
+        width: 100%;
+    }
+    
+    .filter-item select,
+    .filter-item input {
+        width: 100%;
+    }
+}
+
+/* Empty State */
+.empty-resources {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.empty-resources i {
+    font-size: 64px;
+    color: #d1d5db;
+    margin-bottom: 20px;
+}
+
+.empty-resources h3 {
+    font-size: 20px;
+    color: #374151;
+    margin: 0 0 8px 0;
+}
+
+.empty-resources p {
+    color: #9ca3af;
+    margin: 0;
+}
 </style>
 
 <script>
@@ -702,6 +1251,168 @@ if (!document.querySelector('#resources-animations')) {
         }
     `;
     document.head.appendChild(style);
+}
+
+// ====================================
+// VIEW SWITCHING AND FILTERING
+// ====================================
+let currentView = 'cards';
+
+function switchView(view) {
+    currentView = view;
+    
+    // Toggle view buttons
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    if (view === 'cards') {
+        document.getElementById('cardsView').style.display = 'grid';
+        document.getElementById('tableView').style.display = 'none';
+        document.querySelector('.view-btn[onclick="switchView(\'cards\')"]').classList.add('active');
+    } else {
+        document.getElementById('cardsView').style.display = 'none';
+        document.getElementById('tableView').style.display = 'block';
+        document.querySelector('.view-btn[onclick="switchView(\'table\')"]').classList.add('active');
+    }
+}
+
+// Filter Resources (for card view)
+function filterResources() {
+    const typeFilter = document.getElementById('typeFilter').value;
+    const statusFilter = document.getElementById('statusFilter').value;
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    
+    document.querySelectorAll('.resource-card').forEach(card => {
+        const cardType = card.dataset.type;
+        const cardStatus = card.dataset.status;
+        const cardText = card.textContent.toLowerCase();
+        
+        let show = true;
+        
+        if (typeFilter && cardType !== typeFilter) show = false;
+        if (statusFilter && cardStatus !== statusFilter) show = false;
+        if (searchTerm && !cardText.includes(searchTerm)) show = false;
+        
+        card.style.display = show ? 'flex' : 'none';
+    });
+}
+
+// View Resource Modal
+function viewResourceModal(resourceId, resourceData) {
+    try {
+        const resource = typeof resourceData === 'string' ? JSON.parse(resourceData) : resourceData;
+        
+        const deployments = resource.deployments || [];
+        let deploymentsHtml = '';
+        
+        if (deployments.length > 0) {
+            deploymentsHtml = `
+                <div class="deployment-list" style="margin-top: 20px; padding: 15px; background: #f9fafb; border-radius: 10px;">
+                    <h5 style="margin: 0 0 15px 0; color: #374151;"><i class="fas fa-map-marked-alt"></i> Current Deployments</h5>
+                    ${deployments.map(dep => `
+                        <div class="deployment-item" style="padding: 10px; background: white; border-radius: 8px; margin-bottom: 10px;">
+                            <strong style="color: #111827;">${dep.disaster_name}</strong>
+                            <div style="margin-top: 5px;">Quantity: <span class="badge badge-info">${dep.quantity_deployed}</span></div>
+                            <div style="color: #6b7280; font-size: 12px;">Deployed: ${new Date(dep.deployment_date).toLocaleDateString()}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        $('#viewResourceModal .modal-body').html(`
+            <div class="resource-view-content">
+                <div class="resource-view-header" style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px; padding-bottom: 20px; border-bottom: 2px solid #f3f4f6;">
+                    <div class="resource-view-icon type-${resource.resource_type}" style="width: 60px; height: 60px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: white; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas ${getResourceIcon(resource.resource_type)}"></i>
+                    </div>
+                    <div class="resource-view-title" style="flex: 1;">
+                        <h4 style="margin: 0 0 8px 0; color: #111827; font-size: 20px;">${resource.resource_name}</h4>
+                        <span class="badge status-${resource.availability_status}" style="padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase;">${resource.availability_status}</span>
+                    </div>
+                </div>
+                
+                <div class="resource-view-details">
+                    <div class="detail-group" style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; color: #6b7280; font-size: 12px; margin-bottom: 8px;"><i class="fas fa-align-left"></i> Description</label>
+                        <p style="margin: 0; color: #374151; line-height: 1.6;">${resource.description || 'No description available'}</p>
+                    </div>
+                    
+                    <div class="detail-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div class="detail-group">
+                            <label style="display: block; font-weight: 600; color: #6b7280; font-size: 12px; margin-bottom: 8px;"><i class="fas fa-tag"></i> Type</label>
+                            <p style="margin: 0; color: #374151; font-weight: 500;">${resource.resource_type}</p>
+                        </div>
+                        <div class="detail-group">
+                            <label style="display: block; font-weight: 600; color: #6b7280; font-size: 12px; margin-bottom: 8px;"><i class="fas fa-cubes"></i> Quantity</label>
+                            <p style="margin: 0; color: #374151; font-weight: 500;"><strong style="color: #10b981; font-size: 18px;">${resource.quantity_available}/${resource.quantity_total}</strong> Available</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div class="detail-group">
+                            <label style="display: block; font-weight: 600; color: #6b7280; font-size: 12px; margin-bottom: 8px;"><i class="fas fa-map-marker-alt"></i> Location</label>
+                            <p style="margin: 0; color: #374151;">${resource.location || 'Not specified'}</p>
+                        </div>
+                        <div class="detail-group">
+                            <label style="display: block; font-weight: 600; color: #6b7280; font-size: 12px; margin-bottom: 8px;"><i class="fas fa-user"></i> Owner/Manager</label>
+                            <p style="margin: 0; color: #374151;">${resource.owner_manager || 'Not specified'}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-group" style="margin-bottom: 20px;">
+                        <label style="display: block; font-weight: 600; color: #6b7280; font-size: 12px; margin-bottom: 8px;"><i class="fas fa-phone"></i> Contact Information</label>
+                        <p style="margin: 0; color: #374151;">${resource.contact_info || 'Not specified'}</p>
+                    </div>
+                    
+                    ${deploymentsHtml}
+                </div>
+            </div>
+        `);
+        
+        $('#viewResourceModal').modal('show');
+    } catch (error) {
+        console.error('Error viewing resource:', error);
+        alert('Error loading resource details');
+    }
+}
+
+// Edit Resource Modal
+function editResourceModal(resourceId, resourceData) {
+    try {
+        const resource = typeof resourceData === 'string' ? JSON.parse(resourceData) : resourceData;
+        
+        $('#editResourceModal #edit_resource_id').val(resource.resource_id);
+        $('#editResourceModal #edit_resource_name').val(resource.resource_name);
+        $('#editResourceModal #edit_resource_type').val(resource.resource_type);
+        $('#editResourceModal #edit_description').val(resource.description);
+        $('#editResourceModal #edit_quantity_total').val(resource.quantity_total);
+        $('#editResourceModal #edit_quantity_available').val(resource.quantity_available);
+        $('#editResourceModal #edit_location').val(resource.location);
+        $('#editResourceModal #edit_owner_manager').val(resource.owner_manager);
+        $('#editResourceModal #edit_contact_info').val(resource.contact_info);
+        $('#editResourceModal #edit_availability_status').val(resource.availability_status);
+        
+        $('#editResourceModal').modal('show');
+    } catch (error) {
+        console.error('Error editing resource:', error);
+        alert('Error loading resource for editing');
+    }
+}
+
+// Get icon for resource type
+function getResourceIcon(type) {
+    const icons = {
+        'vehicle': 'fa-truck',
+        'equipment': 'fa-tools',
+        'medical': 'fa-medkit',
+        'food': 'fa-utensils',
+        'shelter': 'fa-home',
+        'communication': 'fa-satellite-dish',
+        'other': 'fa-box'
+    };
+    return icons[type] || 'fa-box';
 }
 </script>
 

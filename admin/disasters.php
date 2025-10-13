@@ -52,14 +52,27 @@ $status_filter = sanitizeInput($_GET['status'] ?? '');
 $severity_filter = sanitizeInput($_GET['severity'] ?? '');
 $type_filter = sanitizeInput($_GET['type'] ?? '');
 $search_query = sanitizeInput($_GET['search'] ?? '');
+$show_completed = isset($_GET['show_completed']) ? sanitizeInput($_GET['show_completed']) : '0';
 
 // Build WHERE clause
 $where_conditions = [];
 $params = [];
 
-if (!empty($status_filter)) {
-    $where_conditions[] = "d.status = ?";
-    $params[] = $status_filter;
+// By default, exclude COMPLETED disasters unless explicitly requested
+if ($status_filter === 'COMPLETED' || $show_completed === '1') {
+    // Show completed disasters
+    if (!empty($status_filter)) {
+        $where_conditions[] = "d.status = ?";
+        $params[] = $status_filter;
+    }
+} else {
+    // Exclude completed disasters by default
+    if (!empty($status_filter)) {
+        $where_conditions[] = "d.status = ?";
+        $params[] = $status_filter;
+    } else {
+        $where_conditions[] = "d.status != 'COMPLETED'";
+    }
 }
 
 if (!empty($severity_filter)) {
@@ -144,17 +157,34 @@ include 'includes/header.php';
     </div>
 <?php endif; ?>
 
+<?php if ($show_completed !== '1' && empty($status_filter)): ?>
+    <div class="alert alert-info" style="background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e40af;">
+        <i class="fas fa-info-circle"></i>
+        <strong>Showing Active Reports Only</strong> - Completed disasters are hidden by default. 
+        Check "Include Completed" to see all reports.
+    </div>
+<?php endif; ?>
+
 <!-- Filters -->
 <div class="filters-card">
     <form method="GET" class="filters-form">
         <div class="filter-group">
             <label for="status">Status</label>
             <select name="status" id="status">
-                <option value="">All Statuses</option>
+                <option value="">Active Reports (Excluding Completed)</option>
                 <option value="ON GOING" <?php echo $status_filter === 'ON GOING' ? 'selected' : ''; ?>>On Going</option>
                 <option value="IN PROGRESS" <?php echo $status_filter === 'IN PROGRESS' ? 'selected' : ''; ?>>In Progress</option>
-                <option value="COMPLETED" <?php echo $status_filter === 'COMPLETED' ? 'selected' : ''; ?>>Completed</option>
+                <option value="COMPLETED" <?php echo $status_filter === 'COMPLETED' ? 'selected' : ''; ?>>Completed Only</option>
             </select>
+        </div>
+        
+        <div class="filter-group">
+            <label for="show_completed">
+                <input type="checkbox" name="show_completed" id="show_completed" value="1" 
+                       <?php echo $show_completed === '1' ? 'checked' : ''; ?>
+                       onchange="this.form.submit()">
+                Include Completed
+            </label>
         </div>
         
         <div class="filter-group">
@@ -202,26 +232,43 @@ include 'includes/header.php';
 <div class="summary-stats">
     <div class="stat-item">
         <span class="stat-number"><?php echo count($disasters); ?></span>
-        <span class="stat-label">Total Results</span>
+        <span class="stat-label">
+            <?php echo $show_completed === '1' || $status_filter === 'COMPLETED' ? 'Total Results' : 'Active Reports'; ?>
+        </span>
     </div>
     <div class="stat-item critical">
         <span class="stat-number">
-            <?php echo count(array_filter($disasters, fn($d) => $d['priority'] === 'critical')); ?>
+            <?php echo count(array_filter($disasters, fn($d) => $d['priority'] === 'critical' && $d['status'] !== 'COMPLETED')); ?>
         </span>
-        <span class="stat-label">Critical</span>
+        <span class="stat-label">Critical Active</span>
     </div>
     <div class="stat-item pending">
         <span class="stat-number">
-            <?php echo count(array_filter($disasters, fn($d) => in_array($d['status'], ['pending', 'assigned']))); ?>
+            <?php echo count(array_filter($disasters, fn($d) => $d['status'] === 'ON GOING')); ?>
         </span>
-        <span class="stat-label">Pending Response</span>
+        <span class="stat-label">On Going</span>
     </div>
+    <div class="stat-item progress">
+        <span class="stat-number">
+            <?php echo count(array_filter($disasters, fn($d) => $d['status'] === 'IN PROGRESS')); ?>
+        </span>
+        <span class="stat-label">In Progress</span>
+    </div>
+    <?php if ($show_completed === '1' || $status_filter === 'COMPLETED'): ?>
+    <div class="stat-item completed">
+        <span class="stat-number">
+            <?php echo count(array_filter($disasters, fn($d) => $d['status'] === 'COMPLETED')); ?>
+        </span>
+        <span class="stat-label">Completed</span>
+    </div>
+    <?php else: ?>
     <div class="stat-item overdue">
         <span class="stat-number">
-            <?php echo count(array_filter($disasters, fn($d) => strtotime($d['escalation_deadline']) < time() && !in_array($d['status'], ['resolved', 'closed']))); ?>
+            <?php echo count(array_filter($disasters, fn($d) => isset($d['escalation_deadline']) && strtotime($d['escalation_deadline']) < time() && $d['status'] !== 'COMPLETED')); ?>
         </span>
         <span class="stat-label">Overdue</span>
     </div>
+    <?php endif; ?>
 </div>
 
 <!-- Disasters Table -->
@@ -470,6 +517,14 @@ include 'includes/header.php';
 
 .stat-item.overdue {
     border-left-color: #dc2626;
+}
+
+.stat-item.progress {
+    border-left-color: #3b82f6;
+}
+
+.stat-item.completed {
+    border-left-color: #10b981;
 }
 
 .stat-number {
