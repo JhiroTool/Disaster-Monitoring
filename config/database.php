@@ -23,6 +23,10 @@ try {
     // Set default fetch mode to associative array
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     
+    // IMPORTANT: Set MySQL timezone to match PHP timezone (Asia/Manila = +08:00)
+    // This ensures all database timestamps are consistent with Philippine time
+    $pdo->exec("SET time_zone = '+08:00'");
+    
     // Disable emulated prepared statements
     $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     

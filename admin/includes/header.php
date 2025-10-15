@@ -42,10 +42,11 @@ $current_page = basename($_SERVER['PHP_SELF']);
     
     <!-- Universal Real-Time System (SSE) - Works on ALL admin pages -->
         <script>
-        // Real-time updates (OPTIMIZED for performance)
-        window.REALTIME_ENABLED = true; // Now optimized and fast!
+        // Real-time updates with automatic fallback (SSE → Polling)
+        window.REALTIME_ENABLED = true;
     </script>
-    <script src="assets/js/realtime-system.js"></script>
+    <!-- Use fallback system for better Hostinger compatibility -->
+    <script src="assets/js/realtime-fallback.js"></script>
 </head>
 <body>
     <div class="admin-container">
