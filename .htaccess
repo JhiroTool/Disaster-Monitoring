@@ -1,3 +1,7 @@
+# Custom Error Pages
+ErrorDocument 404 /404.php
+ErrorDocument 403 /403.php
+
 # Enable URL Rewriting
 RewriteEngine On
 
@@ -12,8 +16,9 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.+)/$ /$1 [R=301,L]
 
 # Redirect .php URLs to clean URLs (remove .php from browser)
-RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s([^.]+)\.php [NC]
-RewriteRule ^ %1 [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+(.*)\.php[\s?] [NC]
+RewriteCond %{REQUEST_METHOD} !POST
+RewriteRule ^ %1 [R=301,L,NE]
 
 # Add .php extension internally if file exists
 RewriteCond %{REQUEST_FILENAME} !-f
