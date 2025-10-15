@@ -103,6 +103,22 @@ $checkInterval = 2; // FAST: Check every 2 seconds for quick admin response!
 // Send initial connection message IMMEDIATELY
 sendSSE('connected', ['message' => 'Real-time updates connected', 'timestamp' => time()]);
 
+// Send initial stats immediately on connection
+$initialStats = getCurrentStats($pdo);
+if ($initialStats) {
+    sendSSE('update', [
+        'stats' => $initialStats,
+        'changes' => ['type' => 'initial'],
+        'timestamp' => time()
+    ]);
+    // Store initial values
+    $lastTotal = $initialStats['total_disasters'];
+    $lastActive = $initialStats['active_disasters'];
+    $lastCritical = $initialStats['critical_disasters'];
+    $lastUsersNeedHelp = $initialStats['users_need_help'];
+    $lastUsersSafe = $initialStats['users_safe'];
+}
+
 // OPTIMIZED: Shorter max runtime for faster reconnections
 $startTime = time();
 $maxRunTime = 180; // 3 minutes max, then reconnect (was 5 minutes)

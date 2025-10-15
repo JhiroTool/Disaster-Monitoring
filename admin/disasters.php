@@ -812,27 +812,29 @@ let updateCheckInterval = null;
 let isUpdating = false;
 
 // Initialize real-time integration
-if (window.realtimeSystem) {
-    // Register for new report notifications
-    window.realtimeSystem.registerCallback('onNewReport', (data) => {
-        console.log('🚨 New disaster report received:', data);
-        handleNewDisasterNotification(data);
-    });
-    
-    // Register for general updates
-    window.realtimeSystem.registerCallback('onUpdate', (data) => {
-        if (data.stats && data.stats.total_disasters !== undefined) {
-            checkForNewDisasters(data.stats.total_disasters);
-        }
-    });
-    
-    // Visual indicator that real-time is active
-    setRealtimeIndicator('active');
-    console.log('✅ Real-time updates enabled for disasters page');
-} else {
-    setRealtimeIndicator('offline');
-    console.warn('⚠️ Real-time system not available');
-}
+setTimeout(() => {
+    if (window.RealtimeSystem) {
+        // Register for new report notifications
+        window.RealtimeSystem.registerCallback('onNewReport', (data) => {
+            console.log('🚨 New disaster report received:', data);
+            handleNewDisasterNotification(data);
+        });
+        
+        // Register for general updates
+        window.RealtimeSystem.registerCallback('onUpdate', (data) => {
+            if (data.stats && data.stats.total_disasters !== undefined) {
+                checkForNewDisasters(data.stats.total_disasters);
+            }
+        });
+        
+        // Visual indicator that real-time is active
+        setRealtimeIndicator('active');
+        console.log('✅ Real-time updates enabled for disasters page');
+    } else {
+        setRealtimeIndicator('offline');
+        console.warn('⚠️ Real-time system not available');
+    }
+}, 1000);
 
 // Update the real-time status indicator
 function setRealtimeIndicator(status) {
@@ -876,8 +878,11 @@ function handleNewDisasterNotification(data) {
     // Show smart notification banner
     showSmartDisasterBanner(count, data);
     
-    // Reset indicator after a moment
-    setTimeout(() => setRealtimeIndicator('active'), 2000);
+    // Auto-refresh the page after 3 seconds to show new reports
+    setTimeout(() => {
+        console.log('🔄 Auto-refreshing to show new reports...');
+        location.reload();
+    }, 3000);
 }
 
 // Show smart disaster notification banner

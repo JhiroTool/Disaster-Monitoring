@@ -29,6 +29,9 @@ $current_page = basename($_SERVER['PHP_SELF']);
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     
+    <!-- jQuery (required for DataTables) -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
     <!-- Chart.js for Dashboard Charts -->
     <?php if ($current_page === 'dashboard.php'): ?>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -88,19 +91,19 @@ $current_page = basename($_SERVER['PHP_SELF']);
                     </li>
                     
                     <li class="menu-section">Communications</li>
-                    <li class="<?php echo $current_page === 'announcements.php' ? 'active' : ''; ?>">
-                        <a href="announcements.php">
-                            <i class="fas fa-bullhorn"></i>
-                            <span>Announcements</span>
-                        </a>
-                    </li>
-                    <li class="<?php echo $current_page === 'notifications.php' ? 'active' : ''; ?>">
-                        <a href="notifications.php">
+                    <li class="<?php echo $current_page === 'my-notifications.php' ? 'active' : ''; ?>">
+                        <a href="my-notifications.php">
                             <i class="fas fa-bell"></i>
                             <span>Notifications</span>
                             <?php if ($notifications_count > 0): ?>
                                 <span class="badge"><?php echo $notifications_count; ?></span>
                             <?php endif; ?>
+                        </a>
+                    </li>
+                    <li class="<?php echo $current_page === 'announcements.php' ? 'active' : ''; ?>">
+                        <a href="announcements.php">
+                            <i class="fas fa-bullhorn"></i>
+                            <span>Announcements</span>
                         </a>
                     </li>
                     

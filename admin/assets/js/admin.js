@@ -152,11 +152,15 @@ async function loadNotifications() {
                 dropdown.innerHTML = '<div class="empty-state"><p>No notifications</p></div>';
             } else {
                 dropdown.innerHTML = data.notifications.map(notification => `
-                    <a href="#" onclick="markAsRead(${notification.notification_id})" class="${!notification.is_read ? 'unread' : ''}">
-                        <div>
+                    <a href="${notification.link || '#'}" onclick="markAsRead(${notification.id}); ${notification.link ? '' : 'return false;'}" class="notification-item ${!notification.is_read ? 'unread' : ''}">
+                        ${!notification.is_read ? '<span class="unread-dot"></span>' : ''}
+                        <div class="notification-icon ${notification.class}">
+                            <i class="fas ${notification.icon}"></i>
+                        </div>
+                        <div class="notification-content">
                             <strong>${escapeHtml(notification.title)}</strong>
                             <p>${escapeHtml(notification.message)}</p>
-                            <small>${formatTimeAgo(notification.created_at)}</small>
+                            <small>${notification.time_ago}</small>
                         </div>
                     </a>
                 `).join('');

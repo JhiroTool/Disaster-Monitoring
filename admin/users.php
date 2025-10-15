@@ -140,6 +140,7 @@ include 'includes/header.php';
                         <th>Status</th>
                         <th>Report Statuses</th>
                         <th>Last Login</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -240,10 +241,30 @@ include 'includes/header.php';
                                     <span class="text-muted">Never</span>
                                 <?php endif; ?>
                             </td>
+                            <td>
+                                <button class="btn btn-xs btn-primary" onclick="viewUserDetails(<?php echo $user['user_id']; ?>)" title="View Details">
+                                    <i class="fas fa-eye"></i> View
+                                </button>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- User Details Modal -->
+<div id="userDetailsModal" class="modal" style="display: none;">
+    <div class="modal-content modal-lg">
+        <div class="modal-header">
+            <h3><i class="fas fa-user-circle"></i> Reporter Details</h3>
+            <button class="modal-close" onclick="closeUserModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="userDetailsContent">
+            <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin"></i> Loading...
+            </div>
         </div>
     </div>
 </div>
@@ -487,6 +508,161 @@ include 'includes/header.php';
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     }
 }
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease;
+}
+
+.modal-lg {
+    max-width: 800px;
+}
+
+.modal-header {
+    padding: 20px 25px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #64748b;
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.modal-close:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.modal-body {
+    padding: 25px;
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 40px;
+    color: #667eea;
+    font-size: 18px;
+}
+
+.user-detail-section {
+    margin-bottom: 25px;
+}
+
+.user-detail-section h4 {
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #667eea;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.detail-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.detail-value.full-width {
+    grid-column: span 2;
+}
+
+.address-map {
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .detail-value.full-width {
+        grid-column: span 1;
+    }
+}
 </style>
 
 <script>
@@ -505,6 +681,148 @@ function filterUsers() {
         row.style.display = searchableText.includes(filter) ? '' : 'none';
     }
 }
+
+// View user details modal
+async function viewUserDetails(userId) {
+    const modal = document.getElementById('userDetailsModal');
+    const content = document.getElementById('userDetailsContent');
+    
+    // Show modal with loading state
+    modal.style.display = 'flex';
+    content.innerHTML = '<div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+    
+    try {
+        const response = await fetch(`ajax/get-user-details.php?user_id=${userId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            displayUserDetails(data.user);
+        } else {
+            content.innerHTML = `<div class="error-message"><i class="fas fa-exclamation-circle"></i> ${data.message || 'Error loading user details'}</div>`;
+        }
+    } catch (error) {
+        console.error('Error fetching user details:', error);
+        content.innerHTML = '<div class="error-message"><i class="fas fa-exclamation-circle"></i> Failed to load user details</div>';
+    }
+}
+
+function displayUserDetails(user) {
+    const content = document.getElementById('userDetailsContent');
+    const address = user.address || {};
+    
+    const html = `
+        <div class="user-detail-section">
+            <h4><i class="fas fa-user"></i> Personal Information</h4>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Full Name</span>
+                    <span class="detail-value">${user.first_name} ${user.last_name}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Username</span>
+                    <span class="detail-value">${user.username_reporters}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Email</span>
+                    <span class="detail-value"><a href="mailto:${user.email}">${user.email}</a></span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Phone</span>
+                    <span class="detail-value">${user.phone || 'N/A'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Status</span>
+                    <span class="detail-value">
+                        <span class="reporter-status reporter-status-${user.status === 'Need help' ? 'help' : 'fine'}">
+                            <i class="fas ${user.status === 'Need help' ? 'fa-life-ring' : 'fa-user-check'}"></i>
+                            ${user.status || "I'm fine"}
+                        </span>
+                    </span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Account Created</span>
+                    <span class="detail-value">${new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="user-detail-section">
+            <h4><i class="fas fa-map-marker-alt"></i> Address Information</h4>
+            ${address.address_id ? `
+                <div class="address-map">
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">House No. / Street</span>
+                            <span class="detail-value">${address.house_no || 'N/A'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Purok / Sitio</span>
+                            <span class="detail-value">${address.purok || 'N/A'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Barangay</span>
+                            <span class="detail-value">${address.barangay}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">City / Municipality</span>
+                            <span class="detail-value">${address.city}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Province</span>
+                            <span class="detail-value">${address.province}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Region</span>
+                            <span class="detail-value">${address.region}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Postal Code</span>
+                            <span class="detail-value">${address.postal_code || 'N/A'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Landmark</span>
+                            <span class="detail-value">${address.landmark || 'N/A'}</span>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                        <div class="detail-label" style="margin-bottom: 8px;">Full Address</div>
+                        <div class="detail-value" style="line-height: 1.6;">
+                            ${[address.house_no, address.purok, address.barangay, address.city, address.province, address.region, address.postal_code].filter(Boolean).join(', ')}
+                        </div>
+                    </div>
+                </div>
+            ` : '<p class="text-muted">No address information available</p>'}
+        </div>
+        
+        <div class="user-detail-section">
+            <h4><i class="fas fa-chart-bar"></i> Activity Summary</h4>
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <span class="detail-label">Total Reports</span>
+                    <span class="detail-value">${user.total_reports || 0}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">Last Login</span>
+                    <span class="detail-value">${user.last_login ? new Date(user.last_login).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Never'}</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    content.innerHTML = html;
+}
+
+function closeUserModal() {
+    document.getElementById('userDetailsModal').style.display = 'none';
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(event) {
+    const modal = document.getElementById('userDetailsModal');
+    if (event.target === modal) {
+        closeUserModal();
+    }
+});
 
 // ====================================
 // REAL-TIME INTEGRATION

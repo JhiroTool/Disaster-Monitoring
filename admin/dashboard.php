@@ -206,73 +206,6 @@ include 'includes/header.php';
 </div>
 
 <div class="dashboard-grid">
-    <!-- Statistics Cards -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-header">
-                <span class="stat-label">Total Reports</span>
-                <div class="stat-icon-container blue">
-                    <i class="fas fa-clipboard-list"></i>
-                </div>
-            </div>
-            <div class="stat-body">
-                <h2 class="stat-number" id="total-disasters"><?php echo number_format($total_disasters); ?></h2>
-                <div class="stat-trend <?php echo $total_trend >= 0 ? 'trend-up' : 'trend-down'; ?>">
-                    <i class="fas fa-arrow-<?php echo $total_trend >= 0 ? 'up' : 'down'; ?>"></i>
-                    <span><?php echo abs($total_trend); ?>% from last month</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-header">
-                <span class="stat-label">Active Disasters</span>
-                <div class="stat-icon-container orange">
-                    <i class="fas fa-fire"></i>
-                </div>
-            </div>
-            <div class="stat-body">
-                <h2 class="stat-number" id="active-disasters"><?php echo number_format($active_disasters); ?></h2>
-                <div class="stat-trend <?php echo $active_trend >= 0 ? 'trend-up' : 'trend-down'; ?>">
-                    <i class="fas fa-arrow-<?php echo $active_trend >= 0 ? 'up' : 'down'; ?>"></i>
-                    <span><?php echo abs($active_trend); ?>% from last month</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-header">
-                <span class="stat-label">Critical Alerts</span>
-                <div class="stat-icon-container red">
-                    <i class="fas fa-exclamation-triangle"></i>
-                </div>
-            </div>
-            <div class="stat-body">
-                <h2 class="stat-number" id="critical-disasters"><?php echo number_format($critical_disasters); ?></h2>
-                <div class="stat-trend <?php echo $critical_trend >= 0 ? 'trend-up' : 'trend-down'; ?>">
-                    <i class="fas fa-arrow-<?php echo $critical_trend >= 0 ? 'up' : 'down'; ?>"></i>
-                    <span><?php echo abs($critical_trend); ?>% from last month</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="stat-card">
-            <div class="stat-header">
-                <span class="stat-label">Completion Rate</span>
-                <div class="stat-icon-container green">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-            </div>
-            <div class="stat-body">
-                <h2 class="stat-number" id="pending-disasters"><?php echo number_format($completion_rate, 1); ?>%</h2>
-                <div class="stat-trend <?php echo $completion_trend >= 0 ? 'trend-up' : 'trend-down'; ?>">
-                    <i class="fas fa-arrow-<?php echo $completion_trend >= 0 ? 'up' : 'down'; ?>"></i>
-                    <span><?php echo abs($completion_trend); ?>% from last month</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    
     <!-- Charts Row -->
     <div class="charts-row">
         <div class="dashboard-card chart-large">
@@ -883,6 +816,12 @@ window.onRealtimeUpdate = function(data) {
 window.onNewReport = function(count, stats) {
     console.log('🚨 Dashboard: New report notification', count);
     // Toast is already shown by global system
+    
+    // Auto-refresh dashboard data after 3 seconds
+    setTimeout(() => {
+        console.log('🔄 Auto-refreshing dashboard...');
+        location.reload();
+    }, 3000);
 };
 
 // Update last update time in dashboard header

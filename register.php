@@ -38,8 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
     // Validation
     if (empty($first_name) || empty($last_name) || empty($username_reporters) || empty($email) || empty($password) || empty($confirm_password)) {
         $error_message = 'Please fill in all required fields.';
-    } elseif (empty($barangay) || empty($city) || empty($province) || empty($region)) {
-        $error_message = 'Please fill in all required address fields (Barangay, City, Province, Region).';
+    } elseif (empty($house_no) || empty($purok) || empty($barangay) || empty($city) || empty($province) || empty($region) || empty($postal_code)) {
+        $error_message = 'Please fill in all required address fields.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = 'Please enter a valid email address.';
     } elseif (strlen($username_reporters) < 3) {
@@ -90,14 +90,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 
                 $address_stmt->execute([
                     $user_id,
-                    !empty($house_no) ? $house_no : null,
-                    !empty($purok) ? $purok : null,
+                    $house_no,
+                    $purok,
                     $barangay,
                     $city,
                     $province,
                     $region,
-                    !empty($postal_code) ? $postal_code : null,
-                    !empty($landmark) ? $landmark : null
+                    $postal_code,
+                    $landmark
                 ]);
                 
                 // Log the registration activity
@@ -172,8 +172,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             overflow: hidden;
             width: 100%;
-            max-width: 1000px;
-            min-height: 600px;
+            max-width: 1100px;
+            min-height: auto;
             display: grid;
             grid-template-columns: 1fr 1fr;
             position: relative;
@@ -183,10 +183,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             padding: 50px 40px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             background: white;
             overflow-y: auto;
-            max-height: 600px;
+            max-height: 90vh;
         }
         
         .register-right {
@@ -267,19 +267,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         
         .register-header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 35px;
         }
         
         .register-header h1 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: #1a202c;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         
         .register-header p {
             color: #6b7280;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            line-height: 1.5;
         }
         
         .alert {
@@ -314,12 +315,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 18px;
+            margin-bottom: 22px;
         }
         
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 22px;
         }
         
         .form-group.full-width {
@@ -330,8 +331,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             display: block;
             font-weight: 600;
             color: #374151;
-            margin-bottom: 6px;
-            font-size: 13px;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
         
         .form-group label .required {
@@ -355,10 +356,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         .input-group input,
         .input-group select {
             width: 100%;
-            padding: 14px 14px 14px 42px;
+            padding: 15px 15px 15px 44px;
             border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 14px;
+            border-radius: 12px;
+            font-size: 15px;
             background: white;
             transition: all 0.3s ease;
             font-family: inherit;
@@ -408,18 +409,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         
         .btn {
             width: 100%;
-            padding: 14px 20px;
+            padding: 16px 24px;
             border: none;
-            border-radius: 10px;
-            font-size: 15px;
+            border-radius: 12px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            margin: 25px 0 20px 0;
+            gap: 10px;
+            margin: 30px 0 25px 0;
             text-decoration: none;
             font-family: inherit;
         }
@@ -467,20 +468,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
         /* Responsive Design */
         @media (max-width: 768px) {
             body {
-                padding: 15px;
+                padding: 20px 15px;
                 align-items: flex-start;
-                padding-top: 30px;
-                overflow: auto; /* allow page scrolling on small screens */
-                -webkit-overflow-scrolling: touch; /* smooth momentum scrolling on iOS */
+                padding-top: 40px;
+                overflow: auto;
+                -webkit-overflow-scrolling: touch;
             }
 
             .register-container {
                 grid-template-columns: 1fr;
-                max-width: 420px;
+                max-width: 100%;
                 min-height: auto;
-                border-radius: 16px;
-                box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-                max-height: none; /* ensure container doesn't block page scroll */
+                border-radius: 20px;
+                box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+                max-height: none;
             }
             
             .register-right {
@@ -488,7 +489,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             }
             
             .register-left {
-                padding: 20px 18px;
+                padding: 35px 25px;
                 max-height: none;
                 overflow: visible;
             }
@@ -496,43 +497,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
 
             .form-row {
                 grid-template-columns: 1fr;
-                gap: 10px;
+                gap: 16px;
             }
             
             .form-group.full-width {
                 grid-column: span 1;
             }
             
+            .register-header {
+                margin-bottom: 30px;
+            }
+            
             .register-header h1 {
-                font-size: 1.6rem;
+                font-size: 1.85rem;
             }
 
             .register-header p {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
             }
 
             .form-group {
-                margin-bottom: 14px;
+                margin-bottom: 18px;
             }
-            .input-group i { left: 10px; }
-            .input-group input, .input-group select { padding: 12px 12px 12px 38px; }
+            
+            .form-group label {
+                font-size: 14px;
+                margin-bottom: 7px;
+            }
+            
+            .input-group i { 
+                left: 14px;
+                font-size: 15px;
+            }
+            
+            .input-group input, .input-group select { 
+                padding: 14px 14px 14px 44px;
+                font-size: 15px;
+                border-radius: 11px;
+            }
+            
+            .btn {
+                padding: 15px 20px;
+                font-size: 15px;
+                margin: 25px 0 20px 0;
+            }
+            
+            .alert {
+                padding: 14px 16px;
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
         }
         
         @media (max-width: 480px) {
             body {
-                padding: 10px;
-                padding-top: 20px;
-                overflow: auto; /* ensure scrolling works on very small screens */
+                padding: 15px 12px;
+                padding-top: 30px;
+                overflow: auto;
                 -webkit-overflow-scrolling: touch;
             }
 
             .register-container {
-                border-radius: 12px;
+                border-radius: 16px;
                 max-height: none;
             }
 
             .register-left {
-                padding: 16px 14px;
+                padding: 28px 20px;
             }
 
             .register-header {
@@ -540,57 +571,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
             }
 
             .register-header h1 {
-                font-size: 1.35rem;
+                font-size: 1.65rem;
             }
 
             .register-header p {
-                font-size: 0.85rem;
+                font-size: 0.9rem;
+            }
+            
+            .form-row {
+                gap: 14px;
             }
             
             .input-group input,
             .input-group select {
-                padding: 10px 10px 10px 34px;
-                font-size: 14px;
+                padding: 13px 13px 13px 42px;
+                font-size: 14.5px;
             }
 
             .input-group i {
-                left: 10px;
-                font-size: 13px;
+                left: 13px;
+                font-size: 14px;
             }
 
             .password-toggle {
-                right: 10px;
-                font-size: 13px;
+                right: 12px;
+                font-size: 14px;
             }
 
             .form-group label {
-                font-size: 12.5px;
-                margin-bottom: 5px;
+                font-size: 13.5px;
+                margin-bottom: 6px;
             }
 
             .form-group {
-                margin-bottom: 12px;
+                margin-bottom: 16px;
             }
             
             .btn {
-                padding: 11px 14px;
-                font-size: 14px;
-                margin: 18px 0 14px 0;
+                padding: 14px 18px;
+                font-size: 14.5px;
+                margin: 22px 0 18px 0;
             }
 
             .alert {
-                padding: 12px 14px;
-                font-size: 13px;
-                margin-bottom: 18px;
+                padding: 13px 15px;
+                font-size: 13.5px;
+                margin-bottom: 20px;
             }
 
             .register-footer {
-                padding-top: 18px;
+                padding-top: 20px;
             }
 
             .register-footer p,
             .register-footer a {
-                font-size: 13px;
+                font-size: 13.5px;
             }
         }
     </style>
@@ -676,22 +711,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 <!-- Address Section -->
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="house_no">House No. / Street</label>
+                        <label for="house_no">House No. / Street <span class="required">*</span></label>
                         <div class="input-group">
                             <i class="fas fa-home"></i>
                             <input type="text" id="house_no" name="house_no" 
                                    value="<?php echo htmlspecialchars($house_no ?? ''); ?>"
-                                   placeholder="House number or street">
+                                   placeholder="House number or street" required>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="purok">Purok / Sitio</label>
+                        <label for="purok">Purok / Sitio <span class="required">*</span></label>
                         <div class="input-group">
                             <i class="fas fa-map-pin"></i>
                             <input type="text" id="purok" name="purok" 
                                    value="<?php echo htmlspecialchars($purok ?? ''); ?>"
-                                   placeholder="Purok or Sitio">
+                                   placeholder="Purok or Sitio" required>
                         </div>
                     </div>
                 </div>
@@ -742,22 +777,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register'])) {
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="postal_code">Postal Code</label>
+                        <label for="postal_code">Postal Code <span class="required">*</span></label>
                         <div class="input-group">
                             <i class="fas fa-mail-bulk"></i>
                             <input type="text" id="postal_code" name="postal_code" 
                                    value="<?php echo htmlspecialchars($postal_code ?? ''); ?>"
-                                   placeholder="ZIP code">
+                                   placeholder="ZIP code" required>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="landmark">Landmark (Optional)</label>
+                        <label for="landmark">Landmark <span class="required">*</span></label>
                         <div class="input-group">
                             <i class="fas fa-landmark"></i>
                             <input type="text" id="landmark" name="landmark" 
                                    value="<?php echo htmlspecialchars($landmark ?? ''); ?>"
-                                   placeholder="Nearby landmark">
+                                   placeholder="Nearby landmark" required>
                         </div>
                     </div>
                 </div>

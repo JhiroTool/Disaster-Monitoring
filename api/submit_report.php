@@ -236,6 +236,27 @@ try {
 
     $disasterId = (int) $pdo->lastInsertId();
 
+    // Create notifications for all admins and LGU staff
+    $notifStmt = $pdo->prepare("
+        INSERT INTO notifications (user_id, type, title, message, related_disaster_id, is_read, created_at)
+        SELECT 
+            user_id,
+            'alert' as type,
+            'New Emergency Report' as title,
+            CONCAT('New disaster report: ', :disaster_name, ' in ', :city) as message,
+            :disaster_id as related_disaster_id,
+            FALSE as is_read,
+            NOW() as created_at
+        FROM users
+        WHERE role IN ('admin', 'lgu_staff') AND is_active = TRUE
+    ");
+    
+    $notifStmt->execute([
+        ':disaster_name' => $disasterName,
+        ':city' => $city ?? 'Unknown location',
+        ':disaster_id' => $disasterId
+    ]);
+
     $pdo->commit();
 
     http_response_code(201);

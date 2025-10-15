@@ -146,34 +146,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $can_edit) {
     }
 }
 
-// Fetch notifications with statistics
+// Fetch notifications with statistics for current user
 try {
-    $stmt = $pdo->query("
+    $stmt = $pdo->prepare("
         SELECT n.*, 
                l.lgu_name,
                CONCAT(u.first_name, ' ', u.last_name) as created_by_name,
-               (SELECT COUNT(*) FROM notifications n2 WHERE n2.notification_id = n.notification_id AND n2.is_read = 1) as read_count,
-               (SELECT COUNT(*) FROM notifications n3 WHERE n3.notification_id = n.notification_id) as total_recipients
+               d.disaster_name,
+               d.tracking_id,
+               dt.type_name as disaster_type
         FROM notifications n
         LEFT JOIN lgus l ON n.target_lgu_id = l.lgu_id
         LEFT JOIN users u ON n.created_by = u.user_id
-        ORDER BY n.created_at DESC
+        LEFT JOIN disasters d ON COALESCE(n.related_disaster_id, n.related_id) = d.disaster_id
+        LEFT JOIN disaster_types dt ON d.type_id = dt.type_id
+        WHERE n.user_id = ?
+        ORDER BY n.is_read ASC, n.created_at DESC
     ");
+    $stmt->execute([$_SESSION['user_id']]);
     $notifications = $stmt->fetchAll();
     
     // Fetch LGUs for targeting
     $lgu_stmt = $pdo->query("SELECT lgu_id, lgu_name FROM lgus WHERE is_active = TRUE ORDER BY lgu_name");
     $lgus = $lgu_stmt->fetchAll();
     
-    // Fetch notification stats
-    $stats_stmt = $pdo->query("
+    // Fetch notification stats for current user
+    $stats_stmt = $pdo->prepare("
         SELECT 
-            COUNT(DISTINCT notification_id) as total_notifications,
+            COUNT(*) as total_notifications,
+            COUNT(CASE WHEN is_read = FALSE THEN 1 END) as unread_notifications,
             COUNT(CASE WHEN is_active = 1 THEN 1 END) as active_notifications,
             COUNT(CASE WHEN expires_at IS NULL OR expires_at > NOW() THEN 1 END) as valid_notifications,
             COUNT(CASE WHEN expires_at IS NOT NULL AND expires_at <= NOW() THEN 1 END) as expired_notifications
         FROM notifications
+        WHERE user_id = ?
     ");
+    $stats_stmt->execute([$_SESSION['user_id']]);
     $stats = $stats_stmt->fetch();
     
 } catch (Exception $e) {
@@ -224,6 +232,16 @@ include 'includes/header.php';
         <div class="stat-content">
             <div class="stat-number" data-stat-total><?php echo $stats['total_notifications']; ?></div>
             <div class="stat-label">Total Notifications</div>
+        </div>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-icon warning">
+            <i class="fas fa-envelope"></i>
+        </div>
+        <div class="stat-content">
+            <div class="stat-number" data-stat-unread><?php echo $stats['unread_notifications']; ?></div>
+            <div class="stat-label">Unread</div>
         </div>
     </div>
     
@@ -387,13 +405,16 @@ include 'includes/header.php';
                             ];
                             $notification_json = htmlspecialchars(json_encode($notification_payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_QUOTES, 'UTF-8');
                         ?>
-                        <tr class="notification-row" data-notification="<?php echo $notification_json; ?>" data-notification-type="<?php echo htmlspecialchars($notification['type']); ?>" data-notification-status="<?php echo htmlspecialchars($status_class); ?>" style="--notification-accent: <?php echo htmlspecialchars($accent_color); ?>;">
+                        <tr class="notification-row <?php echo $notification['is_read'] ? '' : 'unread'; ?>" data-notification="<?php echo $notification_json; ?>" data-notification-type="<?php echo htmlspecialchars($notification['type']); ?>" data-notification-status="<?php echo htmlspecialchars($status_class); ?>" style="--notification-accent: <?php echo htmlspecialchars($accent_color); ?>;">
                             <td>
+                                <?php if (!$notification['is_read']): ?>
+                                    <span class="unread-indicator" title="Unread"></span>
+                                <?php endif; ?>
                                 <input type="checkbox" class="notification-checkbox" 
                                        value="<?php echo $notification['notification_id']; ?>">
                             </td>
                             <td class="notification-main">
-                                <article class="notification-card" tabindex="0">
+                                <article class="notification-card <?php echo $notification['is_read'] ? '' : 'unread-card'; ?>" tabindex="0">
                                     <span class="notification-card-accent" aria-hidden="true"></span>
                                     <header class="notification-card-header">
                                         <div class="notification-card-heading">
@@ -1453,6 +1474,31 @@ include 'includes/header.php';
 .notification-row {
     --notification-accent: #2563eb;
     transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.notification-row.unread {
+    background: #fef3c7;
+    border-left: 4px solid #f59e0b;
+}
+
+.notification-row.unread .notification-card {
+    background: #fffbeb;
+    font-weight: 500;
+}
+
+.unread-indicator {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background: #ef4444;
+    border-radius: 50%;
+    margin-right: 8px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
 }
 
 .notification-row:hover {
@@ -3354,7 +3400,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // REAL-TIME INTEGRATION FOR NOTIFICATIONS
 // ====================================
 function initializeRealtimeNotifications() {
-    if (!window.realtimeSystem) {
+    if (!window.RealtimeSystem) {
         console.warn('⚠️ RealtimeSystem not available on notifications page');
         return;
     }
@@ -3362,7 +3408,7 @@ function initializeRealtimeNotifications() {
     let lastNotificationUpdate = Date.now();
     
     // Listen for notification updates
-    window.realtimeSystem.registerCallback('onUpdate', (data) => {
+    window.RealtimeSystem.registerCallback('onUpdate', (data) => {
         if (data.notification_count !== undefined) {
             const currentTime = Date.now();
             
