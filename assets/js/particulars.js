@@ -25,7 +25,19 @@
     flooding: 'Level of flooding',
     safety: 'Level of safety',
     readiness: 'Readiness to go back to school',
-    transport: 'Transportation Status'
+    transport: 'Transportation Status',
+    eq_structural: 'Structural integrity after the earthquake',
+    eq_road_access: 'Road access after the earthquake',
+    eq_utilities: 'Utility services after the earthquake',
+    eq_casualties: 'Casualty and injury status',
+    eq_evacuation: 'Evacuation and shelter needs',
+    eq_aftershocks: 'Aftershock activity and risk',
+    volc_ashfall: 'Ashfall condition in community',
+    volc_lava_flow: 'Lava or pyroclastic flow threat',
+    volc_air_quality: 'Air quality and respiratory safety',
+    volc_water: 'Water supply and contamination status',
+    volc_evacuation: 'Evacuation progress and shelter status',
+    volc_infrastructure: 'Critical infrastructure condition'
   };
 
   const DETAILS = {
@@ -127,7 +139,155 @@
       red: [
         'No, transportation is not available / services suspended'
       ]
+    },
+    eq_structural: {
+      green: [
+        'Structures stable with only cosmetic cracks'
+      ],
+      orange: [
+        'Visible structural cracks, inspection needed'
+      ],
+      red: [
+        'Severe structural damage or collapse'
+      ]
+    },
+    eq_road_access: {
+      green: [
+        'Roads clear and passable'
+      ],
+      orange: [
+        'Partial debris blocking some access'
+      ],
+      red: [
+        'Roads blocked or unsafe to use'
+      ]
+    },
+    eq_utilities: {
+      green: [
+        'Power, water, and communications working normally'
+      ],
+      orange: [
+        'Intermittent power or water outages'
+      ],
+      red: [
+        'Utilities unavailable or infrastructure destroyed'
+      ]
+    },
+    eq_casualties: {
+      green: [
+        'No injuries reported'
+      ],
+      orange: [
+        'Minor injuries needing assistance'
+      ],
+      red: [
+        'Serious injuries or trapped persons'
+      ]
+    },
+    eq_evacuation: {
+      green: [
+        'No evacuation required'
+      ],
+      orange: [
+        'Partial evacuation or temporary shelter needed'
+      ],
+      red: [
+        'Immediate evacuation required'
+      ]
+    },
+    eq_aftershocks: {
+      green: [
+        'Minimal aftershock activity'
+      ],
+      orange: [
+        'Occasional aftershocks causing concern'
+      ],
+      red: [
+        'Frequent strong aftershocks causing danger'
+      ]
+    },
+    volc_ashfall: {
+      green: [
+        'No ashfall observed'
+      ],
+      orange: [
+        'Light ashfall affecting visibility'
+      ],
+      red: [
+        'Heavy ashfall causing hazards'
+      ]
+    },
+    volc_lava_flow: {
+      green: [
+        'No lava or pyroclastic flow threat'
+      ],
+      orange: [
+        'Nearby lava or pyroclastic activity being monitored'
+      ],
+      red: [
+        'Active lava or pyroclastic flow threatening the area'
+      ]
+    },
+    volc_air_quality: {
+      green: [
+        'Air quality safe with minimal irritation'
+      ],
+      orange: [
+        'Masks recommended due to irritation'
+      ],
+      red: [
+        'Hazardous air quality, breathing difficult'
+      ]
+    },
+    volc_water: {
+      green: [
+        'Water supply clean and safe'
+      ],
+      orange: [
+        'Possible ash contamination, limited safe water'
+      ],
+      red: [
+        'Water unusable due to contamination'
+      ]
+    },
+    volc_evacuation: {
+      green: [
+        'Residents safe at home'
+      ],
+      orange: [
+        'Some residents evacuated to shelters'
+      ],
+      red: [
+        'Full evacuation required'
+      ]
+    },
+    volc_infrastructure: {
+      green: [
+        'Critical infrastructure operating'
+      ],
+      orange: [
+        'Partial disruption of services'
+      ],
+      red: [
+        'Critical infrastructure damaged or offline'
+      ]
     }
+  };
+
+  const TYPHOON_KEYS = ['home_state', 'accessibility', 'power', 'water', 'food', 'flooding', 'safety', 'readiness', 'transport'];
+  const EARTHQUAKE_KEYS = ['eq_structural', 'eq_road_access', 'eq_utilities', 'eq_casualties', 'eq_evacuation', 'eq_aftershocks'];
+  const VOLCANIC_KEYS = ['volc_ashfall', 'volc_lava_flow', 'volc_air_quality', 'volc_water', 'volc_evacuation', 'volc_infrastructure'];
+  const DISASTER_GROUPS = {
+    default: TYPHOON_KEYS,
+    typhoon: TYPHOON_KEYS,
+    flood: TYPHOON_KEYS,
+    'storm-surge': TYPHOON_KEYS,
+    'super-typhoon': TYPHOON_KEYS,
+    earthquake: EARTHQUAKE_KEYS,
+    tsunami: EARTHQUAKE_KEYS,
+    'volcanic-eruption': VOLCANIC_KEYS,
+    'volcanic-activity': VOLCANIC_KEYS,
+    ashfall: VOLCANIC_KEYS
   };
 
   function getDetails(particularKey, colorKey) {
@@ -145,7 +305,8 @@
   window.PARTICULARS_DETAILS = {
     LABELS: LABELS,
     DETAILS: DETAILS,
-    getDetails: getDetails
+    getDetails: getDetails,
+    GROUPS: DISASTER_GROUPS
   };
 
 })(window);

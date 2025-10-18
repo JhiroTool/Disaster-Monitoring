@@ -689,15 +689,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_report'])) {
                                 <label for="particular">Particular</label>
                                 <select id="particular" name="particular" required>
                                     <option value="">Select particular...</option>
-                                    <option value="home_state" <?php echo (isset($_POST['particular']) && $_POST['particular']=='home_state') ? 'selected' : ''; ?>>Current state of home/building after the typhoon</option>
-                                    <option value="accessibility" <?php echo (isset($_POST['particular']) && $_POST['particular']=='accessibility') ? 'selected' : ''; ?>>Accessibility to road</option>
-                                    <option value="power" <?php echo (isset($_POST['particular']) && $_POST['particular']=='power') ? 'selected' : ''; ?>>Power Supply Status</option>
-                                    <option value="water" <?php echo (isset($_POST['particular']) && $_POST['particular']=='water') ? 'selected' : ''; ?>>Clean Water Supply</option>
-                                    <option value="food" <?php echo (isset($_POST['particular']) && $_POST['particular']=='food') ? 'selected' : ''; ?>>Food and essential supplies availability</option>
-                                    <option value="flooding" <?php echo (isset($_POST['particular']) && $_POST['particular']=='flooding') ? 'selected' : ''; ?>>Level of flooding</option>
-                                    <option value="safety" <?php echo (isset($_POST['particular']) && $_POST['particular']=='safety') ? 'selected' : ''; ?>>Level of safety</option>
-                                    <option value="readiness" <?php echo (isset($_POST['particular']) && $_POST['particular']=='readiness') ? 'selected' : ''; ?>>Readiness to go back to school</option>
-                                    <option value="transport" <?php echo (isset($_POST['particular']) && $_POST['particular']=='transport') ? 'selected' : ''; ?>>Transportation Status</option>
+                                    <optgroup label="Typhoon/General">
+                                        <option value="home_state" <?php echo (isset($_POST['particular']) && $_POST['particular']=='home_state') ? 'selected' : ''; ?>>Current state of home/building after the typhoon</option>
+                                        <option value="accessibility" <?php echo (isset($_POST['particular']) && $_POST['particular']=='accessibility') ? 'selected' : ''; ?>>Accessibility to road</option>
+                                        <option value="power" <?php echo (isset($_POST['particular']) && $_POST['particular']=='power') ? 'selected' : ''; ?>>Power Supply Status</option>
+                                        <option value="water" <?php echo (isset($_POST['particular']) && $_POST['particular']=='water') ? 'selected' : ''; ?>>Clean Water Supply</option>
+                                        <option value="food" <?php echo (isset($_POST['particular']) && $_POST['particular']=='food') ? 'selected' : ''; ?>>Food and essential supplies availability</option>
+                                        <option value="flooding" <?php echo (isset($_POST['particular']) && $_POST['particular']=='flooding') ? 'selected' : ''; ?>>Level of flooding</option>
+                                        <option value="safety" <?php echo (isset($_POST['particular']) && $_POST['particular']=='safety') ? 'selected' : ''; ?>>Level of safety</option>
+                                        <option value="readiness" <?php echo (isset($_POST['particular']) && $_POST['particular']=='readiness') ? 'selected' : ''; ?>>Readiness to go back to school</option>
+                                        <option value="transport" <?php echo (isset($_POST['particular']) && $_POST['particular']=='transport') ? 'selected' : ''; ?>>Transportation Status</option>
+                                    </optgroup>
+                                    <optgroup label="Earthquake">
+                                        <option value="eq_power" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_power') ? 'selected' : ''; ?>>Power supply status</option>
+                                        <option value="eq_water" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_water') ? 'selected' : ''; ?>>Clean water supply</option>
+                                        <option value="eq_roads" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_roads') ? 'selected' : ''; ?>>Road and evacuation route accessibility</option>
+                                        <option value="eq_communication" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_communication') ? 'selected' : ''; ?>>Communication networks status</option>
+                                        <option value="eq_safety_feeling" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_safety_feeling') ? 'selected' : ''; ?>>Safety and emotional state</option>
+                                        <option value="eq_supplies" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_supplies') ? 'selected' : ''; ?>>Food and essential supplies</option>
+                                        <option value="eq_building_damage" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_building_damage') ? 'selected' : ''; ?>>Building structural damage</option>
+                                        <option value="eq_stress" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_stress') ? 'selected' : ''; ?>>Stress and anxiety levels</option>
+                                        <option value="eq_evacuation" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_evacuation') ? 'selected' : ''; ?>>Evacuation center status</option>
+                                        <option value="eq_transportation" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_transportation') ? 'selected' : ''; ?>>Transportation services</option>
+                                        <option value="eq_collapse" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_collapse') ? 'selected' : ''; ?>>Building collapse or safety</option>
+                                        <option value="eq_road_access" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_road_access') ? 'selected' : ''; ?>>Major road accessibility</option>
+                                        <option value="eq_utilities" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_utilities') ? 'selected' : ''; ?>>Power and water supply</option>
+                                        <option value="eq_aftershocks" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_aftershocks') ? 'selected' : ''; ?>>Aftershock danger level</option>
+                                        <option value="eq_casualties" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_casualties') ? 'selected' : ''; ?>>Injuries or casualties</option>
+                                        <option value="eq_disruption" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_disruption') ? 'selected' : ''; ?>>Communication and transportation disruption</option>
+                                        <option value="eq_resources" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_resources') ? 'selected' : ''; ?>>Essential resources availability</option>
+                                        <option value="eq_trauma" <?php echo (isset($_POST['particular']) && $_POST['particular']=='eq_trauma') ? 'selected' : ''; ?>>Trauma and fear levels</option>
+                                    </optgroup>
+                                    <optgroup label="Volcanic Eruption">
+                                        <option value="volc_ashfall" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_ashfall') ? 'selected' : ''; ?>>Ashfall and volcanic activity</option>
+                                        <option value="volc_air_quality" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_air_quality') ? 'selected' : ''; ?>>Air quality</option>
+                                        <option value="volc_roads" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_roads') ? 'selected' : ''; ?>>Roads and transportation</option>
+                                        <option value="volc_power_water" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_power_water') ? 'selected' : ''; ?>>Power and water supply</option>
+                                        <option value="volc_safety" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_safety') ? 'selected' : ''; ?>>Safety of residents</option>
+                                        <option value="volc_communication" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_communication') ? 'selected' : ''; ?>>Communication networks</option>
+                                        <option value="volc_supplies" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_supplies') ? 'selected' : ''; ?>>Food and essential supplies</option>
+                                        <option value="volc_lava_steam" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_lava_steam') ? 'selected' : ''; ?>>Lava flow or steam emission</option>
+                                        <option value="volc_evacuation" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_evacuation') ? 'selected' : ''; ?>>Evacuation status</option>
+                                        <option value="volc_transportation" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_transportation') ? 'selected' : ''; ?>>Transportation status</option>
+                                        <option value="volc_school_business" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_school_business') ? 'selected' : ''; ?>>School/business status</option>
+                                        <option value="volc_respiratory" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_respiratory') ? 'selected' : ''; ?>>Respiratory health</option>
+                                        <option value="volc_eruption" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_eruption') ? 'selected' : ''; ?>>Eruption status</option>
+                                        <option value="volc_damage" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_damage') ? 'selected' : ''; ?>>Damage to homes/buildings</option>
+                                        <option value="volc_air_pollution" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_air_pollution') ? 'selected' : ''; ?>>Air pollution and health risk</option>
+                                        <option value="volc_lines_down" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_lines_down') ? 'selected' : ''; ?>>Power, water, communication lines</option>
+                                        <option value="volc_roads_blocked" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_roads_blocked') ? 'selected' : ''; ?>>Roads blocked by ash/lava</option>
+                                        <option value="volc_shortage" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_shortage') ? 'selected' : ''; ?>>Shortage of essentials</option>
+                                        <option value="volc_casualties" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_casualties') ? 'selected' : ''; ?>>Casualties or missing persons</option>
+                                        <option value="volc_psych" <?php echo (isset($_POST['particular']) && $_POST['particular']=='volc_psych') ? 'selected' : ''; ?>>Psychological distress</option>
+                                    </optgroup>
                                 </select>
                             </div>
                         </div>

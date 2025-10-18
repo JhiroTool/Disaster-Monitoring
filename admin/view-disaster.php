@@ -35,6 +35,61 @@ try {
     exit;
 }
 
+$assessments = [];
+if (!empty($disaster['assessments'])) {
+    $decodedAssessments = json_decode($disaster['assessments'], true);
+    if (json_last_error() === JSON_ERROR_NONE && is_array($decodedAssessments)) {
+        $assessments = $decodedAssessments;
+    }
+}
+
+$particularLabels = [
+    'home_state' => 'Current state of home/building after the typhoon',
+    'accessibility' => 'Accessibility to road',
+    'power' => 'Power Supply Status',
+    'water' => 'Clean Water Supply',
+    'food' => 'Food and essential supplies availability',
+    'flooding' => 'Level of flooding',
+    'safety' => 'Level of safety',
+    'readiness' => 'Readiness to go back to school',
+    'transport' => 'Transportation Status',
+    'eq_structural' => 'Structural integrity after the earthquake',
+    'eq_road_access' => 'Road access after the earthquake',
+    'eq_utilities' => 'Utility services after the earthquake',
+    'eq_casualties' => 'Casualty and injury status',
+    'eq_evacuation' => 'Evacuation and shelter needs',
+    'eq_aftershocks' => 'Aftershock activity and risk',
+    'volc_ashfall' => 'Ashfall condition in community',
+    'volc_lava_flow' => 'Lava or pyroclastic flow threat',
+    'volc_air_quality' => 'Air quality and respiratory safety',
+    'volc_water' => 'Water supply and contamination status',
+    'volc_evacuation' => 'Evacuation progress and shelter status',
+    'volc_infrastructure' => 'Critical infrastructure condition'
+];
+
+$colorLabels = [
+    'green' => 'Green (Good)',
+    'orange' => 'Orange (Moderate)',
+    'red' => 'Red (Critical)'
+];
+
+$selectedParticularKey = $assessments['selected_particular'] ?? '';
+$selectedParticularColor = $assessments['selected_particular_color'] ?? '';
+$selectedParticularDetail = $assessments['selected_particular_detail'] ?? '';
+
+$selectedParticularLabel = '';
+if (!empty($selectedParticularKey)) {
+    if (isset($particularLabels[$selectedParticularKey])) {
+        $selectedParticularLabel = $particularLabels[$selectedParticularKey];
+    } else {
+        $selectedParticularLabel = ucwords(str_replace('_', ' ', $selectedParticularKey));
+    }
+}
+$selectedColorLabel = '';
+if (!empty($selectedParticularColor)) {
+    $selectedColorLabel = $colorLabels[$selectedParticularColor] ?? ucfirst($selectedParticularColor);
+}
+
 $immediateNeedsRaw = $disaster['immediate_needs'] ?? $disaster['immediate_need'] ?? null;
 $immediateNeedsList = [];
 $immediateNeedsText = '';
@@ -100,6 +155,22 @@ include 'includes/header.php';
         </div>
     <div class="detail-section"><label><i class="fas fa-layer-group"></i> Type</label><div class="value"><?php echo htmlspecialchars($disaster['type_name']); ?></div></div>
     <div class="detail-section"><label><i class="fas fa-bolt"></i> Severity</label><div class="value"><?php echo htmlspecialchars($disaster['severity_display']); ?></div></div>
+    <?php if ($selectedParticularLabel || $selectedColorLabel || $selectedParticularDetail): ?>
+    <div class="detail-section">
+        <label><i class="fas fa-clipboard-list"></i> Rapid Assessment</label>
+        <div class="value" style="display:flex;flex-direction:column;gap:4px;">
+            <?php if ($selectedParticularLabel): ?>
+                <div><strong>Particular:</strong> <?php echo htmlspecialchars($selectedParticularLabel); ?></div>
+            <?php endif; ?>
+            <?php if ($selectedColorLabel): ?>
+                <div><strong>Color:</strong> <?php echo htmlspecialchars($selectedColorLabel); ?></div>
+            <?php endif; ?>
+            <?php if (!empty($selectedParticularDetail)): ?>
+                <div><strong>Detail:</strong> <?php echo htmlspecialchars($selectedParticularDetail); ?></div>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php endif; ?>
     <div class="detail-section"><label><i class="fas fa-flag"></i> Status</label><div class="value"><?php echo ucfirst(str_replace('_', ' ', $disaster['status'])); ?></div></div>
     <div class="detail-section"><label><i class="fas fa-exclamation-triangle"></i> Priority</label><div class="value">
         <?php 

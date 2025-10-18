@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const barangaySelect = document.getElementById('barangay');
     const severitySelect = document.getElementById('severity');
     const severityColorSelect = document.getElementById('severity_color');
+    const disasterTypeSelect = document.getElementById('disaster_type');
 
     // Get defaults from window.formDefaults if available
     const formDefaults = window.formDefaults || {};
@@ -157,6 +158,54 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Use centralized particulars mapping from assets/js/particulars.js (PARTICULARS_DETAILS)
     const particularDetails = window.PARTICULARS_DETAILS ? window.PARTICULARS_DETAILS.DETAILS : {};
+    const particularLabels = window.PARTICULARS_DETAILS ? window.PARTICULARS_DETAILS.LABELS : {};
+    const particularGroups = window.PARTICULARS_DETAILS ? window.PARTICULARS_DETAILS.GROUPS : {};
+    const defaultParticularKeys = particularGroups && particularGroups.default ? particularGroups.default.slice() : Object.keys(particularDetails || {});
+
+    function normalizeDisasterKey(value) {
+        return (value || '').toString().trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    }
+
+    function getParticularKeysForDisaster(disasterText) {
+        const normalized = normalizeDisasterKey(disasterText);
+        if (particularGroups && particularGroups[normalized]) {
+            return particularGroups[normalized];
+        }
+        return defaultParticularKeys;
+    }
+
+    function populateParticularOptions() {
+        if (!particularSelect) {
+            return;
+        }
+        const currentValue = particularSelect.value || (formDefaults.particular || '');
+        const selectedOption = disasterTypeSelect && disasterTypeSelect.selectedIndex >= 0 ? disasterTypeSelect.options[disasterTypeSelect.selectedIndex] : null;
+        const disasterText = selectedOption ? (selectedOption.textContent || selectedOption.text || '') : '';
+        const keys = getParticularKeysForDisaster(disasterText) || [];
+        particularSelect.innerHTML = '';
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = 'Select particular...';
+        placeholder.disabled = true;
+        particularSelect.appendChild(placeholder);
+        let matched = false;
+        keys.forEach(key => {
+            if (!particularDetails[key]) {
+                return;
+            }
+            const opt = document.createElement('option');
+            opt.value = key;
+            opt.textContent = particularLabels[key] || key;
+            if (!matched && currentValue && currentValue === key) {
+                opt.selected = true;
+                matched = true;
+            }
+            particularSelect.appendChild(opt);
+        });
+        if (!matched) {
+            placeholder.selected = true;
+        }
+    }
 
     function populateParticularDetail() {
         console.log('=== STARTING populateParticularDetail ===');
@@ -228,6 +277,13 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('=== FINISHED populateParticularDetail ===');
     }
 
+    if (disasterTypeSelect) {
+        disasterTypeSelect.addEventListener('change', function() {
+            populateParticularOptions();
+            populateParticularDetail();
+        });
+    }
+
     if (particularSelect) {
         // Restore selected particular
         if (formDefaults.particular) {
@@ -243,6 +299,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         particularColorSelect.addEventListener('change', populateParticularDetail);
     }
+
+    populateParticularOptions();
 
     // If both are set from defaults, populate detail list on load
     if ((formDefaults.particular || '') && (formDefaults.particular_color || '')) {
